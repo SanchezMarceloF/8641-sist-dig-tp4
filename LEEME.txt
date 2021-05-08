@@ -1,0 +1,11 @@
+:: TAREAS PENDIENTES ::
+
+UART
+RAM externa
+
+22/02 	:: ram externa ::
+		--finalizado y probado con estado wr1/rd1 60 ns
+		--falta añadir al tp4
+		
+		:: uart ::
+		--empezarlo
