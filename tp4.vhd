@@ -62,7 +62,7 @@ architecture tp4_arq of tp4 is
 	
 	component xilinx_dual_port_ram_sync is
 	generic (
-		ADDR_WIDTH: integer:=18;
+		ADDR_WIDTH: integer:=2*L;
 		DATA_WIDTH:	integer:=1
 	);
 	port (
