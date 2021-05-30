@@ -29,7 +29,7 @@ architecture sram_tb_arch of sram_tb is
    signal data_reg: std_logic_vector(7 downto 0);
    signal db_btn: std_logic_vector(2 downto 0);
    signal clk_tb, reset_tb: std_logic := '0';
-   --signal dio_aux: std_logic_vector(DATA_W-1 downto 0) := "0001110001110001"
+   --signal dio_aux: inout std_logic_vector(L-1 downto 0); -- := 
 
 begin
    
@@ -38,9 +38,13 @@ begin
 	
 	mem <= '0', '1' after 60 ns, '0' after 1000 ns;
 	rw <= '0', '1' after 500 ns; --activo modo 'read' después de 500 ns
-	
-	
-	
+	process(rw, dio_a)
+	begin
+		if (rw = '1') then
+			dio_a <= "0000000011111111";
+		end if;
+	end process;
+		
 	
 	ctrl_unit: entity work.sram_ctrl
 	port map(
@@ -51,13 +55,6 @@ begin
       we_n=>we_n, oe_n=>oe_n, dio_a=>dio_a,
       ce_a_n=>ce_a_n, ub_a_n=>ub_a_n, lb_a_n=>lb_a_n)
 	;
-
-
-    -- debounce_unit0: entity work.debounce
-       -- port map(
-          -- clk=>clk, reset=>reset, sw=>btn(0),
-          -- db_level=>open, db_tick=>db_btn(0));
-    -- debounce_unit1: entity work.debounce
        -- port map(
           -- clk=>clk, reset=>reset, sw=>btn(1),
           -- db_level=>open, db_tick=>db_btn(1));
