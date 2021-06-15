@@ -7,7 +7,7 @@ use IEEE.numeric_std.all;
 -- alfa, beta, gamma son los angulos a rotar de los ejes x ,y ,z respectivamente.
 -- la salida xn,yn,zn sale con mismo módulo que la entrada.
 --'ctrl' on/off del rotador.
---'flag_rot' se pone en "1" cuando termina de rotar.
+--'flag_rot' se pone en "1" (pulso) cuando termina de rotar.
 
 -- declaracion de entidad
 
@@ -70,7 +70,8 @@ begin
 			x_n => x1_aux,
 			y_n => y1_aux,
 			phi_n => open,
-			flag => ctrl_2
+			flag => ctrl_2	--flag queda fijo en '1' cuando termina rx
+							--y habilita la rotación de ry con ctrl_2
 	);
 	
 	
@@ -85,7 +86,8 @@ begin
 			x_n => x2_aux,
 			y_n => y2_aux,
 			phi_n => open,
-			flag => ctrl_3
+			flag => ctrl_3	--flag queda fijo en '1' cuando termina ry
+							--y habilita la rotación de rz con ctrl_3
 	);
 	
 	

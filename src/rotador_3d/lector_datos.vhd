@@ -83,7 +83,7 @@ architecture lector_datos_arq of lector_datos is
 				puntero_ant <= (others => '0');
 				ctrl_aux <= '1';
 			elsif (ctrl = '1') then 
-				--cuando termina rot actual apunta a un nuevo vector
+			--cuando termina rotación actual apunta a un nuevo vector
 				puntero_actual <= std_logic_vector(unsigned(puntero_ant) + L);
 				ctrl_aux <= '0';
 			else

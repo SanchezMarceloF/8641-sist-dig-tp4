@@ -75,8 +75,10 @@ architecture cordic_arq of cordic is
 		port(
 			ent: in std_logic_vector(N-1 downto 0);
 			shift: in std_logic_vector(3 Downto 0);
-			ctrl: in std_logic_vector(1 downto 0); --ctrl(0) = {0 shift derecha,1 shift izquierda}
-			sal: out std_logic_vector(N-1 downto 0)--ctrl(1) = {0 relleno con 0's, 1 relleno con 1's}
+			ctrl: in std_logic_vector(1 downto 0); 
+			--ctrl(0) = {0 shift derecha,1 shift izquierda}
+			--ctrl(1) = {0 relleno con 0's, 1 relleno con 1's}
+			sal: out std_logic_vector(N-1 downto 0)
 		);
 	end component;
 	
