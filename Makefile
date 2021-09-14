@@ -1,7 +1,7 @@
 #extraído de https://github.com/FedeVerstraeten/sd-2c2019/blob/master/ejemplos/Makefile
-#TESTBENCH = sram_tb
+TESTBENCH = sram_tb
 # vhdl files
-FILES = src/uart/* #acá entiendo que los archivos .vhd están guardos acá
+FILES = src/ram_externa/* #acá entiendo que los archivos .vhd están guardos acá
 VHDLEX = .vhd #extensión archivos vhdl
 
 # testbench
