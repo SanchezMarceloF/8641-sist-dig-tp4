@@ -1,4 +1,9 @@
 -- Listing 10.1
+-- código tomado del libro "FPGA PROTOTYPING BY VHDL EXAMPLES"
+-- autor: PONG P. CHU
+-- se agrega el componente 'contador_clock' para elegir los tiempos
+-- de escritura y lectura
+
 library ieee;
 use ieee.std_logic_1164.all;
 entity sram_ctrl is

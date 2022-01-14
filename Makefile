@@ -1,5 +1,9 @@
-#extraído de https://github.com/FedeVerstraeten/sd-2c2019/blob/master/ejemplos/Makefile
-TESTBENCH = tp4_tb
+# extraído de https://github.com/FedeVerstraeten/sd-2c2019/blob/master/ejemplos/Makefile
+
+# se puede descomentar la linea de abajo para hacer permanente el archivo del testbench
+# sino (si se trabaja con distintos testbenchs) usar 'export TESTBENCH=algun_tb' desde
+# bash antes de ejecutar make
+# TESTBENCH = sram_tb
 # vhdl files
 FILES = src/*/* # todos los archivos .vhd están guardos acá
 #FILES = src/*/* # todos los archivos .vhd están guardos acá

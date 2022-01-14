@@ -78,12 +78,12 @@ architecture rotador3d_tb_arq of rotador3d_tb is
 	signal z0_tb: std_logic_vector(N-1 downto 0):= "0011010001001";
 	signal pulsadores_tb: std_logic_vector(5 downto 0);
 	signal xn_tb, yn_tb, zn_tb: std_logic_vector(N-1 downto 0);
-	signal addr_tb: std_logic_vector(R-1 downto 0);	
+	signal addr_romext_tb: std_logic_vector(R-1 downto 0);	
 	--señales para generador_direcciones
-	signal Addrx_tb, Addry_tb: std_logic_vector(L-1 downto 0);
+	signal Addrx_ram_portA_tb, Addry_ram_portA_tb: std_logic_vector(L-1 downto 0);
 	--señales para controlador
 	signal pxl_col_tb, pxl_row_tb: std_logic_vector(R-1 downto 0);
-	signal address_tb: std_logic_vector(2*L-1 downto 0);
+	signal addr_ram_portB_tb: std_logic_vector(2*L-1 downto 0);
 	--señales auxiliares
 	signal flag_fin_aux: std_logic;
 	
@@ -103,7 +103,7 @@ begin
 		pulsadores => pulsadores_tb,
 		rst => rst_tb, ena => ena_tb, clk => clk_tb,
 		x_n => xn_tb, y_n => yn_tb, z_n => zn_tb,
-		addr => addr_tb, --direccionamiento memoria ROM externa
+		addr => addr_romext_tb, --direccionamiento memoria ROM externa
 		flag_fin => flag_fin_aux
 	);
 	
@@ -112,7 +112,7 @@ begin
 	port map(
 		--flag: in std_logic;	--me avisa cuando termina de rotar.
 		x => xn_tb, y => yn_tb,
-		Addrx => Addrx_tb, Addry => Addry_tb --direcciones a port A dual port RAM
+		Addrx => Addrx_ram_portA_tb, Addry => Addry_ram_portA_tb --direcciones a port A dual port RAM
 	);
 	
 	vga: vga_ctrl
@@ -127,7 +127,7 @@ begin
 	port map(
 		pixel_row => pxl_row_tb,
 		pixel_col => pxl_col_tb,
-		address => address_tb --direcciones a port B dual port RAM
+		address => addr_ram_portB_tb --direcciones a port B dual port RAM
 	);
 	
 end;

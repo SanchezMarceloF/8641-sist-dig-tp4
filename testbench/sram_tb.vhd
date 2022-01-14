@@ -36,13 +36,18 @@ begin
 	reset_tb <= '0';
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
 	
+	-- mem = 1 habilita las operaciones de memoria
 	mem <= '0', '1' after 60 ns, '0' after 1000 ns;
+	-- rw = 1 modo lectura, rw = 0 modo escritura.
 	rw <= '0', '1' after 500 ns; --activo modo 'read' después de 500 ns
-	process(rw, dio_a)
+	
+	process(clk_tb, rw, dio_a)
 	begin
-		if (rw = '1') then
-			dio_a <= "0000000011111111";
-		end if;
+		if rising_edge(clk_tb) then
+			if (rw = '1') then
+				dio_a <= "0000000011111111";
+			end if;
+		end if;						
 	end process;
 		
 	
