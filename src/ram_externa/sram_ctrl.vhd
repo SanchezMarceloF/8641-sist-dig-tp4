@@ -7,20 +7,22 @@
 library ieee;
 use ieee.std_logic_1164.all;
 entity sram_ctrl is
+    generic(DATA_W: natural := 16;
+			ADDR_W: natural := 18);
    port(
       clk, reset: in std_logic;
       -- to/from main system
       mem: in std_logic;
       rw: in std_logic;
-      addr: in std_logic_vector(17 downto 0);
-      data_f2s: in std_logic_vector(15 downto 0);
+      addr: in std_logic_vector(ADDR_W-1 downto 0);
+      data_f2s: in std_logic_vector(DATA_W-1 downto 0);
       ready: out std_logic;
-      data_s2f_r, data_s2f_ur: out std_logic_vector(15 downto 0);
+      data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
       -- to/from chip
-      ad: out std_logic_vector(17 downto 0);
+      ad: out std_logic_vector(ADDR_W-1 downto 0);
       we_n, oe_n: out std_logic;
       -- SRAM chip a
-      dio_a: inout std_logic_vector(15 downto 0);
+      dio_a: inout std_logic_vector(DATA_W-1 downto 0);
       ce_a_n, ub_a_n, lb_a_n: out std_logic
   );
 end sram_ctrl;
@@ -41,9 +43,9 @@ architecture arch of sram_ctrl is
 	
    type state_type is (idle, rd1, rd2, wr1, wr2);
    signal state_reg, state_next: state_type;
-   signal data_f2s_reg, data_f2s_next: std_logic_vector(15 downto 0);
-   signal data_s2f_reg, data_s2f_next: std_logic_vector(15 downto 0);
-   signal addr_reg, addr_next: std_logic_vector(17 downto 0);
+   signal data_f2s_reg, data_f2s_next: std_logic_vector(DATA_W-1 downto 0);
+   signal data_s2f_reg, data_s2f_next: std_logic_vector(DATA_W-1 downto 0);
+   signal addr_reg, addr_next: std_logic_vector(ADDR_W-1 downto 0);
    signal we_buf, oe_buf, tri_buf: std_logic;
    signal we_reg, oe_reg, tri_reg: std_logic;
    signal rst_count, flag_count: std_logic;
