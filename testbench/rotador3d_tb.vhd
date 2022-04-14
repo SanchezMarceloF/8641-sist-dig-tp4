@@ -106,22 +106,28 @@ architecture rotador3d_tb_arq of rotador3d_tb is
     signal addr_ramext_tb: std_logic_vector(ADDR_W-1 downto 0) := "010101010101010101";
     signal data_f2s_tb: std_logic_vector(DATA_W-1 downto 0);
     signal data_s2f_r_tb: std_logic_vector(DATA_W-1 downto 0);
+    signal dio_a_tb: std_logic_vector(DATA_W-1 downto 0) := "0000000000000000";
     signal mem_tb, rw_tb, ready_tb: std_logic;
     --signal data_reg: std_logic_vector(7 downto 0);
     --signal db_btn: std_logic_vector(2 downto 0);
+	
 	--señales tb ----------------------------------------
 	signal clk_tb, ena_tb, rst_tb: std_logic := '0';
-	--señales para rotador 3D
+	
+	--señales para rotador 3D----------------------------
 	signal x0_tb: std_logic_vector(COORD_W-1 downto 0):= "1110011111001";
 	signal y0_tb: std_logic_vector(COORD_W-1 downto 0):= "1110010000101";
 	signal z0_tb: std_logic_vector(COORD_W-1 downto 0):= "0011010001001";
 	signal pulsadores_tb: std_logic_vector(5 downto 0);
 	signal xn_tb, yn_tb, zn_tb: std_logic_vector(COORD_W-1 downto 0);
+	
 	--señales para generador_direcciones ------------------
 	signal Addrx_ram_portA_tb, Addry_ram_portA_tb: std_logic_vector(DUAL_W-1 downto 0);
+
 	--señales para controlador ------------------------------
 	signal pxl_col_tb, pxl_row_tb: std_logic_vector(PIX_W-1 downto 0);
 	signal addr_ram_portB_tb: std_logic_vector(2*DUAL_W-1 downto 0);
+
 	--señales auxiliares -----------------------------------
 	signal flag_fin_aux: std_logic;
 	
@@ -141,14 +147,16 @@ begin
 	-- rw_tb = 1 modo lectura, rw = 0 modo escritura.
 	rw_tb <= '0', '1' after 500 ns; --activo modo 'read' después de 500 ns
 	
-	process(clk_tb, rw_tb, dio_a)
+	-- escribo dato en el puerto 'dio_a' si rw_tb está en '1'
+	process(clk_tb, rw_tb)
 	begin
 		if rising_edge(clk_tb) then
 			if (rw_tb = '1') then
-				dio_a <= "0000000011111111";
+				dio_a_tb <= "0000000011111111";
 			end if;
 		end if;						
 	end process;
+	dio_a <= dio_a_tb; 
 		
 	
 	ctrl_unit: sram_ctrl
