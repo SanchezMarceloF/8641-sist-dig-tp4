@@ -269,7 +269,8 @@ begin
         r_data  => r_data_aux,
         tx      => tx
     );
-
+   
+    data_f2s_aux <= "00000000" & r_data_aux; 
 
     sram_ctrl_inst : sram_ctrl
     generic map(
