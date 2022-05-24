@@ -6,8 +6,7 @@
 # TESTBENCH = sram_tb
 # vhdl files
 FILES = src/*/* # todos los archivos .vhd están guardos acá
-#FILES = src/*/* # todos los archivos .vhd están guardos acá
-VHDLEX = .vhd #extensión archivos vhdl
+VHDLEX = .vhd 	# extensión archivos vhdl
 
 # testbench
 TESTBENCHPATH = testbench/${TESTBENCH}$(VHDLEX)
@@ -47,7 +46,10 @@ run:
 	$(GHDL_CMD) -r --workdir=$(SIMDIR) $(TESTBENCH) $(GHDL_SIM_OPT) --vcdgz=$(SIMDIR)/$(TESTBENCH).vcdgz
 
 view:
-	gunzip --stdout $(SIMDIR)/$(TESTBENCH).vcdgz | $(WAVEFORM_VIEWER) --vcd
+	# gunzip descomprime el archivo .vcdgz generado por ghdl y lo envia a la salida estandar 'stdout'
+	# luego lo toma gktwave y recupera las señales guardadas que se guardaron con "ctrl+s" desde gui
+	# fuente: http://billauer.co.il/blog/2017/08/linux-vcd-waveform-viewer/
+	gunzip --stdout $(SIMDIR)/$(TESTBENCH).vcdgz | $(WAVEFORM_VIEWER) --vcd $(SIMDIR)/$(TESTBENCH).sav
 
 clean :
 	$(GHDL_CMD) --clean --workdir=simulation

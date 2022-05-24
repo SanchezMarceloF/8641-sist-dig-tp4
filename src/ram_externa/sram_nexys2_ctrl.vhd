@@ -39,9 +39,9 @@ architecture arch of sram_ctrl is
 	end component;
 
    --constant N: integer:= 10;	--limite contador
-   constant L_WR1: integer:= 3;	--cant ciclos estado wr1
+   constant C_WR2: integer:= 3;	--cant ciclos estado wr2
 	
-   type state_type is (idle, rd1, rd2, wr1, wr2);
+   type state_type is (idle, rd1, rd2, wr1, wr2, wr3);
    signal state_reg, state_next: state_type;
    signal data_f2s_reg, data_f2s_next: std_logic_vector(DATA_W-1 downto 0);
    signal data_s2f_reg, data_s2f_next: std_logic_vector(DATA_W-1 downto 0);
@@ -61,7 +61,7 @@ begin
          tri_reg <= '1';
          we_reg <= '1';
          oe_reg <= '1';
-      elsif rising_edge(clk) then --(clk'event and clk='1') then
+      elsif rising_edge(clk) then
          state_reg <= state_next;
          addr_reg <= addr_next;
          data_f2s_reg <= data_f2s_next;
@@ -74,7 +74,7 @@ begin
    
    --contador clock   
 	contador: contador_clock
-	generic map( N => L_WR1) ---ciclos a contar
+	generic map( N => C_WR2) ---ciclos a contar
 	port map(
 		clk => clk, rst => rst_count,
 		flag_fin => flag_count
@@ -84,18 +84,20 @@ begin
    -- next-state logic
    process(state_reg,mem,rw,dio_a,addr,data_f2s,
            data_f2s_reg,data_s2f_reg,addr_reg, flag_count)
+      --variable count: integer := 0;
    begin
       addr_next <= addr_reg;
       data_f2s_next <= data_f2s_reg;
       data_s2f_next <= data_s2f_reg;
       ready <= '0';
+      rst_count <= '1';
       case state_reg is
          when idle =>
             if mem='0' then
                state_next <= idle;
-			   rst_count <= '1';
+			   --rst_count <= '1';
             else
-			   rst_count <= '0';
+			   --rst_count <= '0';
                addr_next <= addr;
                if rw='0' then --write
                   state_next <= wr1;
@@ -106,12 +108,16 @@ begin
             end if;
             ready <= '1';
          when wr1 =>
-			if flag_count = '1' then
-				state_next <= wr2;
-			else
-				state_next <= wr1;
-			end if;
+		    state_next <= wr2;
+            rst_count <= '0'; 
 		 when wr2 =>
+            rst_count <= '0'; 
+			if flag_count = '1' then
+                state_next <= wr3;
+			else
+				state_next <= wr2;
+			end if;
+         when wr3 =>
             state_next <= idle;
          when rd1 =>
             if flag_count = '1' then
@@ -124,6 +130,7 @@ begin
             state_next <= idle;
       end case;
    end process;
+   
    -- next-state logic
    process(state_next)
    begin
@@ -134,8 +141,11 @@ begin
          when idle =>
          when wr1 =>
             tri_buf <= '0';
-            we_buf <= '0';
+            --we_buf <= '0';
 		 when wr2 =>
+            tri_buf <= '0';
+            we_buf <= '0';
+         when wr3 =>
             tri_buf <= '0';
          when rd1 =>
             oe_buf <= '0';

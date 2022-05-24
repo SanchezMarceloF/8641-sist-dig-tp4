@@ -25,7 +25,7 @@ architecture uart2sram_tb_arch of uart2sram_tb is
 
     --señales de prueba --------------------------------------
 
-    signal clk_tb, rst_tb : std_logic := '0';
+    signal clk_tb, rst_tb, ena_tb : std_logic := '0';
     signal rx_tb : std_logic := '1';
     signal sw_tb, tx_tb : std_logic := '0';
     signal we_n_tb, oe_n_tb : std_logic;
@@ -39,8 +39,7 @@ begin
 
    	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
 	rst_tb <= '1' after 20 ns, '0' after 100 ns;
-
-	sw_tb <= '0' after 135 ns, '1' after 11010 ns;
+	ena_tb <= '0' after 40 ns, '1' after 35005 ns;
         -- :: primer byte de dato :: --
              -- bit de start
     rx_tb <= '0' after 1 ns,
@@ -231,8 +230,7 @@ begin
 		ADDR_W => ADDR_W
     )
     port map(
-        clk => clk_tb, rst => rst_tb,
-        sw => sw_tb,
+        clk => clk_tb, rst => rst_tb, ena => ena_tb,
         rx => rx_tb,
         tx => tx_tb,
         we_n => we_n_tb, oe_n => oe_n_tb,

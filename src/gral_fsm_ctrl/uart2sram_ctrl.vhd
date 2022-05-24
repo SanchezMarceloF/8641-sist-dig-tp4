@@ -18,8 +18,7 @@ entity uart2sram_ctrl is
 		ADDR_W: natural := 18
     );
     port(
-        clk, rst : in std_logic;
-        sw : in std_logic;
+        clk, rst, ena : in std_logic;
         rx : in std_logic;
         tx : out std_logic;
         we_n, oe_n: out std_logic;
@@ -78,6 +77,15 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
     );
     end component;
 
+    component registro is
+	generic(N: natural := 4);
+	port(
+		D: in std_logic_vector(N-1 downto 0);
+		clk, rst, ena: in std_logic;
+		Q: out std_logic_vector(N-1 downto 0)
+	);
+    end component;
+
     component detect_flanco is
 	port(
 		clk, rst: in std_logic;
@@ -118,7 +126,7 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
     -- señales ----------------------------------------------
     
     signal ena_fsm       : std_logic := '0';
-    signal wr_uart_tick      : std_logic := '0';
+    signal wr_uart_tick  : std_logic := '0';
     signal rx_empty_aux  : std_logic := '0';
     signal tx_full_aux   : std_logic := '0';
     signal sel_addr      : std_logic := '0';
@@ -126,6 +134,7 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
     signal mem_aux       : std_logic := '0';
     signal rw_aux        : std_logic := '0';
     signal ready_aux     : std_logic := '0';
+    signal flag_lsb      : std_logic := '0';
     signal r_data_aux    : std_logic_vector(7 downto 0) 
                          := (others => '0');
     signal addr_aux      : std_logic_vector(ADDR_W-1 downto 0) 
@@ -135,7 +144,7 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
     signal data_s2f_r_aux: std_logic_vector(DATA_W-1 downto 0) 
                          := (others => '0');
     signal data_s2f_ur_aux: std_logic_vector(DATA_W-1 downto 0); 
-    signal count_aux     : std_logic_vector(ADDR_W-1 downto 0) 
+    signal count_aux     : std_logic_vector(ADDR_W downto 0) 
                          := (others => '0');
     signal addr_cordic   : std_logic_vector(ADDR_W-1 downto 0) 
                          := "000011110000111100";
@@ -143,12 +152,13 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
     --signal reposo_count : unsigned(1 downto 0) := 0;
     -- variables de estado ----------------
                          
-    type t_estado is (REPOSO, ESCRIBIENDO_1, ESCRIBIENDO_2);
+    type t_estado is (REPOSO, ESCRITURA_1, ESCRITURA_2, ESPERAR_SRAM) ;
     signal estado_act, estado_sig : t_estado;
 
     -- señales para visualizar los estados en gtkwave
     signal estado_actual        : std_logic_vector(1 downto 0) := "00";
     signal estado_siguiente     : std_logic_vector(1 downto 0) := "00";
+
 begin
    
     -- estados ----------------------------------------- 
@@ -164,66 +174,55 @@ begin
    
 	-- logica de proximo estado -------------------------
   
-    prox_estado: process(estado_act, ena_fsm, ready_aux, rx_empty_aux,
-        wr_uart_tick)
+    prox_estado: process(estado_act, ena_fsm, ready_aux, rx_empty_aux)
 	begin
 	    case estado_act is
             when REPOSO =>
                 if ena_fsm = '1' then
-                    if (rx_empty_aux = '0' and ready_aux = '1'
-                        and wr_uart_tick = '0') then 
-                        estado_sig <= ESCRIBIENDO_1;
+                    if (rx_empty_aux = '0') then -- and ready_aux = '1'
+                        --and wr_uart_tick = '0') then 
+                        estado_sig <= ESCRITURA_1;
                     else
                         estado_sig <= REPOSO;
                     end if;
                 else        
                     estado_sig <= REPOSO;
                 end if;        
-            when ESCRIBIENDO_1 =>
+            when ESCRITURA_1 =>
 			    if ena_fsm = '1' then
-                    if ready_aux = '1' then
-                        estado_sig <= ESCRIBIENDO_1;
-                    else    
-                        estado_sig <= ESCRIBIENDO_2;
-                    end if;    
+                    --if ready_aux = '1' then
+                    --    estado_sig <= ESCRITURA_1;
+                    --else    
+                    estado_sig <= ESCRITURA_2;
+                    --end if;    
                 else
                     estado_sig <= REPOSO;
 			    end if;
-             when ESCRIBIENDO_2 =>
+            when ESCRITURA_2 =>
 			    if ena_fsm = '1' then
-                    if ready_aux = '0' then
-                        estado_sig <= ESCRIBIENDO_2;
-                    else    
+                    --if ready_aux = '0' then
+                    --    estado_sig <= ESCRITURA_2;
+                    --else    
+                    --    estado_sig <= REPOSO;
+                    --end if;    
+                    estado_sig <= ESPERAR_SRAM;
+                else
+                    estado_sig <= REPOSO;
+			    end if;
+            when ESPERAR_SRAM => 
+                if (ena_fsm = '1' and ready_aux = '1') then
+                    if rx_empty_aux = '1' then
                         estado_sig <= REPOSO;
-                    end if;    
+                    else
+                        estado_sig <= ESCRITURA_1;
+                    end if;
                 else
-                    estado_sig <= REPOSO;
-			    end if;
-   
+                    estado_sig <= ESPERAR_SRAM;
+                end if;    
         end case;
     end process;
     
     -- mapeo pines componentes -------------- ----------------
-    
-    mux_addr: mux
-    generic map(N => ADDR_W)
-    port map(
-	    A_0 => count_aux,
-	    A_1 => addr_cordic,
-	    sel => sel_addr,
-	    sal => addr_aux
-	);
-
-
-    contador: counter
-    generic map(N => ADDR_W)
-    port map(
-        rst   => rst,
-        clk   => clk, 
-        ena   => ena_count_tick,
-        count => count_aux
-    );
-
     
     --antirebote: debounce
     --port map(
@@ -234,17 +233,7 @@ begin
     --    db_tick  => wr_uart_tick
     --);
 
-    ena_fsm <= sw;
-
-    addr_sig : detect_flanco 
-	port map(
-		clk       => clk,
-        rst       => rst,
-		secuencia => ready_aux,
-		salida    => ena_count_tick
-	);
-
-    wr_uart_tick <= ena_count_tick;
+    ena_fsm <= ena;
 
     uart_inst: uart
     generic map(
@@ -269,8 +258,6 @@ begin
         r_data  => r_data_aux,
         tx      => tx
     );
-   
-    data_f2s_aux <= "00000000" & r_data_aux; 
 
     sram_ctrl_inst : sram_ctrl
     generic map(
@@ -299,28 +286,74 @@ begin
         lb_a_n  => lb_a_n 
     );
 
+    gen_addr: counter
+    generic map(N => ADDR_W+1)
+    port map(
+        rst   => rst,
+        clk   => clk, 
+        ena   => ena_count_tick,
+        count => count_aux
+    );
 
+    flag_lsb <= count_aux(0);
+
+    mux_addr: mux
+    generic map(N => ADDR_W)
+    port map(
+	    A_0 => count_aux(ADDR_W downto 1),
+	    A_1 => addr_cordic,
+	    sel => sel_addr,
+	    sal => addr_aux
+	);
 
 
     -- salidas -----------------------------------------------
 
-    mem_aux     <= '1' when estado_act = ESCRIBIENDO_1 else 
-                            -- estado_act = ESCRIBIENDO_2) else
-                   '0';
-    rw_aux      <= '0' when (estado_act = ESCRIBIENDO_1 or
-                             estado_act = ESCRIBIENDO_2) else
-                   '1';
-    sel_addr    <= '0' when (estado_act = ESCRIBIENDO_1 or 
-                             estado_act = ESCRIBIENDO_2)  else
-                   '1';
+    salidas: process(estado_act)
+    begin
+        -- asignación por defecto  
+        mem_aux <= '0';  
+        wr_uart_tick <= '0';
+        ena_count_tick <= '0';
+        case estado_act is
+            when REPOSO =>
+            when ESCRITURA_1 =>
+                mem_aux <= '1';
+		    when ESCRITURA_2 =>
+                wr_uart_tick <= '1';
+                ena_count_tick <= '1';
+            when ESPERAR_SRAM =>
+        end case;
+    end process;
+   
+
+    data_f2s_aux <= ("00000000" & r_data_aux) when flag_lsb = '1' else 
+                    (r_data_aux & "00000000"); 
+ 
+
+
+    --mem_aux     <= '1' when estado_act = ESCRITURA_1 else 
+                            -- estado_act = ESCRITURA_2) else
+    --               '0';
+    --rw_aux      <= '0' when (estado_act = ESCRITURA_1 else --or
+                             -- estado_act = ESCRITURA_2) else
+    --               '1';
+
+
     estado_actual    <= "00" when estado_act = REPOSO else 
-                        "01" when estado_act = ESCRIBIENDO_1 else
-                        "10" when estado_act = ESCRIBIENDO_2 else
+                        "01" when estado_act = ESCRITURA_1 else
+                        "10" when estado_act = ESCRITURA_2 else
                         "11";
 
     estado_siguiente <= "00" when estado_sig = REPOSO else 
-                        "01" when estado_sig = ESCRIBIENDO_1 else
-                        "10" when estado_sig = ESCRIBIENDO_2 else
+                        "01" when estado_sig = ESCRITURA_1 else
+                        "10" when estado_sig = ESCRITURA_2 else
                         "11";
+    
+
+    sel_addr    <= '1' when estado_act = REPOSO else 
+                   '0';
+
+
 end uart2sram_ctrl_arch;    
  
