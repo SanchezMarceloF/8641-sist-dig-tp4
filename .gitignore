@@ -4,4 +4,7 @@
 #carpetas
 pruebas_ghdl
 sintesis
+simulation
+# guardo solo los archivos .sav en simulation
+!simulation/*.sav
 otros
