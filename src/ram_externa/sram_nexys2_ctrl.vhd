@@ -18,6 +18,7 @@ entity sram_ctrl is
       data_f2s: in std_logic_vector(DATA_W-1 downto 0);
       ready: out std_logic;
       data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
+      ce_in_n, lb_in_n, ub_in_n: in std_logic; 
       -- to/from chip
       ad: out std_logic_vector(ADDR_W-1 downto 0);
       we_n, oe_n: out std_logic;
@@ -161,8 +162,8 @@ begin
    oe_n <= oe_reg;
    ad <= addr_reg;
    --i/o for SRAM chip a
-   ce_a_n <='0';
-   ub_a_n <='0';
-   lb_a_n <='0';
+   ce_a_n <= ce_in_n;
+   ub_a_n <= ub_in_n;
+   lb_a_n <= lb_in_n;
    dio_a <= data_f2s_reg when tri_reg='0' else (others=>'Z');
 end arch;

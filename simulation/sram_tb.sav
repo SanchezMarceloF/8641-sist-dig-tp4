@@ -1,0 +1,40 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Thu May 19 18:05:05 2022
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/simulation/sram_tb.sav"
+[timestart] 0
+[size] 1366 713
+[pos] -29 -29
+*-29.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 223
+[signals_width] 159
+[sst_expanded] 1
+[sst_vpaned_height] 192
+@28
+sram_tb.ce_a_n
+@22
+sram_tb.ad[17:0]
+sram_tb.addr[17:0]
+@28
+sram_tb.ce_a_n
+sram_tb.clk_tb
+@22
+sram_tb.data_f2s[15:0]
+sram_tb.data_reg[7:0]
+sram_tb.data_s2f[15:0]
+@28
+sram_tb.db_btn[2:0]
+@22
+sram_tb.dio_a[15:0]
+@28
+sram_tb.lb_a_n
+sram_tb.mem
+sram_tb.oe_n
+sram_tb.reset_tb
+sram_tb.rw
+sram_tb.ub_a_n
+sram_tb.we_n
+[pattern_trace] 1
+[pattern_trace] 0

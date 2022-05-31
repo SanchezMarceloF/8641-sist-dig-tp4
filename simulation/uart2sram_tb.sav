@@ -1,0 +1,86 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Mon May 30 23:49:40 2022
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/simulation/uart2sram_tb.sav"
+[timestart] 34873500000
+[size] 1280 996
+[pos] 4097 -283
+*-27.125862 91800000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uart2sram_tb.
+[treeopen] uart2sram_tb.dut.
+[treeopen] uart2sram_tb.dut.uart_inst.
+[sst_width] 43
+[signals_width] 312
+[sst_expanded] 0
+[sst_vpaned_height] 480
+@28
+uart2sram_tb.ena_tb
+uart2sram_tb.rst_tb
+@200
+-
+@28
+uart2sram_tb.rx_tb
+uart2sram_tb.tx_tb
+@820
+[color] 7
+uart2sram_tb.dut.uart_inst.rx_data_out[7:0]
+@200
+-
+-
+-
+@28
+[color] 3
+uart2sram_tb.dut.ena_fsm
+[color] 3
+uart2sram_tb.dut.rx_empty_aux
+[color] 3
+uart2sram_tb.dut.ready_aux
+@24
+[color] 2
+uart2sram_tb.dut.estado_actual[1:0]
+[color] 2
+uart2sram_tb.dut.estado_siguiente[1:0]
+@28
+[color] 3
+uart2sram_tb.dut.wr_uart_tick
+@820
+[color] 7
+uart2sram_tb.dut.r_data_aux[7:0]
+@200
+-
+@24
+uart2sram_tb.dut.addr_aux[17:0]
+@820
+[color] 7
+uart2sram_tb.dut.data_f2s_aux[15:0]
+@29
+[color] 1
+uart2sram_tb.dut.mem_aux
+@28
+uart2sram_tb.dut.rw_aux
+uart2sram_tb.dut.ena_fsm
+uart2sram_tb.dut.ready_aux
+@200
+-
+@28
+uart2sram_tb.clk_tb
+uart2sram_tb.dut.flag_lsb
+@22
+[color] 1
+uart2sram_tb.ad_tb[17:0]
+@820
+[color] 7
+uart2sram_tb.dio_a_tb[15:0]
+@28
+uart2sram_tb.we_n_tb
+uart2sram_tb.oe_n_tb
+uart2sram_tb.ce_a_n_tb
+uart2sram_tb.ub_a_n_tb
+uart2sram_tb.lb_a_n_tb
+@200
+-
+-
+[pattern_trace] 1
+[pattern_trace] 0

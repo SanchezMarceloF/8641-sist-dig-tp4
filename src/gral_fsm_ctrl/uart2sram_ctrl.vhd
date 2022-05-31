@@ -68,6 +68,7 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
         data_f2s: in std_logic_vector(DATA_W-1 downto 0);
         ready: out std_logic;
         data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
+        ce_in_n, lb_in_n, ub_in_n: in std_logic; 
         -- to/from chip
         ad: out std_logic_vector(ADDR_W-1 downto 0);
         we_n, oe_n: out std_logic;
@@ -135,6 +136,7 @@ architecture uart2sram_ctrl_arch of uart2sram_ctrl is
     signal rw_aux        : std_logic := '0';
     signal ready_aux     : std_logic := '0';
     signal flag_lsb      : std_logic := '0';
+    signal lb_n_aux      : std_logic := '0';
     signal r_data_aux    : std_logic_vector(7 downto 0) 
                          := (others => '0');
     signal addr_aux      : std_logic_vector(ADDR_W-1 downto 0) 
@@ -259,6 +261,8 @@ begin
         tx      => tx
     );
 
+    lb_n_aux <= not flag_lsb;
+
     sram_ctrl_inst : sram_ctrl
     generic map(
         DATA_W => DATA_W,
@@ -275,6 +279,9 @@ begin
         ready       => ready_aux,
         data_s2f_r  => data_s2f_r_aux,
         data_s2f_ur => data_s2f_ur_aux,
+        ce_in_n     => '0',
+        lb_in_n     => lb_n_aux,
+        ub_in_n     => flag_lsb, 
         -- to/from chip
         ad      => ad,          
         we_n    => we_n,
@@ -307,7 +314,7 @@ begin
 	);
 
 
-    -- salidas -----------------------------------------------
+    -- salidas del fsm -----------------------------------------
 
     salidas: process(estado_act)
     begin
@@ -325,19 +332,9 @@ begin
             when ESPERAR_SRAM =>
         end case;
     end process;
-   
-
+    
     data_f2s_aux <= ("00000000" & r_data_aux) when flag_lsb = '1' else 
                     (r_data_aux & "00000000"); 
- 
-
-
-    --mem_aux     <= '1' when estado_act = ESCRITURA_1 else 
-                            -- estado_act = ESCRITURA_2) else
-    --               '0';
-    --rw_aux      <= '0' when (estado_act = ESCRITURA_1 else --or
-                             -- estado_act = ESCRITURA_2) else
-    --               '1';
 
 
     estado_actual    <= "00" when estado_act = REPOSO else 
