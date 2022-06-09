@@ -96,9 +96,7 @@ begin
          when idle =>
             if mem='0' then
                state_next <= idle;
-			   --rst_count <= '1';
             else
-			   --rst_count <= '0';
                addr_next <= addr;
                if rw='0' then --write
                   state_next <= wr1;
@@ -121,11 +119,11 @@ begin
          when wr3 =>
             state_next <= idle;
          when rd1 =>
-            if flag_count = '1' then
+            -- if flag_count = '1' then
 				state_next <= rd2;
-			else
-				state_next <= rd1;
-			end if;
+			--else
+			--	state_next <= rd1;
+			--end if;
          when rd2=>
             data_s2f_next <= dio_a;
             state_next <= idle;

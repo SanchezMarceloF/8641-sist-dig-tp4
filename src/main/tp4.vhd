@@ -54,36 +54,36 @@ entity tp4 is
         hs, vs: out std_logic		
 		);
     
-    attribute loc: string;
-	attribute iostandard: string;
-	
-	--Mapeo de pines para el kit Nexys 2 (spartan 3E)
-	attribute loc of clk: signal is "B8";
-	attribute loc of rst: signal is "B18";
-    
-    -- Pulsadores
-    attribute loc of pulsadores: signal is "D18 E18 H13";
-
-    -- UART
-	attribute loc of rx: signal is "U6";
-	attribute loc of tx: signal is "P9";
-    
-    -- SRAM externa
-	attribute loc of we_n: signal is "N7";
-	attribute loc of oe_n: signal is "T2";
-	attribute loc of dio_sram: signal is "T1 R3 N4 L2 M6 M3 L5 L3 R2 P2 P1 N5
-                                          M4 L6 L4 L1";
-	attribute loc of ce_n: signal is "R6";
-	attribute loc of ub_n: signal is "K4";
-	attribute loc of lb_n: signal is "K5";
-	attribute loc of address_sram: signal is "K6 D1 K3 D2 C1 C2 E2 M5 E1 F2 G4
-                                        G5 G6 G3 F1 H6 H3 J5 H2 H1 H4 J2 J1 NA";
-    -- VGA	
-	attribute loc of hs: signal is "T4";
-	attribute loc of vs: signal is "U3";
-	attribute loc of red_o: signal is "R8 T8 R9";
-	attribute loc of grn_o: signal is "P6 P8 N8";
-	attribute loc of blu_o: signal is "U4 U5";
+--    attribute loc: string;
+--	attribute iostandard: string;
+--	
+--	--Mapeo de pines para el kit Nexys 2 (spartan 3E)
+--	attribute loc of clk: signal is "B8";
+--	attribute loc of rst: signal is "B18";
+--    
+--    -- Pulsadores
+--    attribute loc of pulsadores: signal is "D18 E18 H13";
+--
+--    -- UART
+--	attribute loc of rx: signal is "U6";
+--	attribute loc of tx: signal is "P9";
+--    
+--    -- SRAM externa
+--	attribute loc of we_n: signal is "N7";
+--	attribute loc of oe_n: signal is "T2";
+--	attribute loc of dio_sram: signal is "T1 R3 N4 L2 M6 M3 L5 L3 R2 P2 P1 N5
+--                                          M4 L6 L4 L1";
+--	attribute loc of ce_n: signal is "R6";
+--	attribute loc of ub_n: signal is "K4";
+--	attribute loc of lb_n: signal is "K5";
+--	attribute loc of address_sram: signal is "K6 D1 K3 D2 C1 C2 E2 M5 E1 F2 G4
+--                                        G5 G6 G3 F1 H6 H3 J5 H2 H1 H4 J2 J1 NA";
+--    -- VGA	
+--	attribute loc of hs: signal is "T4";
+--	attribute loc of vs: signal is "U3";
+--	attribute loc of red_o: signal is "R8 T8 R9";
+--	attribute loc of grn_o: signal is "P6 P8 N8";
+--	attribute loc of blu_o: signal is "U4 U5";
 
         
 end;
@@ -257,7 +257,7 @@ begin
 	
 	--salidas
 	
-	blue_out <= blu_aux(0); ---CAMBIAR
+	blu_o <= blu_aux; ---CAMBIAR
 	hs <= hs_aux;
 	vs <= vs_aux;
 	
