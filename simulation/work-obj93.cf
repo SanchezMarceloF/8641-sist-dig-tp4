@@ -1,116 +1,110 @@
 v 4
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/uart2sram_ctrl.vhd" "2c5a1255fc436d9561551114d71de1a390bb328d" "20220531202209.919":
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/sram2cordic_tb.vhd" "96cc65605dfa13178e6a87a07ffe3538c4b8dc8f" "20220609203321.906":
+  entity sram2cordic_tb at 1( 0) + 0 on 15;
+  architecture sram2cordic_tb_arch of sram2cordic_tb at 13( 223) + 0 on 16;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/acumulador_ang.vhd" "858b9c0b626ee89eef892dbd7da8d6c76586012c" "20220609203425.173":
+  entity acumulador_ang at 2( 40) + 0 on 59;
+  architecture acumulador_ang_arq of acumulador_ang at 21( 478) + 0 on 60;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/barrer_shifter.vhd" "5e227fc7dd248729aaa9e2739cf6089c6e8cc5f9" "20220609203425.173":
+  entity barrer_shifter at 2( 40) + 0 on 53;
+  architecture estruc of barrer_shifter at 20( 524) + 0 on 54;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/contador.vhd" "a8e49bb429cbae49223283a9ed833a4539327d76" "20220609203425.173":
+  entity contador at 2( 40) + 0 on 57;
+  architecture contador_arq of contador at 19( 426) + 0 on 58;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/cordic_v2.vhd" "17b46ab445e98a574c2e9b6e2c94034b25083447" "20220609203425.173":
+  entity cordic at 2( 40) + 0 on 49;
+  architecture cordic_arq of cordic at 25( 806) + 0 on 50;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/mux.vhd" "4e2ae87216fe7bfd6507879cc241e84eb686d052" "20220609203425.173":
+  entity mux at 2( 40) + 0 on 51;
+  architecture mux_arq of mux at 17( 352) + 0 on 52;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/registro.vhd" "785a222bad9947b10dd83e077a7ac9d5e19cb8bf" "20220609203425.173":
+  entity registro at 2( 40) + 0 on 41;
+  architecture registro_arq of registro at 16( 324) + 0 on 42;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/sumador.vhd" "0c6999741a06b2372b82a27ce12f6bed459d6456" "20220609203425.173":
+  entity sumador at 15( 329) + 0 on 55;
+  architecture sum of sumador at 34( 759) + 0 on 56;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/counter.vhd" "3b80b459b5de28a7dbced82fe92e6b085d40b51f" "20220609203425.033":
+  entity counter at 1( 0) + 0 on 4;
+  architecture behavioral of counter at 17( 345) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/sram2cordic.vhd" "8421603a2a000192fde8da88870b14f76cbcaee1" "20220609203425.034":
+  entity sram2cordic at 1( 0) + 0 on 4;
+  architecture sram2cordic_arch of sram2cordic at 28( 799) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/uart2sram_ctrl.vhd" "2c5a1255fc436d9561551114d71de1a390bb328d" "20220609203425.034":
   entity uart2sram_ctrl at 1( 0) + 0 on 4;
   architecture uart2sram_ctrl_arch of uart2sram_ctrl at 31( 1037) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_04_uart.vhd" "690fda734020d2f49ef327cf2dd3b0817be98f62" "20220531202210.158":
-  entity uart at 2( 16) + 0 on 4;
-  architecture str_arch of uart at 29( 922) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_03_uart_tx.vhd" "c473024fc3063bd76fa8948e656d158bf0f832a9" "20220531202210.138":
-  entity uart_tx at 2( 16) + 0 on 4;
-  architecture arch of uart_tx at 20( 458) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_02_flag.vhd" "843cfa3ec5a66fcc8f1166970d3cacbe5469bb85" "20220531202210.137":
-  entity flag_buf at 2( 16) + 0 on 4;
-  architecture arch of flag_buf at 15( 340) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_01_uart_rx.vhd" "aa89c208da0e1a11e0c84108ece03aaa1ab91c4d" "20220531202210.133":
-  entity uart_rx at 2( 16) + 0 on 4;
-  architecture arch of uart_rx at 19( 428) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch06_01_02_debounce.vhd" "f706bc175a04437354efd17d0d6c7257df399a78" "20220531202210.127":
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/main/tp4.vhd" "e557d417dce476fa25055521993a53243c4981f3" "20220609203425.035":
+  entity tp4 at 12( 438) + 0 on 4;
+  architecture tp4_arq of tp4 at 92( 3467) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/main/uart2sram_wrap.vhd" "4367c3261e7e1728bd38644706d3ba3b9896735f" "20220609203425.035":
+  entity uart2sram_wrap at 1( 0) + 0 on 4;
+  architecture uart2sram_wrap_arch of uart2sram_wrap at 45( 1642) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_externa/contador_clock.vhd" "2350bf9e34c6f4a67a6d316db50d57664fe67ca9" "20220609203425.173":
+  entity contador_clock at 1( 0) + 0 on 29;
+  architecture contador_clock_arq of contador_clock at 14( 231) + 0 on 30;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_externa/sram_nexys2_ctrl.vhd" "5a24dc4b09c3ccc6557aa05530db38e68d52f803" "20220609203425.173":
+  entity sram_ctrl at 7( 197) + 0 on 19;
+  architecture arch of sram_ctrl at 33( 972) + 0 on 20;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/controlador.vhd" "918a8888c3cdc710cec68c76eb5cf648a516bee5" "20220609203425.173":
+  entity controlador at 12( 434) + 0 on 27;
+  architecture behavioral of controlador at 31( 892) + 0 on 28;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/generador_direcciones.vhd" "64aedad26b322a0e77b95710d891ee1167cc53e5" "20220609203425.173":
+  entity generador_direcciones at 2( 40) + 0 on 23;
+  architecture generador_direcciones_arq of generador_direcciones at 26( 695) + 0 on 24;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/vga_ctrl.vhd" "17b1c1708e941843c1daedf25a385d0f515cc9e3" "20220609203425.173":
+  entity vga_ctrl at 10( 354) + 0 on 25;
+  architecture vga_ctrl_arq of vga_ctrl at 67( 2270) + 0 on 26;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/xilinx_dual_port_ram_sync_v2.vhd" "5750d5fc616da1cf10e0ab428d5b160af707e884" "20220609203425.036":
+  entity xilinx_dual_port_ram_sync at 6( 171) + 0 on 4;
+  architecture beh_arch of xilinx_dual_port_ram_sync at 27( 723) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/cordic3d.vhd" "fd25ba2f5997d5f1405f827a537b33d8eb0f53b1" "20220609203425.173":
+  entity cordic3d at 2( 40) + 0 on 39;
+  architecture cordic3d_arq of cordic3d at 29( 907) + 0 on 40;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/detect_flanco.vhd" "7e5654d7b370546733630d7ce50d432203c5b956" "20220609203425.173":
+  entity detect_flanco at 2( 41) + 0 on 33;
+  architecture det_arq of detect_flanco at 19( 410) + 0 on 34;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/ena_20mili.vhd" "db99cba6967e9a2df550685027763bc2b4acdc1e" "20220609203425.173":
+  entity ena_20mili at 1( 0) + 0 on 31;
+  architecture ena_20mili_arq of ena_20mili at 18( 308) + 0 on 32;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/ffd.vhd" "6ee8e98c19416bd11bb352aef68cb81648bd195e" "20220609203425.173":
+  entity ffd at 1( 0) + 0 on 43;
+  architecture ffd_arq of ffd at 15( 329) + 0 on 44;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/lector_datos.vhd" "49786706e6092538c49dfca30d027daae00482ab" "20220609203425.173":
+  entity lector_datos at 2( 40) + 0 on 35;
+  architecture lector_datos_arq of lector_datos at 31( 1108) + 0 on 36;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/mux2.vhd" "310d8debf7be576293bce865fcbcbafc8ac2b7d9" "20220609203425.173":
+  entity mux2 at 2( 40) + 0 on 47;
+  architecture mux2_arq of mux2 at 16( 380) + 0 on 48;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/rotacion_ctrl.vhd" "e38bf7b676f811ddc3829dfed9e20493061a05db" "20220609203425.173":
+  entity rotacion_ctrl at 2( 40) + 0 on 37;
+  architecture rotacion_ctrl_arq of rotacion_ctrl at 20( 481) + 0 on 38;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/rotador3d.vhd" "97291e8f19ed3286108394f8c4968b040af4b3b3" "20220609203425.173":
+  entity rotador3d at 2( 40) + 0 on 21;
+  architecture rotador3d_arq of rotador3d at 32( 1088) + 0 on 22;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/updown_counter.vhd" "5f40ce8fcdea62d9dd5a460fc9b7093a77af40c0" "20220609203425.173":
+  entity updown_counter at 2( 40) + 0 on 45;
+  architecture updown_counter_arq of updown_counter at 22( 525) + 0 on 46;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch04_11_mod_m.vhd" "857487ae0ca051b304df51fcc7581917a7fd74c9" "20220609203425.037":
+  entity mod_m_counter at 2( 17) + 0 on 4;
+  architecture arch of mod_m_counter at 17( 365) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch04_20_fifo.vhd" "0a7a9047014632a753991d6694f89ef1b78efeb0" "20220609203425.038":
+  entity fifo at 2( 17) + 0 on 4;
+  architecture arch of fifo at 19( 441) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch06_01_02_debounce.vhd" "f706bc175a04437354efd17d0d6c7257df399a78" "20220609203425.038":
   entity debounce at 2( 16) + 0 on 4;
   architecture exp_fsmd_arch of debounce at 13( 241) + 0 on 4;
   architecture fsmd_arch of debounce at 86( 2300) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch04_20_fifo.vhd" "0a7a9047014632a753991d6694f89ef1b78efeb0" "20220531202210.114":
-  entity fifo at 2( 17) + 0 on 4;
-  architecture arch of fifo at 19( 441) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch04_11_mod_m.vhd" "857487ae0ca051b304df51fcc7581917a7fd74c9" "20220531202210.102":
-  entity mod_m_counter at 2( 17) + 0 on 4;
-  architecture arch of mod_m_counter at 17( 365) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/updown_counter.vhd" "5f40ce8fcdea62d9dd5a460fc9b7093a77af40c0" "20220531202210.676":
-  entity updown_counter at 2( 40) + 0 on 104;
-  architecture updown_counter_arq of updown_counter at 22( 525) + 0 on 105;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/rotador3d.vhd" "97291e8f19ed3286108394f8c4968b040af4b3b3" "20220531202210.676":
-  entity rotador3d at 2( 40) + 0 on 80;
-  architecture rotador3d_arq of rotador3d at 32( 1088) + 0 on 81;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/rotacion_ctrl.vhd" "e38bf7b676f811ddc3829dfed9e20493061a05db" "20220531202210.676":
-  entity rotacion_ctrl at 2( 40) + 0 on 96;
-  architecture rotacion_ctrl_arq of rotacion_ctrl at 20( 481) + 0 on 97;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/mux2.vhd" "310d8debf7be576293bce865fcbcbafc8ac2b7d9" "20220531202210.676":
-  entity mux2 at 2( 40) + 0 on 106;
-  architecture mux2_arq of mux2 at 16( 380) + 0 on 107;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/lector_datos.vhd" "49786706e6092538c49dfca30d027daae00482ab" "20220531202210.676":
-  entity lector_datos at 2( 40) + 0 on 94;
-  architecture lector_datos_arq of lector_datos at 31( 1108) + 0 on 95;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/ffd.vhd" "6ee8e98c19416bd11bb352aef68cb81648bd195e" "20220531202210.676":
-  entity ffd at 1( 0) + 0 on 102;
-  architecture ffd_arq of ffd at 15( 329) + 0 on 103;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/ena_20mili.vhd" "db99cba6967e9a2df550685027763bc2b4acdc1e" "20220531202210.676":
-  entity ena_20mili at 1( 0) + 0 on 90;
-  architecture ena_20mili_arq of ena_20mili at 18( 308) + 0 on 91;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/detect_flanco.vhd" "7e5654d7b370546733630d7ce50d432203c5b956" "20220531202210.676":
-  entity detect_flanco at 2( 41) + 0 on 92;
-  architecture det_arq of detect_flanco at 19( 410) + 0 on 93;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/rotador_3d/cordic3d.vhd" "fd25ba2f5997d5f1405f827a537b33d8eb0f53b1" "20220531202210.676":
-  entity cordic3d at 2( 40) + 0 on 98;
-  architecture cordic3d_arq of cordic3d at 29( 907) + 0 on 99;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/xilinx_dual_port_ram_sync_v2.vhd" "5750d5fc616da1cf10e0ab428d5b160af707e884" "20220531202210.010":
-  entity xilinx_dual_port_ram_sync at 6( 171) + 0 on 4;
-  architecture beh_arch of xilinx_dual_port_ram_sync at 27( 723) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/vga_ctrl.vhd" "17b1c1708e941843c1daedf25a385d0f515cc9e3" "20220531202210.676":
-  entity vga_ctrl at 10( 354) + 0 on 84;
-  architecture vga_ctrl_arq of vga_ctrl at 67( 2270) + 0 on 85;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/generador_direcciones.vhd" "64aedad26b322a0e77b95710d891ee1167cc53e5" "20220531202210.676":
-  entity generador_direcciones at 2( 40) + 0 on 82;
-  architecture generador_direcciones_arq of generador_direcciones at 26( 695) + 0 on 83;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_vga/controlador.vhd" "918a8888c3cdc710cec68c76eb5cf648a516bee5" "20220531202210.676":
-  entity controlador at 12( 434) + 0 on 86;
-  architecture behavioral of controlador at 31( 892) + 0 on 87;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_externa/contador_clock.vhd" "2350bf9e34c6f4a67a6d316db50d57664fe67ca9" "20220531202210.676":
-  entity contador_clock at 1( 0) + 0 on 88;
-  architecture contador_clock_arq of contador_clock at 14( 231) + 0 on 89;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/main/tp4.vhd" "a181fcb73ce0b39ec8df671875d936d67cd8036b" "20220531202209.934":
-  entity tp4 at 13( 451) + 0 on 4;
-  architecture tp4_arq of tp4 at 35( 1171) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/sumador.vhd" "0c6999741a06b2372b82a27ce12f6bed459d6456" "20220531202210.676":
-  entity sumador at 15( 329) + 0 on 114;
-  architecture sum of sumador at 34( 759) + 0 on 115;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/registro.vhd" "785a222bad9947b10dd83e077a7ac9d5e19cb8bf" "20220531202210.676":
-  entity registro at 2( 40) + 0 on 100;
-  architecture registro_arq of registro at 16( 324) + 0 on 101;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/mux.vhd" "4e2ae87216fe7bfd6507879cc241e84eb686d052" "20220531202210.676":
-  entity mux at 2( 40) + 0 on 110;
-  architecture mux_arq of mux at 17( 352) + 0 on 111;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/cordic_v2.vhd" "17b46ab445e98a574c2e9b6e2c94034b25083447" "20220531202210.676":
-  entity cordic at 2( 40) + 0 on 108;
-  architecture cordic_arq of cordic at 25( 806) + 0 on 109;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/contador.vhd" "a8e49bb429cbae49223283a9ed833a4539327d76" "20220531202210.676":
-  entity contador at 2( 40) + 0 on 116;
-  architecture contador_arq of contador at 19( 426) + 0 on 117;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/barrer_shifter.vhd" "5e227fc7dd248729aaa9e2739cf6089c6e8cc5f9" "20220531202210.676":
-  entity barrer_shifter at 2( 40) + 0 on 112;
-  architecture estruc of barrer_shifter at 20( 524) + 0 on 113;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/cordic/acumulador_ang.vhd" "858b9c0b626ee89eef892dbd7da8d6c76586012c" "20220531202210.676":
-  entity acumulador_ang at 2( 40) + 0 on 118;
-  architecture acumulador_ang_arq of acumulador_ang at 21( 478) + 0 on 119;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/rotador3d_tb.vhd" "d2d5f9bc458d1e117ef95eae7e65a4f66358d5bd" "20220531202210.676":
-  entity rotador3d_tb at 2( 40) + 0 on 76;
-  architecture rotador3d_tb_arq of rotador3d_tb at 27( 953) + 0 on 77;
-file "/home/marcelofs/Documentos/OtrosCuatris/8641 - Sistemas digitales/8641-sist-dig-tp4/" "testbench/tp4_tb.vhd" "0ad7b319452bd4adb9631655cf290f38478d05b5" "20220114152029.979":
-  entity tp4_tb at 2( 40) + 0 on 50;
-  architecture tp4_tb_arq of tp4_tb at 15( 415) + 0 on 51;
-file "/home/marcelofs/Documentos/OtrosCuatris/8641 - Sistemas digitales/8641-sist-dig-tp4/" "testbench/uart_test.vhd" "5766b1e2218d59d3a1fc62b8f506ffd9de7ee6bf" "20210530060243.137":
-  entity uart_test at 2( 15) + 0 on 24;
-  architecture arch of uart_test at 17( 391) + 0 on 25;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/counter.vhd" "abaf02ac4ce05c55d785d997be4f02ec6f44ae99" "20220531202209.916":
-  entity counter at 1( 0) + 0 on 4;
-  architecture behavioral of counter at 16( 312) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/sram_tb.vhd" "036c64dc2b6ae10c5bf318ef01d7ebf2615e1d13" "20220519180513.322":
-  entity sram_tb at 2( 17) + 0 on 70;
-  architecture sram_tb_arch of sram_tb at 20( 579) + 0 on 71;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/main/uart2sram_wrap.vhd" "4367c3261e7e1728bd38644706d3ba3b9896735f" "20220531202209.949":
-  entity uart2sram_wrap at 1( 0) + 0 on 4;
-  architecture uart2sram_wrap_arch of uart2sram_wrap at 45( 1642) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/uart2sram_tb.vhd" "e906ad794219de9aee04a672ee6b9135b6c82d1c" "20220530233838.376":
-  entity uart2sram_tb at 1( 0) + 0 on 74;
-  architecture uart2sram_tb_arch of uart2sram_tb at 22( 733) + 0 on 75;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/ram_externa/sram_nexys2_ctrl.vhd" "ac379534e50e3695302cb428b559af6ea12650c9" "20220531202210.676":
-  entity sram_ctrl at 7( 197) + 0 on 78;
-  architecture arch of sram_ctrl at 31( 945) + 0 on 79;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_01_uart_rx.vhd" "aa89c208da0e1a11e0c84108ece03aaa1ab91c4d" "20220609203425.038":
+  entity uart_rx at 2( 16) + 0 on 4;
+  architecture arch of uart_rx at 19( 428) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_02_flag.vhd" "843cfa3ec5a66fcc8f1166970d3cacbe5469bb85" "20220609203425.038":
+  entity flag_buf at 2( 16) + 0 on 4;
+  architecture arch of flag_buf at 15( 340) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_03_uart_tx.vhd" "c473024fc3063bd76fa8948e656d158bf0f832a9" "20220609203425.038":
+  entity uart_tx at 2( 16) + 0 on 4;
+  architecture arch of uart_tx at 20( 458) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/uart/list_ch07_04_uart.vhd" "690fda734020d2f49ef327cf2dd3b0817be98f62" "20220609203425.038":
+  entity uart at 2( 16) + 0 on 4;
+  architecture str_arch of uart at 29( 922) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/rotador3d_tb.vhd" "d2d5f9bc458d1e117ef95eae7e65a4f66358d5bd" "20220609203425.172":
+  entity rotador3d_tb at 2( 40) + 0 on 17;
+  architecture rotador3d_tb_arq of rotador3d_tb at 27( 953) + 0 on 18;

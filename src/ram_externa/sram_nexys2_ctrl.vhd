@@ -6,6 +6,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
 entity sram_ctrl is
     generic(DATA_W: natural := 16;
 			ADDR_W: natural := 18);
@@ -44,8 +46,10 @@ architecture arch of sram_ctrl is
 	
    type state_type is (idle, rd1, rd2, wr1, wr2, wr3);
    signal state_reg, state_next: state_type;
+   constant RD_CLKS: integer:= 3; -- contador para lectura 
    signal data_f2s_reg, data_f2s_next: std_logic_vector(DATA_W-1 downto 0);
    signal data_s2f_reg, data_s2f_next: std_logic_vector(DATA_W-1 downto 0);
+   signal count_reg, count_next: unsigned(1 downto 0);
    signal addr_reg, addr_next: std_logic_vector(ADDR_W-1 downto 0);
    signal we_buf, oe_buf, tri_buf: std_logic;
    signal we_reg, oe_reg, tri_reg: std_logic;
@@ -59,6 +63,7 @@ begin
          addr_reg <= (others=>'0');
          data_f2s_reg <= (others=>'0');
          data_s2f_reg <= (others=>'0');
+         count_reg <= (others=>'0'); 
          tri_reg <= '1';
          we_reg <= '1';
          oe_reg <= '1';
@@ -67,6 +72,7 @@ begin
          addr_reg <= addr_next;
          data_f2s_reg <= data_f2s_next;
          data_s2f_reg <= data_s2f_next;
+         count_reg <= count_next;
          tri_reg <= tri_buf;
          we_reg <= we_buf;
          oe_reg <= oe_buf;
@@ -83,13 +89,14 @@ begin
 	
    
    -- next-state logic
-   process(state_reg,mem,rw,dio_a,addr,data_f2s,
+   process(state_reg,count_reg,mem,rw,dio_a,addr,data_f2s,
            data_f2s_reg,data_s2f_reg,addr_reg, flag_count)
       --variable count: integer := 0;
    begin
       addr_next <= addr_reg;
       data_f2s_next <= data_f2s_reg;
       data_s2f_next <= data_s2f_reg;
+      count_next <= count_reg;
       ready <= '0';
       rst_count <= '1';
       case state_reg is
@@ -110,7 +117,7 @@ begin
 		    state_next <= wr2;
             rst_count <= '0'; 
 		 when wr2 =>
-            rst_count <= '0'; 
+            rst_count <= '0';
 			if flag_count = '1' then
                 state_next <= wr3;
 			else
@@ -119,12 +126,14 @@ begin
          when wr3 =>
             state_next <= idle;
          when rd1 =>
-            -- if flag_count = '1' then
-				state_next <= rd2;
-			--else
-			--	state_next <= rd1;
-			--end if;
-         when rd2=>
+            if count_reg = RD_CLKS-1 then  
+               state_next <= rd2;
+               count_next <= (others => '0');
+            else   
+			   state_next <= rd1;
+               count_next <= count_reg+1;
+           end if;   
+         when rd2 =>      
             data_s2f_next <= dio_a;
             state_next <= idle;
       end case;
@@ -148,7 +157,7 @@ begin
             tri_buf <= '0';
          when rd1 =>
             oe_buf <= '0';
-         when rd2=>
+         when rd2 =>
             oe_buf <= '0';
       end case;
    end process;

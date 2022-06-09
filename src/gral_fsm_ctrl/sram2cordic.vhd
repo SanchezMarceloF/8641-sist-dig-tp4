@@ -64,17 +64,19 @@ architecture sram2cordic_arch of sram2cordic is
     generic (N : natural := 8);
     port(
         rst : in std_logic;
+        rst_sync : in std_logic;
         clk : in std_logic;
         ena : in std_logic;
         count : out std_logic_vector(N-1 downto 0)
     );
     end component;
 
+
     -- señales ----------------------------------------------
 
     constant FLAG_Z: integer:= 3; -- contador para flag_z 
     signal ena_fsm       : std_logic := '0';
-    signal rst_count_aux, rst_count_sinc: std_logic:= '0';
+    signal rst_count_sinc: std_logic:= '0';
     -- para registros de coordenadas
     signal wr_reg_tick   : std_logic := '0';
     signal coord_aux     : std_logic_vector(COORD_W-1 downto 0);
@@ -101,7 +103,7 @@ architecture sram2cordic_arch of sram2cordic is
                          := (others => '0');
     signal data_s2f_ur_aux: std_logic_vector(DATA_W-1 downto 0); 
     -- variables de estado ---------------------------
-    type t_estado is (REPOSO, LECTURA_SRAM, ESCRITURA_REG, ESPERAR_SRAM,
+    type t_estado is (REPOSO, LECTURA_SRAM, SHIFT_REG, ESPERA_SRAM,
                       ESCRITURA_DPR, ESPERA_CORDIC);
     signal estado_act, estado_sig : t_estado;
     signal zcount_act, zcount_sig: unsigned(1 downto 0);
@@ -156,12 +158,12 @@ begin
     gen_addr: counter
     generic map(N => ADDR_W)
     port map(
-        rst   => rst_count_aux,
-        clk   => clk, 
+        rst   => rst,
+        rst_sync => rst_count_sinc,
+        clk   => clk,
         ena   => ena_count_tick,
         count => addr_aux
     );
-    rst_count_aux <= rst or rst_count_sinc;
 
     -- Máquina de estados ------------------------------
     --##################################################
@@ -185,6 +187,7 @@ begin
 
     prox_estado: process(estado_act, zcount_act, ena_fsm, ready_aux, flag_fin)
 	begin
+        -- asignaciones por defecto
         estado_sig <= estado_act;
         zcount_sig <= zcount_act;
 	    case estado_act is
@@ -193,27 +196,27 @@ begin
                     estado_sig <= LECTURA_SRAM;
                 end if;        
             when LECTURA_SRAM => -- duración 1 ciclo
-                estado_sig <= ESCRITURA_REG;
-            when ESCRITURA_REG => -- duración 1 ciclo
+                estado_sig <= ESPERA_SRAM;
+            when ESPERA_SRAM => 
+                if (ready_aux = '1') then
+                    estado_sig <= SHIFT_REG;
+                end if;
+            when SHIFT_REG => -- duración 1 ciclo
                 if (zcount_act = FLAG_Z-1) then
                     estado_sig <= ESCRITURA_DPR;
                     zcount_sig <= (others => '0');
                 else    
-                    estado_sig <= ESPERAR_SRAM;
+                    estado_sig <= LECTURA_SRAM;
                     zcount_sig <= zcount_act + 1;
                 end if;        
-            when ESPERAR_SRAM => 
-                if (ready_aux = '1') then
-                    estado_sig <= LECTURA_SRAM;
-                end if;
-             when ESCRITURA_DPR => -- duración 1 ciclo
+            when ESCRITURA_DPR => -- duración 1 ciclo
                  estado_sig <= ESPERA_CORDIC;
-             when ESPERA_CORDIC => 
-                 if (addr_aux >= addr_max) then
-                     estado_sig <= REPOSO;
-                 elsif (flag_fin = '1') then
-                     estado_sig <= LECTURA_SRAM;
-                 end if;    
+            when ESPERA_CORDIC => 
+                if (addr_aux >= addr_max) then
+                    estado_sig <= REPOSO;
+                elsif (flag_fin = '1') then
+                    estado_sig <= LECTURA_SRAM;
+                end if;    
         end case;
     end process;
     
@@ -232,10 +235,10 @@ begin
                 rst_count_sinc <= '1';
             when LECTURA_SRAM =>
                 mem_aux <= '1';
-		    when ESCRITURA_REG =>
+		    when SHIFT_REG =>
                 wr_reg_tick <= '1';
                 ena_count_tick <= '1';
-            when ESPERAR_SRAM =>
+            when ESPERA_SRAM =>
             when ESCRITURA_DPR =>
                 wr_dpr_tick_aux <= '1';
             when ESPERA_CORDIC =>    
@@ -254,16 +257,16 @@ begin
 --#------ Señales para visualizar los estados en gtkwave ------------#
     estado_actual    <= "000" when estado_act = REPOSO else        --# 
                         "001" when estado_act = LECTURA_SRAM else  --#
-                        "010" when estado_act = ESCRITURA_REG else --#
-                        "011" when estado_act = ESPERAR_SRAM else  --#
+                        "010" when estado_act = ESPERA_SRAM else --#
+                        "011" when estado_act = SHIFT_REG else  --#
                         "100" when estado_act = ESCRITURA_DPR else --#
                         "101" when estado_act = ESPERA_CORDIC else --#
                         "111";                                     --#
                                                                    --#
     estado_siguiente <= "000" when estado_sig = REPOSO else        --#
                         "001" when estado_sig = LECTURA_SRAM else  --#
-                        "010" when estado_sig = ESCRITURA_REG else --#
-                        "011" when estado_sig = ESPERAR_SRAM else  --#
+                        "010" when estado_sig = ESPERA_SRAM else --#
+                        "011" when estado_sig = SHIFT_REG else  --#
                         "100" when estado_sig = ESCRITURA_DPR else --#
                         "101" when estado_sig = ESPERA_CORDIC else --#
                         "111";                                     --#  

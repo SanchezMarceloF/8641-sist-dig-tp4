@@ -16,7 +16,7 @@ architecture sram2cordic_tb_arch of sram2cordic_tb is
 
     --señales de prueba --------------------------------------
     signal clk_tb, rst_tb, ena_tb: std_logic := '0';
-    signal count_tb: std_logic_vector(3 downto 0);
+    signal count_tb: std_logic_vector(4 downto 0);
     -- Dual port RAM ----------------------------
     signal wr_dpr_tick_tb: std_logic;
     signal x_coord_tb: std_logic_vector(COORD_W-1 downto 0);
@@ -44,6 +44,7 @@ begin
     generic map(N => DATA_W+3)
     port map(
         rst => rst_tb,
+        rst_sync => '0',
         clk => clk_tb,
         ena => '1',
         count => dio_a_tb_aux
@@ -51,17 +52,18 @@ begin
     dio_a_tb <= dio_a_tb_aux(DATA_W+2 downto 3);
 
     gen_tick3D: entity work.counter(behavioral)
-    generic map (N => 4) --quiero contar 13 ciclos
+    generic map (N => 5) --quiero contar 32 ciclos
     port map(
         rst => rst_tb,
         clk => clk_tb,
+        rst_sync => '0',
         ena => '1', -- que cuente siempre 
         count => count_tb
     );
-    -- genero un tick cada 16 ciclos emulando el rotador 3D
+    -- genero un tick cada 32 ciclos emulando el rotador 3D
     process(count_tb)
     begin
-        if(count_tb = "1011") then
+        if(count_tb = "10001") then
             flag_fin_tb <= '1';
         else 
             flag_fin_tb <= '0';
