@@ -2,15 +2,15 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity sram2cordic_tb is
+entity sram2cordic_ctrl_tb is
     generic(
         COORD_W: natural := 13;
         DATA_W: natural := 16;
 		ADDR_W: natural := 18
     );
-end sram2cordic_tb;
+end sram2cordic_ctrl_tb;
 
-architecture sram2cordic_tb_arch of sram2cordic_tb is 
+architecture sram2cordic_ctrl_tb_arch of sram2cordic_ctrl_tb is 
 
 --    constant BIT_W : time := 20 ns * DVSR_BIT_UART * 16; 
 
@@ -71,7 +71,7 @@ begin
     end process;    
 
 
-    DUT: entity work.sram2cordic(sram2cordic_arch)
+    DUT: entity work.sram2cordic_ctrl(sram2cordic_ctrl_arch)
     generic map(
         COORD_W => COORD_W,
         DATA_W => DATA_W,
@@ -93,5 +93,5 @@ begin
         ce_a_n=>ce_a_n_tb, ub_a_n=>ub_a_n_tb, lb_a_n=>lb_a_n_tb
     );
 
-end;    
+end sram2cordic_ctrl_tb_arch;    
 
