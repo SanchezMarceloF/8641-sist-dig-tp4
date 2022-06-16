@@ -6,7 +6,7 @@ entity gral_ctrl is
     generic(
         COORD_W: natural := 13;
         DATA_W: natural := 16;
-		ADDR_W: natural := 18
+		ADDR_W: natural := 23 
     );
     port(
         clk, rst, ena : in std_logic;
@@ -48,7 +48,7 @@ architecture gral_ctrl_arch of gral_ctrl is
 
     constant EOF_WORD: std_logic_vector(DATA_W-1 downto 0)
                      := (others => '1');   
-    signal rst_count_sinc: std_logic:= '0';
+    signal rst_addr_sync: std_logic:= '0';
     -- contador (direcciones a sram)---------------------------
     signal addr_tick: std_logic := '0';
     -- uart2sram ---------------------------------------------
@@ -71,18 +71,28 @@ architecture gral_ctrl_arch of gral_ctrl is
 
 begin
 
+ -- +-------------------------------------------------------------------------+
+ -- |                                                                         |
+ -- |                       Conexión de componentes                           |
+ -- |                                                                         |
+ -- +-------------------------------------------------------------------------+
+
     gen_addr: counter
     generic map(N => ADDR_W)
     port map(
         rst   => rst,
-        rst_sync => rst_count_sinc,
+        rst_sync => rst_addr_sync,
         clk   => clk,
         ena   => addr_tick,
         count => addr_sram_aux 
     );
 
-    -- Máquina de estados ------------------------------
-    --##################################################
+
+ -- +-------------------------------------------------------------------------+
+ -- |                                                                         |
+ -- |                         Maquina de estados                              |
+ -- |                                                                         |
+ -- +-------------------------------------------------------------------------+
 
     -- estados ----------------------------------------- 
 
@@ -97,7 +107,8 @@ begin
    
 	-- lógica de próximo estado -------------------------
  
-    word <= data_s2f_r;
+    word <= data_f2s when estado_act = CARGA_DATOS else
+            data_s2f_r;
 
     prox_estado: process(estado_act, ena, rx_uart_empty, word)
 	begin
@@ -114,7 +125,7 @@ begin
                 end if;        
             when CARGA_DATOS =>
                 if (word = EOF_WORD) then
-                    estado_sig <= ROTACION;
+                    estado_sig <= REFRESH_DPR;
                 end if;        
             when ROTACION => 
                 if (word = EOF_WORD) then
@@ -129,13 +140,22 @@ begin
         end case;
     end process;
     
-    -- Salidas -----------------------------------------
+ -- +-------------------------------------------------------------------------+
+ -- |                                                                         |
+ -- |                               Salidas                                   |
+ -- |                                                                         |
+ -- +-------------------------------------------------------------------------+
+    
+    
+    
+    
+    -- Salidas del fsm -----------------------------------------
 
     salidas: process(estado_act, mem_uart, mem_cordic, addr_tick_uart,
-                     addr_tick_cordic)
+                     addr_tick_cordic, addr_sram_aux)
     begin
         -- asignación por defecto 
-        rst_count_sinc <= '0'; -- reseteo de direccionamiento
+        rst_addr_sync <= '0'; -- reseteo de direccionamiento
         mem_aux <= '0'; -- comienzo de operacion sram (r ó w)
         rw_aux <= '1'; -- [0]: escritura; [1]: lectura
         addr_tick <= '0'; -- avance de direccionamiento
@@ -144,27 +164,29 @@ begin
         --refresh_tick <= '0';
         case estado_act is
             when REPOSO =>
-                rst_count_sinc <= '1';
+                rst_addr_sync <= '1';
             when CARGA_DATOS => -- proceso uart2sram
-                rw_aux <= '0';
                 mem_aux <= mem_uart;
+                rw_aux <= '0';
                 addr_tick <= addr_tick_uart;
                 ena_uart2sram_aux <= '1';
 		    when ROTACION => -- proceso sram2cordic
-                ena_sram2cordic_aux <= '1';
-                rw_aux <= '1';
                 mem_aux <= mem_cordic;
+                rw_aux <= '1';
+                ena_sram2cordic_aux <= '1';
                 addr_tick <= addr_tick_cordic;
             when REFRESH_DPR =>
                 -- refresh_tick <= '1';
-                rst_count_sinc <= '1';
-                ena_sram2cordic_aux <= '1';
-                rw_aux <= '1';
+                rst_addr_sync <= '1';
                 mem_aux <= mem_cordic;
+                rw_aux <= '1';
                 addr_tick <= addr_tick_cordic;
+                ena_sram2cordic_aux <= '1';
         end case;
     end process;
 
+    -- señales de salida ---------------
+ 
     addr_sram <= addr_sram_aux;
     rw <= rw_aux;
     mem <= mem_aux;
