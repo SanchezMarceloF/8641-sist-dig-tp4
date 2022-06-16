@@ -34,6 +34,7 @@ architecture gral_ctrl_tb_arch of gral_ctrl_tb is
                         := std_logic_vector(to_unsigned(138,DATA_W));
     signal clk_tb, rst_tb, ena_tb: std_logic := '0';
     signal count_tb: std_logic_vector(4 downto 0);
+    signal ena_gen_data: std_logic := '0';
     -- Dual port RAM ----------------------------
     signal wr_dpr_tick_tb: std_logic;
     signal x_coord_tb: std_logic_vector(COORD_W-1 downto 0);
@@ -294,22 +295,32 @@ begin
              '1' after 119600 ns;
 	
 
---##################################################
-    -- ::  Contador para generar datos   ::        #
-    -----------------------------------------------#
-    gen_data: entity work.counter                --#
-    generic map(N => DATA_W+3)                   --#
-    port map(                                    --#
-        rst => rst_tb,                           --#
-        rst_sync => '0',                         --#
-        clk => clk_tb,                           --#
-        ena => '1',                              --#
-        count => dio_a_tb_aux                    --#
-    );                                           --#
-   -- dio_a_tb <= EOF_WORD when dio_a_tb_aux(DATA_W+2 downto 3) = DATA_MATCH else
-   --             dio_a_tb_aux(DATA_W+2 downto 3); --#
-                                                 --#
---##################################################
+--#########################################################
+    -- ::  Contador para generar datos   ::               #
+    ------------------------------------------------------#
+    gen_data: entity work.counter                       --#
+    generic map(N => DATA_W+3)                          --#
+    port map(                                           --#
+        rst => rst_tb,                                  --#
+        rst_sync => '0',                                --#
+        clk => clk_tb,                                  --#
+        ena => ena_gen_data,                            --#
+        count => dio_a_tb_aux                           --#
+    );                                                  --#
+   ena_gen_data <= '1' after 119300 ns;                 --#
+   process(dio_a_tb_aux, ena_gen_data)                  --#
+   begin                                                --#
+   if ena_gen_data = '1' then                           --#
+       if dio_a_tb_aux(DATA_W+2 downto 3) = DATA_MATCH  --#
+       then dio_a_tb <= EOF_WORD;                       --#
+       else                                             --#
+           dio_a_tb <= dio_a_tb_aux(DATA_W+2 downto 3); --#
+       end if;                                          --#
+   else                                                 --#
+       dio_a_tb <= (others => 'Z');                     --#
+   end if;                                              --#
+   end process;                                         --#
+--#########################################################
 
 --###########################################################
     -- ::  Contador para emular fin del  rotador 3D  ::     #

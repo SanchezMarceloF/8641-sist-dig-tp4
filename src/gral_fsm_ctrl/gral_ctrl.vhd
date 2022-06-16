@@ -110,7 +110,7 @@ begin
     word <= data_f2s when estado_act = CARGA_DATOS else
             data_s2f_r;
 
-    prox_estado: process(estado_act, ena, rx_uart_empty, word)
+    prox_estado: process(estado_act, ena, rx_uart_empty, word, mem_uart)
 	begin
         -- asignaciones por defecto
         estado_sig <= estado_act;
@@ -124,15 +124,17 @@ begin
                     end if; 
                 end if;        
             when CARGA_DATOS =>
-                if (word = EOF_WORD) then
+                -- acá llega al final del archivo, luego me aseguro que
+                -- se escriba en memoria leyendo el bit mem_uart
+                if (word = EOF_WORD and mem_uart= '1') then
                     estado_sig <= REFRESH_DPR;
                 end if;        
             when ROTACION => 
                 if (word = EOF_WORD) then
                     estado_sig <= REFRESH_DPR;
                 end if;    
-            when REFRESH_DPR => -- duración 1 ciclo 
-                if ena = '1' then
+            when REFRESH_DPR => 
+                if ena = '1' then 
                     estado_sig <= ROTACION;
                 else 
                     estado_sig <= REPOSO;
