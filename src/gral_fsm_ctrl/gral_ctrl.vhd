@@ -154,7 +154,7 @@ begin
     -- Salidas del fsm -----------------------------------------
 
     salidas: process(estado_act, mem_uart, mem_cordic, addr_tick_uart,
-                     addr_tick_cordic, addr_sram_aux)
+                     addr_tick_cordic)
     begin
         -- asignación por defecto 
         rst_addr_sync <= '0'; -- reseteo de direccionamiento

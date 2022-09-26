@@ -2,16 +2,17 @@ close all
 clear all
 clc
 
-datos = dlmread('coordenadas.txt', '\t', 5, 0); 
+datos = dlmread('../files/coordenadas.txt', '\t', 5, 0); 
 
-%res0 = valores_medios (datos(1:end,3), datos(1:end,4), datos(1:end,2));
-M = 13;   %longitud del numero
-N = 11;   %numero de decimales
+N = 13;   %longitud del numero
+M = 12;   %numero de decimales
+N_ROWS = 11946;
 
-for i=1 : 11946
+for i=1 : N_ROWS 
   for j=0 : 2
-    datos_ptofijo(i , (j*M+1+j):((j+1)*M)+j) = decimal_a_ptofijo(M, N, datos(i, j+1));
+    datos_ptofijo(i , (j*N+1):((j+1)*N)) = decimal_a_ptofijo(N, M, datos(i, j+1));
   endfor
 endfor
- 
-dlmwrite('coordenadas_ptofijo.txt', datos_ptofijo);
+
+%datos_ptofijo
+dlmwrite('../files/coordenadas_ptofijo.txt', datos_ptofijo, "delimiter", "");%"newline", "");
