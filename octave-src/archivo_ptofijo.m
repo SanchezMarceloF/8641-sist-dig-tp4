@@ -4,7 +4,7 @@ clc
 
 datos = dlmread('../files/coordenadas.txt', '\t', 5, 0); 
 
-N = 13;   %longitud del numero
+N = 16;   %longitud del numero
 M = 12;   %numero de decimales
 N_ROWS = 11946;
 
@@ -15,4 +15,4 @@ for i=1 : N_ROWS
 endfor
 
 %datos_ptofijo
-dlmwrite('../files/coordenadas_ptofijo.txt', datos_ptofijo, "delimiter", "");%"newline", "");
+dlmwrite('../files/coordenadas_ptofijo-16.txt', datos_ptofijo, "delimiter", "");%"newline", "");

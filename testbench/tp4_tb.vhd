@@ -51,8 +51,8 @@ architecture tp4_tb_arq of tp4_tb is
     component tp4 is
 	generic(COORD_W: integer:= 13;  --long coordenadas x, y, z.
 			ANG_W: integer:= 15;    --long angulos de rotacion
-			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
-	        DATA_DP_W: natural:= 1;
+            ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
+            DATA_DP_W: natural:= 1;
             -- UART -- Default setting:
             -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
             DBIT_UART: integer:=8;     -- # data bits
@@ -95,6 +95,7 @@ architecture tp4_tb_arq of tp4_tb is
                       :="1111111111111111";
     constant DATA_MATCH : std_logic_vector(DATA_W-1 downto 0)
                         := std_logic_vector(to_unsigned(138,DATA_W));
+    constant DATA_BYTE_LEN : integer := 12;                     
 	
     signal clk_tb, ena_tb, rst_tb: std_logic:= '0';
     signal count_tb: std_logic_vector(4 downto 0);
@@ -117,10 +118,10 @@ architecture tp4_tb_arq of tp4_tb is
 	signal grn_o_tb: std_logic_vector(2 downto 0);
 	signal blu_o_tb: std_logic_vector(1 downto 0);	
     signal hs_tb, vs_tb: std_logic;		
-	
-    file datos: text open read_mode is "test_files/datos.txt";	
+    -- para operar con archivo de datos -------------
+    file datos  : text open read_mode is "test_files/datos.bin";
+    signal word : std_logic_vector(7 downto 0);
     
-    signal binario: std_logic_vector(0 downto 0);
 	
 begin 
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
@@ -137,20 +138,22 @@ begin
 		wait until rising_edge(ena_tb);
 		while not(endfile(datos)) loop 	-- si se quiere leer de stdin se pone "input"
 			readline(datos, linea); 	-- se lee una linea del archivo de valores de prueba
-            -- bit de inicio -------
-            rx_tb <= '0'; 
-            wait for 950 ns;
-            -- bits de datos -------
-            for i in 1 to 8 loop
+            for j in 1 to DATA_BYTE_LEN loop
 			    read(linea, ch);   -- se extrae un entero de la linea
-                binario <= std_logic_vector(to_unsigned(character'pos(ch),1));
-                wait for 10 ns;
-                rx_tb <= binario(0);
-                wait for 950 ns;
+                word <= std_logic_vector(to_unsigned(character'pos(ch),8));
+                -- bit de inicio -------
+                rx_tb <= '0'; 
+                wait for 960 ns;
+                -- bits de datos -------
+                for i in 0 to 7 loop
+                    --word(i) <= std_logic_vector(to_unsigned(character'pos(ch),i));
+                    rx_tb <= word(i);
+                    wait for 960 ns;
+                end loop;    
+                -- reposo ---------------
+                rx_tb <= '1'; 
+                wait for 1000 ns;
             end loop;    
-            -- reposo ---------------
-            rx_tb <= '1'; 
-            wait for 1000 ns;
 		end loop;
 
 		file_close(datos); -- cierra el archivo
