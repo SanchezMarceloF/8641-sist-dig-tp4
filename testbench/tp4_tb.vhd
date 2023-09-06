@@ -26,23 +26,23 @@ entity tp4_tb is
     );
 	end;
 
--------------------------* 
--- baud rate | DVSR_UART |
--------------+-----------*     
---      300    10416.7   |
---      600     5208.3   |
---     1200     2604.2   |
---     2400     1302.1   |
---     4800     651      |
---     9600     325.5    |
---    14400     217      |
---    19200     162.8    |
---    38400      81.4    |
---    57600      54.3    |
---    115200     27.1    |
---    230400     13.6    |
---    460800      6.8    |
--------------------------*
+    -- *-----------------------* 
+    -- | baud rate | DVSR_UART |
+    -- *-----------+-----------*     
+    -- |      300    10416.7   |
+    -- |      600     5208.3   |
+    -- |     1200     2604.2   |
+    -- |     2400     1302.1   |
+    -- |     4800      651     |
+    -- |     9600      325.5   |
+    -- |    14400      217     |
+    -- |    19200      162.8   |
+    -- |    38400       81.4   |
+    -- |    57600       54.3   |
+    -- |   115200       27.1   |
+    -- |   230400       13.6   |
+    -- |   460800        6.8   |
+    -- *-----------------------*
    
 -- cuerpo de arquitectura
 
@@ -124,13 +124,14 @@ architecture tp4_tb_arq of tp4_tb is
     
 	
 begin 
-	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
+
+    clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
 	pulsadores_tb <= "010010";
 	rst_tb <= '1' after 20 ns, '0' after 100 ns;
 	ena_tb <= '0' after 40 ns, '1' after 203 ns;
 
 
-    Test_Sequence: process
+    Test_uart: process
 		variable linea: line;
 		variable ch: character:= ' ';
 		--variable aux: bit;
@@ -152,7 +153,7 @@ begin
                 end loop;    
                 -- reposo ---------------
                 rx_tb <= '1'; 
-                wait for 1000 ns;
+                wait for 1122 ns;
             end loop;    
 		end loop;
 
@@ -160,225 +161,48 @@ begin
 		--wait for TCK*(DELAY+1); -- se pone el +1 para poder ver los datos
 		--assert false report -- este assert se pone para abortar la simulacion
 		--	"Fin de la simulacion" severity failure;
-	end process Test_Sequence;
+	end process Test_uart;
 
---    -- :: primer byte de dato :: --
---             -- bit de start
---    rx_tb <= '0' after 1 ns,
---             -- bits de datos
---             '0' after 960 ns,
---             '0' after 1920 ns,
---             '0' after 2880 ns,
---             '1' after 3840 ns,
---             '0' after 4800 ns,
---             '0' after 5760 ns,
---             '1' after 6720 ns,
---             '0' after 7680 ns,
---             -- bit de stop
---             '1' after 8640 ns,
---             -- en reposo
---             '1' after 9600 ns,
---	        
---        -- :: segundo byte de dato :: --
---             -- bit de start
---             '0' after 10000 ns,
---    --rx_tb <= '0' after 10000 ns,
---             -- bits de datos
---             '1' after 10960 ns,
---             '1' after 11920 ns,
---             '1' after 12880 ns,
---             '1' after 13840 ns,
---             '0' after 14800 ns,
---             '0' after 15760 ns,
---             '1' after 16720 ns,
---             '0' after 17680 ns,
---             -- bit de stop
---             '1' after 18640 ns,
---             -- en reposo
---             '1' after 19600 ns,
---	
---        -- :: tercer byte de dato :: --
---             -- bit de start
---    --rx_tb <= '0' after 20000 ns,
---             '0' after 20000 ns,
---             -- bits de datos
---             '0' after 20960 ns,
---             '0' after 21920 ns,
---             '1' after 22880 ns,
---             '1' after 23840 ns,
---             '0' after 24800 ns,
---             '0' after 25760 ns,
---             '1' after 26720 ns,
---             '0' after 27680 ns,
---             -- bit de stop
---             '1' after 28640 ns,
---             -- en reposo
---             '1' after 29600 ns,
---	
---        -- :: cuarto byte de dato :: --
---             -- bit de start
---    --rx_tb <= '0' after 30000 ns,
---             '0' after 30000 ns,
---             -- bits de datos
---             '1' after 30960 ns,
---             '0' after 31920 ns,
---             '0' after 32880 ns,
---             '0' after 33840 ns,
---             '0' after 34800 ns,
---             '0' after 35760 ns,
---             '1' after 36720 ns,
---             '0' after 37680 ns,
---             -- bit de stop
---             '1' after 38640 ns,
---             -- en reposo
---             '1' after 39600 ns,
---	
---        -- :: quinto byte de dato :: --
---             -- bit de start
---             '0' after 40000 ns,
---             -- bits de datos
---             '0' after 40960 ns,
---             '0' after 41920 ns,
---             '0' after 42880 ns,
---             '0' after 43840 ns,
---             '0' after 44800 ns,
---             '1' after 45760 ns,
---             '0' after 46720 ns,
---             '0' after 47680 ns,
---             -- bit de stop
---             '1' after 48640 ns,
---             -- en reposo
---             '1' after 49600 ns,
---	        
---        -- :: sexto byte de dato :: --
---             -- bit de start
---             '0' after 50000 ns,
---    --rx_tb <= '0' after 10000 ns,
---             -- bits de datos
---             '1' after 50960 ns,
---             '0' after 51920 ns,
---             '1' after 52880 ns,
---             '1' after 53840 ns,
---             '0' after 54800 ns,
---             '0' after 55760 ns,
---             '1' after 56720 ns,
---             '0' after 57680 ns,
---             -- bit de stop
---             '1' after 58640 ns,
---             -- en reposo
---             '1' after 59600 ns,
---	
---         -- :: septimo byte de dato :: --
---             -- bit de start
---    --rx_tb <= '0' after 20000 ns,
---             '0' after 60000 ns,
---             -- bits de datos
---             '1' after 60960 ns,
---             '0' after 61920 ns,
---             '1' after 62880 ns,
---             '0' after 63840 ns,
---             '1' after 64800 ns,
---             '0' after 65760 ns,
---             '1' after 66720 ns,
---             '0' after 67680 ns,
---             -- bit de stop
---             '1' after 68640 ns,
---             -- en reposo
---             '1' after 69600 ns,
---	
---        -- :: octavo byte de dato :: --
---             -- bit de start
---    --rx_tb <= '0' after 30000 ns,
---             '0' after 70000 ns,
---             -- bits de datos
---             '0' after 70960 ns,
---             '1' after 71920 ns,
---             '1' after 72880 ns,
---             '1' after 73840 ns,
---             '0' after 74800 ns,
---             '0' after 75760 ns,
---             '1' after 76720 ns,
---             '0' after 77680 ns,
---             -- bit de stop
---             '1' after 78640 ns,
---             -- en reposo
---             '1' after 79600 ns,
---	
---        -- :: noveno byte de dato :: --
---             -- bit de start
---    --rx_tb <= '0' after 20000 ns,
---             '0' after 80000 ns,
---             -- bits de datos
---             '0' after 80960 ns,
---             '0' after 81920 ns,
---             '1' after 82880 ns,
---             '0' after 83840 ns,
---             '0' after 84800 ns,
---             '0' after 85760 ns,
---             '1' after 86720 ns,
---             '0' after 87680 ns,
---             -- bit de stop
---             '1' after 88640 ns,
---             -- en reposo
---             '1' after 89600 ns,
---	
---        -- :: decimo byte de dato :: --
---             -- bit de start
---             --rx_tb <= '0' after 30000 ns,
---             '0' after 90000 ns,
---             -- bits de datos
---             '1' after 90960 ns,
---             '1' after 91920 ns,
---             '1' after 92880 ns,
---             '1' after 93840 ns,
---             '0' after 94800 ns,
---             '0' after 95760 ns,
---             '1' after 96720 ns,
---             '0' after 97680 ns,
---             -- bit de stop
---             '1' after 98640 ns,
---             -- en reposo
---             '1' after 99600 ns,
+
+--    Test_sram: process
+--		variable linea: line;
+--		variable ch: character:= ' ';
+--		--variable aux: bit;
+--	begin
+--		wait until rising_edge(ena_tb);
+--		while not(endfile(datos)) loop 	-- si se quiere leer de stdin se pone "input"
+--			readline(datos, linea); 	-- se lee una linea del archivo de valores de prueba
+--            for j in 1 to DATA_BYTE_LEN loop
+--			    read(linea, ch);   -- se extrae un entero de la linea
+--                word <= std_logic_vector(to_unsigned(character'pos(ch),8));
+--                -- bit de inicio -------
+--                rx_tb <= '0'; 
+--                wait for 960 ns;
+--                -- bits de datos -------
+--                for i in 0 to 7 loop
+--                    --word(i) <= std_logic_vector(to_unsigned(character'pos(ch),i));
+--                    rx_tb <= word(i);
+--                    wait for 960 ns;
+--                end loop;    
+--                -- reposo ---------------
+--                rx_tb <= '1'; 
+--                wait for 1122 ns;
+--            end loop;    
+--		end loop;
 --
---        -- :: onceavo byte EOF_WORD :: --
---             -- bit de start
---    --rx_tb <= '0' after 20000 ns,
---             '0' after 100000 ns,
---             -- bits de datos
---             '1' after 100960 ns,
---             '1' after 101920 ns,
---             '1' after 102880 ns,
---             '1' after 103840 ns,
---             '1' after 104800 ns,
---             '1' after 105760 ns,
---             '1' after 106720 ns,
---             '1' after 107680 ns,
---             -- bit de stop
---             '1' after 108640 ns,
---             -- en reposo
---             '1' after 109600 ns,
---	
---        -- :: doceavo byte EOF_WORD :: --
---             -- bit de start
---             --rx_tb <= '0' after 30000 ns,
---             '0' after 110000 ns,
---             -- bits de datos
---             '1' after 110960 ns,
---             '1' after 111920 ns,
---             '1' after 112880 ns,
---             '1' after 113840 ns,
---             '1' after 114800 ns,
---             '1' after 115760 ns,
---             '1' after 116720 ns,
---             '1' after 117680 ns,
---             -- bit de stop
---             '1' after 118640 ns,
---             -- en reposo
---             '1' after 119600 ns;
-	
+--		file_close(datos); -- cierra el archivo
+--		--wait for TCK*(DELAY+1); -- se pone el +1 para poder ver los datos
+--		--assert false report -- este assert se pone para abortar la simulacion
+--		--	"Fin de la simulacion" severity failure;
+--	end process Test_sram;
+    
+
+
+
 
 --#################################################################
-     --   ::    Contador para generar datos     ::                #
+     --   ::    Contador para generar datos aleatorios    ::      #         
+     --   ::    para emular comportamiento desde SRAM     ::      #
 ------------------------------------------------------------------#
     gen_data: entity work.counter                               --#
     generic map(N => DATA_W+3)                                  --#
@@ -403,30 +227,6 @@ begin
     end if;                                                     --#
     end process;                                                --#
 --#################################################################
-
---###########################################################
---     -- ::  Contador para emular fin del  rotador 3D  ::     #
---     --------------------------------------------------------#
---     gen_tick3D: entity work.counter(behavioral)           --#
---     generic map (N => 5) --quiero contar 32 ciclos        --#
---     port map(                                             --#
---         rst => rst_tb,                                    --#
---         clk => clk_tb,                                    --#
---         rst_sync => '0',                                  --#
---         ena => '1', -- que cuente siempre                 --#
---         count => count_tb                                 --#
---     );                                                    --#
---     -- genero un tick cada 32 ciclos emulando el rotador 3D #
---     process(count_tb)                                     --# 
---     begin                                                 --#
---         if(count_tb = "10001") then                       --#
---             flag_fin_tb <= '1';                           --#
---         else                                              --#
---             flag_fin_tb <= '0';                           --#
---         end if;                                           --#
---     end process;                                          --#
---                                                           --#
---###########################################################
 
 	DUT: tp4
 	generic map(COORD_W => COORD_W, --long coordenadas x, y, z.
@@ -467,7 +267,4 @@ begin
         hs => hs_tb, vs => vs_tb		
 		);
   
-    
-
-		
 end tp4_tb_arq;
