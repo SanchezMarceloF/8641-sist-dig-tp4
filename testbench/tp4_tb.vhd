@@ -95,7 +95,7 @@ architecture tp4_tb_arq of tp4_tb is
                       :="1111111111111111";
     constant DATA_MATCH : std_logic_vector(DATA_W-1 downto 0)
                         := std_logic_vector(to_unsigned(138,DATA_W));
-    constant DATA_BYTE_LEN : integer := 12;                     
+    constant DATA_ROW_LEN : integer := 7;                     
 	
     signal clk_tb, ena_tb, rst_tb: std_logic:= '0';
     signal count_tb: std_logic_vector(4 downto 0);
@@ -119,7 +119,8 @@ architecture tp4_tb_arq of tp4_tb is
 	signal blu_o_tb: std_logic_vector(1 downto 0);	
     signal hs_tb, vs_tb: std_logic;		
     -- para operar con archivo de datos -------------
-    file datos  : text open read_mode is "test_files/datos.bin";
+    -- file datos  : text open read_mode is "test_files/datos.bin";
+    file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
     signal word : std_logic_vector(7 downto 0);
     
 	
@@ -139,21 +140,23 @@ begin
 		wait until rising_edge(ena_tb);
 		while not(endfile(datos)) loop 	-- si se quiere leer de stdin se pone "input"
 			readline(datos, linea); 	-- se lee una linea del archivo de valores de prueba
-            for j in 1 to DATA_BYTE_LEN loop
-			    read(linea, ch);   -- se extrae un entero de la linea
-                word <= std_logic_vector(to_unsigned(character'pos(ch),8));
-                -- bit de inicio -------
-                rx_tb <= '0'; 
-                wait for 960 ns;
-                -- bits de datos -------
-                for i in 0 to 7 loop
-                    --word(i) <= std_logic_vector(to_unsigned(character'pos(ch),i));
-                    rx_tb <= word(i);
+            for j in 1 to DATA_ROW_LEN loop
+                for r in 1 to 6 loop
+			        read(linea, ch);   -- se extrae un entero de la linea
+                    word <= std_logic_vector(to_unsigned(character'pos(ch),8));
+                    -- bit de inicio -------
+                    rx_tb <= '0'; 
                     wait for 960 ns;
+                    -- bits de datos -------
+                    for i in 0 to 7 loop
+                        --word(i) <= std_logic_vector(to_unsigned(character'pos(ch),i));
+                        rx_tb <= word(i);
+                        wait for 960 ns;
+                    end loop;    
+                    -- reposo ---------------
+                    rx_tb <= '1'; 
+                    wait for 1122 ns;
                 end loop;    
-                -- reposo ---------------
-                rx_tb <= '1'; 
-                wait for 1122 ns;
             end loop;    
 		end loop;
 
@@ -213,7 +216,8 @@ begin
         ena => ena_gen_data,                                    --#
         count => dio_sram_tb_aux                                --#
     );                                                          --#
-    ena_gen_data <= '1' after 119300 ns;                        --#
+    --ena_gen_data <= '1' after 119300 ns;                      --#
+    ena_gen_data <= not oe_n_tb;                                --#
     process(dio_sram_tb_aux, ena_gen_data)                      --#
     begin                                                       --#
     if ena_gen_data = '1' then                                  --#
