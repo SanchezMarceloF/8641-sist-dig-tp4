@@ -7,11 +7,11 @@ use IEEE.numeric_std.all;
 
 
 --Recibe 2 vectores de N bits en punto fijo
---normalizado en 2*11 = 2048 y lo escala a 320 y una
+--normalizado en 2*13 = 8192 y lo escala a 320 y una
 --longitud de 9 bits para las direcciones	
 
 entity generador_direcciones is
-	generic(N: integer := 13;	--longitud de los vectores
+	generic(N: integer := 16;	--longitud de los vectores
 			L: integer := 9);	--longitud de las direcciones
 	port(
 		--flag: in std_logic;	--me avisa cuando termina de rotar.
@@ -26,8 +26,8 @@ end;
 architecture generador_direcciones_arq of generador_direcciones is
 
 	--Para escalar el vector normalizado en 2048 a 320 necesito
-	--dividir por 6,4 = 32/5. Es lo mismo que multiplicar por 5
-	--y luego dividir por 32 (ó descartar los 5 bits menos
+	--dividir por 25,6 = 128/5. Es lo mismo que multiplicar por 5
+	--y luego dividir por 128 (ó descartar los 7 bits menos
 	--sinificativos del multiplicador)
 	
 	constant M: integer:= 2*N; --tamanio vector multiplicacion
@@ -59,8 +59,8 @@ begin
 	sal_multx <= std_logic_vector (signed(x)*to_signed(VAL_MULT,N)); --multiplico por 5
 	sal_multy <= std_logic_vector (signed(y)*to_signed(VAL_MULT,N));
 
-	x_mul <= sal_multx(L+4 downto 5); --division por 32
-	y_mul <= sal_multy(L+4 downto 5); --division por 32
+	x_mul <= sal_multx(L+6 downto 7); --division por 128
+	y_mul <= sal_multy(L+6 downto 7); --division por 128
 
 
 	--sumo 160 para eliminar los numeros negativos.

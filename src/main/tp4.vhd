@@ -53,29 +53,31 @@ entity tp4 is
         hs, vs: out std_logic		
 		);
     
---    attribute loc: string;
+--  attribute loc: string;
 --	attribute iostandard: string;
 --	
---	--Mapeo de pines para el kit Nexys 2 (spartan 3E)
---	attribute loc of clk: signal is "B8";
+--	--Mapeo de pines para el kit Nexys 2 (Spartan 3E-500 FG320)
+--	attribute loc of clk: signal is "B8"; --CHECK OK
 --	attribute loc of rst: signal is "B18";
 --    
---    -- Pulsadores
---    attribute loc of pulsadores: signal is "D18 E18 H13";
+--  -- Pulsadores
+--  attribute loc of pulsadores: signal is "D18 E18 H13"; --CHECK OK
 --
---    -- UART
---	attribute loc of rx: signal is "U6";
---	attribute loc of tx: signal is "P9";
+--  -- UART
+--	attribute loc of rx: signal is "L15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
+--	attribute loc of tx: signal is "K12"; --(Pmod conector) --"P9"; --VA A DB-9 (RS-232)
 --    
---    -- SRAM externa
---	attribute loc of we_n: signal is "N7";
---	attribute loc of oe_n: signal is "T2";
+--  -- SRAM externa
+--	attribute loc of we_n: signal is "N7"; -- CHECK OK
+--	attribute loc of oe_n: signal is "T2"; -- CHECK OK
+--  -- dio_sram CHECK OK
 --	attribute loc of dio_sram: signal is "T1 R3 N4 L2 M6 M3 L5 L3 R2 P2 P1 N5 M4 L6 L4 L1"; 
---	attribute loc of ce_n: signal is "R6";
---	attribute loc of ub_n: signal is "K4";
---	attribute loc of lb_n: signal is "K5";
---	attribute loc of address_sram: signal is "K6 D1 K3 D2 C1 C2 E2 M5 E1 F2 G4 G5 G6 G3 F1 H6 H3 J5 H2 H1 H4 J2 J1 NA";                                        
---    -- VGA	
+--	attribute loc of ce_n: signal is "R6"; --CHECK OK
+--	attribute loc of ub_n: signal is "K4"; --CHECK OK
+--	attribute loc of lb_n: signal is "K5"; --CHECK OK
+--  -- address_sram -> 22 a 0 CHECK OK (ADDR0 en DRAM desconectado) 
+--	attribute loc of address_sram: signal is "K6 D1 K3 D2 C1 C2 E2 M5 E1 F2 G4 G5 G6 G3 F1 H6 H3 J5 H2 H1 H4 J2 J1";                       
+--  -- VGA  -- CHECK OK	
 --	attribute loc of hs: signal is "T4";
 --	attribute loc of vs: signal is "U3";
 --	attribute loc of red_o: signal is "R8 T8 R9";

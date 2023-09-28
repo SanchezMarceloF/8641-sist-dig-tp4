@@ -34,6 +34,7 @@ architecture Behavioral of controlador is
 	constant coleft: signed(M-1 downto 0):= to_signed(160,M);
 	constant colright: signed(M-1 downto 0):= to_signed(490,M);
 	constant rowsup: signed(M-1 downto 0):= to_signed(10,M); --(80,M)
+    -- HARDCODEADO para la simulación
 	constant rowinf: signed(M-1 downto 0):= to_signed(410,M);
 	
 	

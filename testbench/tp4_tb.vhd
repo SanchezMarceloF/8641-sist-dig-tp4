@@ -96,6 +96,7 @@ architecture tp4_tb_arq of tp4_tb is
     constant DATA_MATCH : std_logic_vector(DATA_W-1 downto 0)
                         := std_logic_vector(to_unsigned(138,DATA_W));
     constant DATA_ROW_LEN : integer := 7;                     
+    constant SRAM_ROW_LEN : integer := 28;                     
 	
     signal clk_tb, ena_tb, rst_tb: std_logic:= '0';
     signal count_tb: std_logic_vector(4 downto 0);
@@ -121,6 +122,8 @@ architecture tp4_tb_arq of tp4_tb is
     -- para operar con archivo de datos -------------
     -- file datos  : text open read_mode is "test_files/datos.bin";
     file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
+    file datos_ram  : text open read_mode is
+        "test_files/coord_linea_ptofijo-16_ram.bin";
     signal word : std_logic_vector(7 downto 0);
     
 	
@@ -155,7 +158,7 @@ begin
                     end loop;    
                     -- reposo ---------------
                     rx_tb <= '1'; 
-                    wait for 1122 ns;
+                    wait for 4000 ns;
                 end loop;    
             end loop;    
 		end loop;
@@ -166,71 +169,59 @@ begin
 		--	"Fin de la simulacion" severity failure;
 	end process Test_uart;
 
-
---    Test_sram: process
---		variable linea: line;
---		variable ch: character:= ' ';
---		--variable aux: bit;
---	begin
---		wait until rising_edge(ena_tb);
---		while not(endfile(datos)) loop 	-- si se quiere leer de stdin se pone "input"
---			readline(datos, linea); 	-- se lee una linea del archivo de valores de prueba
---            for j in 1 to DATA_BYTE_LEN loop
---			    read(linea, ch);   -- se extrae un entero de la linea
---                word <= std_logic_vector(to_unsigned(character'pos(ch),8));
---                -- bit de inicio -------
---                rx_tb <= '0'; 
---                wait for 960 ns;
---                -- bits de datos -------
---                for i in 0 to 7 loop
---                    --word(i) <= std_logic_vector(to_unsigned(character'pos(ch),i));
---                    rx_tb <= word(i);
---                    wait for 960 ns;
---                end loop;    
---                -- reposo ---------------
---                rx_tb <= '1'; 
---                wait for 1122 ns;
---            end loop;    
---		end loop;
---
---		file_close(datos); -- cierra el archivo
---		--wait for TCK*(DELAY+1); -- se pone el +1 para poder ver los datos
---		--assert false report -- este assert se pone para abortar la simulacion
---		--	"Fin de la simulacion" severity failure;
---	end process Test_sram;
+    Test_sram: process
+		variable linea: line;
+		variable ch: character:= ' ';
+		--variable aux: bit;
+	begin
+		wait until rising_edge(ena_tb);
+		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+            for j in 1 to SRAM_ROW_LEN loop
+                for i in 1 to 3 loop
+                wait until falling_edge(oe_n_tb); 
+			    read(linea, ch);   -- se extrae un entero de la linea
+                dio_sram_tb(15 downto 8) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+			    read(linea, ch);   -- se extrae un entero de la linea
+                dio_sram_tb(7 downto 0) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+                end loop;
+            end loop;
+		end loop;
+		file_close(datos_ram); -- cierra el archivo
+	end process Test_sram;
     
 
 
 
 
---#################################################################
-     --   ::    Contador para generar datos aleatorios    ::      #         
-     --   ::    para emular comportamiento desde SRAM     ::      #
-------------------------------------------------------------------#
-    gen_data: entity work.counter                               --#
-    generic map(N => DATA_W+3)                                  --#
-    port map(                                                   --#
-        rst => rst_tb,                                          --#
-        rst_sync => '0',                                        --#
-        clk => clk_tb,                                          --#
-        ena => ena_gen_data,                                    --#
-        count => dio_sram_tb_aux                                --#
-    );                                                          --#
-    --ena_gen_data <= '1' after 119300 ns;                      --#
-    ena_gen_data <= not oe_n_tb;                                --#
-    process(dio_sram_tb_aux, ena_gen_data)                      --#
-    begin                                                       --#
-    if ena_gen_data = '1' then                                  --#
-        if dio_sram_tb_aux(DATA_W+2 downto 3) = DATA_MATCH then --#
-            dio_sram_tb <= EOF_WORD;                           --#
-        else                                                    --#
-            dio_sram_tb <= dio_sram_tb_aux(DATA_W+2 downto 3);  --#
-        end if;                                                 --#
-    else                                                        --#
-        dio_sram_tb <= (others => 'Z');                         --#
-    end if;                                                     --#
-    end process;                                                --#
---#################################################################
+----#################################################################
+--     --   ::    Contador para generar datos aleatorios    ::      #         
+--     --   ::    para emular comportamiento desde SRAM     ::      #
+--------------------------------------------------------------------#
+--    gen_data: entity work.counter                               --#
+--    generic map(N => DATA_W+3)                                  --#
+--    port map(                                                   --#
+--        rst => rst_tb,                                          --#
+--        rst_sync => '0',                                        --#
+--        clk => clk_tb,                                          --#
+--        ena => ena_gen_data,                                    --#
+--        count => dio_sram_tb_aux                                --#
+--    );                                                          --#
+--    --ena_gen_data <= '1' after 119300 ns;                      --#
+--    ena_gen_data <= not oe_n_tb;                                --#
+--    process(dio_sram_tb_aux, ena_gen_data)                      --#
+--    begin                                                       --#
+--    if ena_gen_data = '1' then                                  --#
+--        if dio_sram_tb_aux(DATA_W+2 downto 3) = DATA_MATCH then --#
+--            dio_sram_tb <= EOF_WORD;                           --#
+--        else                                                    --#
+--            dio_sram_tb <= dio_sram_tb_aux(DATA_W+2 downto 3);  --#
+--        end if;                                                 --#
+--    else                                                        --#
+--        dio_sram_tb <= (others => 'Z');                         --#
+--    end if;                                                     --#
+--    end process;                                                --#
+----#################################################################
 
 	DUT: tp4
 	generic map(COORD_W => COORD_W, --long coordenadas x, y, z.

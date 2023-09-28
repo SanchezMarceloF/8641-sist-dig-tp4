@@ -35,10 +35,10 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then --(clk’event and clk = ’ 1 ’ ) then
-			if (rst = '1') then
-				ram <= (others => (others => '0'));
-                dout_b <= (others => '0');
-			elsif (we = '1') then
+			-- if (rst = '1') then
+			--	ram <= (others => (others => '0'));
+            --    dout_b <= (others => '0');
+			if (we = '1') then
 				ram(to_integer(unsigned(addr_a))) <= din_a;
 			end if;
 			addr_a_reg <= addr_a;
