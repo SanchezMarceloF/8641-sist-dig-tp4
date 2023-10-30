@@ -24,7 +24,9 @@ entity gral_ctrl is
         data_s2f_r: in std_logic_vector(DATA_W-1 downto 0);
         addr_sram: out std_logic_vector(ADDR_W-1 downto 0);
         mem: out std_logic;
-        rw: out std_logic
+        rw: out std_logic;
+		-- a 7 segmentos
+		sal_7seg: out std_logic_vector(7 downto 0)
     );
 end gral_ctrl;
 
@@ -42,6 +44,13 @@ architecture gral_ctrl_arch of gral_ctrl is
         count : out std_logic_vector(N-1 downto 0)
     );
     end component;
+	
+	component deco_BCDa7seg is
+	port(
+	inBCD : in std_logic_vector (3 downto 0);
+	segm : out std_logic_vector (7 downto 0)
+	);
+	end component;
 
 
     -- señales ----------------------------------------------
@@ -66,8 +75,10 @@ architecture gral_ctrl_arch of gral_ctrl is
     signal estado_act, estado_sig : t_estado;
 
     -- señales para visualizar los estados en gtkwave ------------------
-    signal estado_actual        : std_logic_vector(1 downto 0) := "00";
-    signal estado_siguiente     : std_logic_vector(1 downto 0) := "00";
+	signal estado_actual        : std_logic_vector(1 downto 0) := "00";
+	signal estado_siguiente     : std_logic_vector(1 downto 0) := "00";
+	signal bcd_4aux : std_logic_vector(3 downto 0);
+	signal segm_aux : std_logic_vector(7 downto 0);
 
 begin
 
@@ -77,15 +88,15 @@ begin
  -- |                                                                         |
  -- +-------------------------------------------------------------------------+
 
-    gen_addr: counter
-    generic map(N => ADDR_W)
-    port map(
-        rst   => rst,
-        rst_sync => rst_addr_sync,
-        clk   => clk,
-        ena   => addr_tick,
-        count => addr_sram_aux 
-    );
+	gen_addr: counter
+	generic map(N => ADDR_W)
+	port map(
+		rst   => rst,
+		rst_sync => rst_addr_sync,
+		clk   => clk,
+		ena   => addr_tick,
+		count => addr_sram_aux 
+	);
 
 
  -- +-------------------------------------------------------------------------+
@@ -96,15 +107,15 @@ begin
 
     -- estados ----------------------------------------- 
 
-    estados: process(clk,rst)
+	estados: process(clk,rst)
 	begin
-	    if (rst = '1') then
-            estado_act <= REPOSO;
-        elsif rising_edge(clk) then
-	        estado_act <= estado_sig;
- 	    end if;
+		if (rst = '1') then
+		estado_act <= REPOSO;
+		elsif rising_edge(clk) then
+		estado_act <= estado_sig;
+		end if;
 	end process;
-   
+	
 	-- lógica de próximo estado -------------------------
  
     word <= data_f2s when estado_act = CARGA_DATOS else
@@ -112,35 +123,35 @@ begin
 
     prox_estado: process(estado_act, ena, rx_uart_empty, word, mem_uart)
 	begin
-        -- asignaciones por defecto
-        estado_sig <= estado_act;
-	    case estado_act is
-            when REPOSO =>
-                if ena = '1' then
-                    if rx_uart_empty = '0' then 
-                        estado_sig <= CARGA_DATOS;
-                    else
-                        estado_sig <= ROTACION;
-                    end if; 
-                end if;        
-            when CARGA_DATOS =>
-                -- acá llega al final del archivo, luego me aseguro que
-                -- se escriba en memoria leyendo el bit mem_uart
-                if (word = EOF_WORD and mem_uart= '1') then
-                    estado_sig <= REFRESH_DPR;
-                end if;        
-            when ROTACION => 
-                if (word = EOF_WORD) then
-                    estado_sig <= REFRESH_DPR;
-                end if;    
-            when REFRESH_DPR => 
-                if ena = '1' then 
-                    estado_sig <= ROTACION;
-                else 
-                    estado_sig <= REPOSO;
-                end if;    
-        end case;
-    end process;
+		-- asignaciones por defecto
+		estado_sig <= estado_act;
+		case estado_act is
+			when REPOSO =>
+				if ena = '1' then
+					if rx_uart_empty = '0' then 
+						estado_sig <= CARGA_DATOS;
+					else
+						estado_sig <= ROTACION;
+					end if; 
+				end if;        
+			when CARGA_DATOS =>
+			-- acá llega al final del archivo, luego me aseguro que
+			-- se escriba en memoria leyendo el bit mem_uart
+				if (word = EOF_WORD and mem_uart= '1') then
+					estado_sig <= REFRESH_DPR;
+				end if;        
+			when ROTACION => 
+				if (word = EOF_WORD) then
+					estado_sig <= REFRESH_DPR;
+				end if;    
+			when REFRESH_DPR => 
+				if ena = '1' then 
+					estado_sig <= ROTACION;
+				else 
+					estado_sig <= REPOSO;
+				end if;    
+		end case;
+	end process;
     
  -- +-------------------------------------------------------------------------+
  -- |                                                                         |
@@ -207,7 +218,19 @@ begin
                         "01" when estado_sig = CARGA_DATOS else    --#
                         "10" when estado_sig = ROTACION else       --#
                         "11";                                      --#
---####################################################################    
+--####################################################################
+
+	bcd_4aux <= "00" & estado_actual;
+	
+	inst_deco: deco_BCDa7seg
+	port map(
+	inBCD => bcd_4aux,
+	segm => segm_aux
+	);
+	
+	-- Salida a 7 Segmentos
+	
+	sal_7seg <= segm_aux; 
 
 end gral_ctrl_arch;    
  
