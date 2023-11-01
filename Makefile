@@ -24,7 +24,7 @@ GHDL_FLAGS  = --ieee=standard --warn-no-vital-generic
 SIMDIR = simulation
 # Simulation break condition
 #GHDL_SIM_OPT = --assert-level=error
-GHDL_SIM_OPT = --stop-time=450000ns
+GHDL_SIM_OPT = --stop-time=700000ns
 
 WAVEFORM_VIEWER = gtkwave
 # WAVEFORM_VIEWER = /C/Users/MarceloFernando/GTKWAVE/bin/gtkwave # por si no funca el Path ( WIN :( )

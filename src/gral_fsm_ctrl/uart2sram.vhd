@@ -4,28 +4,28 @@ use ieee.numeric_std.all;
 
 entity uart2sram is
     generic(
-        -- Default setting:
-        -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
-        DBIT_UART: integer:=8;     -- # data bits
-        SB_TICK_UART: integer:=16; -- # ticks for stop bits, 16/24/32
+		-- Default setting:
+		-- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
+		DBIT_UART: integer:=8;     -- # data bits
+		SB_TICK_UART: integer:=16; -- # ticks for stop bits, 16/24/32
                             --   for 1/1.5/2 stop bits
-        DVSR_UART: integer:= 163;  -- baud rate divisor
+		DVSR_UART: integer:= 163;  -- baud rate divisor
                             -- DVSR = 50M/(16*baud rate)
-        DVSR_BIT_UART: integer:=8; -- # bits of DVSR
-        FIFO_W_UART: integer:=2;    -- # addr bits of FIFO
+		DVSR_BIT_UART: integer:=8; -- # bits of DVSR
+		FIFO_W_UART: integer:=2;    -- # addr bits of FIFO
                             -- # words in FIFO=2^FIFO_W
-        DATA_W: natural := 16;
+		DATA_W: natural := 16;
 		ADDR_W: natural := 18
     );
     port(
-        clk, rst, ena : in std_logic;
-        rx : in std_logic;
-        tx : out std_logic;
-        -- a sram_ctrl
-        data_out : out std_logic_vector(DATA_W-1 downto 0);
-        mem   : out std_logic;
-        ready : in std_logic;
-        addr_tick : out std_logic
+		clk, rst, ena : in std_logic;
+		rx : in std_logic;
+		tx : out std_logic;
+		-- a sram_ctrl
+		data_out : out std_logic_vector(DATA_W-1 downto 0);
+		mem   : out std_logic;
+		ready : in std_logic;
+		addr_tick : out std_logic
     );
 end uart2sram;
 
@@ -153,38 +153,37 @@ begin
    
 	-- logica de proximo estado -------------------------
   
-    prox_estado: process(estado_act, ena, ready, rx_empty_aux, flag_ub_act)
+	prox_estado: process(estado_act, ena, ready, rx_empty_aux, flag_ub_act)
 	begin
-        estado_sig <= estado_act;
-        flag_ub_sig <= flag_ub_act;
-	    case estado_act is
-            when REPOSO =>
-                if ena = '1' and rx_empty_aux = '0' then
-                    if flag_ub_act = '0' then
-                        estado_sig <= LECTURA_UB;
-                    else 
-                        estado_sig <= ESCRITURA;
-                        flag_ub_sig <= '0';
-                    end if;
-                end if;
-            when LECTURA_UB => -- permanece 1 ciclo
-                estado_sig <= REPOSO;
-                flag_ub_sig <= '1';
-            when ESCRITURA => -- permanece 1 ciclo
-                estado_sig <= LIMPIEZA_UART;
-            when LIMPIEZA_UART => -- permanece 1 ciclo
-                estado_sig <= ESPERA_SRAM;
-            when ESPERA_SRAM => 
-                if ready = '1' then
-                    if rx_empty_aux = '1' then -- buffer uart vacío
-                        estado_sig <= REPOSO;
-                    else  -- buffer uart con datos    
-                        estado_sig <= LECTURA_UB;
-                    end if;
-                end if;    
-        end case;
-    end process;
-    
+		estado_sig <= estado_act;
+		flag_ub_sig <= flag_ub_act;
+		case estado_act is
+		when REPOSO =>
+			if ena = '1' and rx_empty_aux = '0' then
+				if flag_ub_act = '0' then
+					estado_sig <= LECTURA_UB;
+				else 
+					estado_sig <= ESCRITURA;
+					flag_ub_sig <= '0';
+				end if;
+			end if;
+		when LECTURA_UB => -- permanece 1 ciclo
+			estado_sig <= REPOSO;
+			flag_ub_sig <= '1';
+		when ESCRITURA => -- permanece 1 ciclo
+			estado_sig <= LIMPIEZA_UART;
+		when LIMPIEZA_UART => -- permanece 1 ciclo
+			estado_sig <= ESPERA_SRAM;
+		when ESPERA_SRAM => 
+			if ready = '1' then
+				if rx_empty_aux = '1' then -- buffer uart vacío
+					estado_sig <= REPOSO;
+				else  -- buffer uart con datos    
+					estado_sig <= LECTURA_UB;
+				end if;
+			end if;    
+		end case;
+	end process;
 
  -- +-------------------------------------------------------------------------+
  -- |                                                                         |
@@ -220,21 +219,21 @@ begin
     addr_tick <= addr_tick_aux;
 
 
---####################################################################
-    -- Señales para mostrar los estados en gktwave ------------------#
-                                                                   --#
-    estado_actual    <= "000" when estado_act = REPOSO else        --#
-                        "001" when estado_act = LECTURA_UB else    --# 
-                        "010" when estado_act = ESCRITURA else     --# 
-                        "011" when estado_act = LIMPIEZA_UART else --#
-                        "100";                                     --#
-                                                                   --#
-    estado_siguiente <= "000" when estado_sig = REPOSO else        --#
-                        "001" when estado_sig = LECTURA_UB else    --# 
-                        "010" when estado_sig = ESCRITURA else     --# 
-                        "011" when estado_sig = LIMPIEZA_UART else --#
-                        "100";                                     --#
---################################################################
+--#########################################################################
+    -- Señales para mostrar los estados en gktwave ----------------------#
+                                                           --#        --#
+	estado_actual  	<= 	"000" when estado_act = REPOSO else	-- 0	--#
+						"001" when estado_act = LECTURA_UB else-- 1    --# 
+						"010" when estado_act = ESCRITURA else -- 2    --# 
+						"011" when estado_act = LIMPIEZA_UART else	-- 3--#
+						"100";             -- ESPERA_SRAM      	-- 4--#
+                                                           --#        --#
+	estado_siguiente <=	"000" when estado_sig = REPOSO else        	--#
+						"001" when estado_sig = LECTURA_UB else    	--# 
+						"010" when estado_sig = ESCRITURA else     	--# 
+						"011" when estado_sig = LIMPIEZA_UART else 	--#
+						"100";                                  	--#
+--#########################################################################
 
 end uart2sram_arch;    
  

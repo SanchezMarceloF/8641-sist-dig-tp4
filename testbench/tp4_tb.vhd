@@ -6,23 +6,23 @@ use std.textio.all;
 
 -- declaracion de entidad
 entity tp4_tb is
-	generic(COORD_W: integer:= 13;  --long coordenadas x, y, z.
-			ANG_W: integer:= 15;    --long angulos de rotacion
-			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
-	        DATA_DP_W: natural:= 1;
-            -- UART -- Default setting:
-            -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
-            DBIT_UART: integer:=8;     -- # data bits
-            SB_TICK_UART: integer:=16; -- # ticks for stop bits, 16/24/32
-                            --   for 1/1.5/2 stop bits
-            DVSR_UART: integer:= 3;  -- baud rate divisor
-                            -- DVSR = 50M/(16*baud rate)
-            DVSR_BIT_UART: integer:=8; -- # bits of DVSR
-            FIFO_W_UART: integer:=2;    -- # addr bits of FIFO
-                            -- # words in FIFO=2^FIFO_W
-            -- SRAM externa ----------
-            DATA_W: natural := 16;
-		    ADDR_W: natural := 23
+	generic(COORD_W: integer:= 13;		--long coordenadas x, y, z.
+			ANG_W: integer:= 15;		--long angulos de rotacion
+			ADDR_DP_W: integer:= 9;		--long direcciones a dual port RAM
+			DATA_DP_W: natural:= 1;
+			-- UART -- Default setting:
+			-- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
+			DBIT_UART: integer:=8;    	-- # data bits
+			SB_TICK_UART: integer:=16; 	-- # ticks for stop bits, 16/24/32
+										--   for 1/1.5/2 stop bits
+			DVSR_UART: integer:= 3;  	-- baud rate divisor
+										-- DVSR = 50M/(16*baud rate)
+			DVSR_BIT_UART: integer:=8; 	-- # bits of DVSR
+			FIFO_W_UART: integer:=2;   -- # addr bits of FIFO
+										-- # words in FIFO=2^FIFO_W
+			-- SRAM externa ----------
+			DATA_W: natural := 16;
+			ADDR_W: natural := 23
     );
 	end;
 
@@ -99,8 +99,8 @@ architecture tp4_tb_arq of tp4_tb is
                       :="1111111111111111";
 	constant DATA_MATCH : std_logic_vector(DATA_W-1 downto 0)
 						:= std_logic_vector(to_unsigned(138,DATA_W));
-	constant DATA_ROW_LEN : integer := 4;                   
-	constant SRAM_ROW_LEN : integer := 12;                     
+	constant DATA_ROW_LEN : integer := 7;                   
+	-- constant SRAM_ROW_LEN : integer := 12;                     
 	
 	signal clk_tb, ena_tb, rst_tb: std_logic:= '0';
 	signal count_tb: std_logic_vector(4 downto 0);
@@ -128,8 +128,8 @@ architecture tp4_tb_arq of tp4_tb is
     -- para operar con archivo de datos -------------
     -- file datos  : text open read_mode is "test_files/datos.bin";
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
-	file datos_ram  : text open read_mode is
-        "test_files/coord_linea_ptofijo-16_ram.bin";
+	--file datos_ram  : text open read_mode is
+   --     "test_files/coord_linea_ptofijo-16_ram.bin";
 	signal word : std_logic_vector(7 downto 0);
     
 	
@@ -178,27 +178,27 @@ begin
 		--	"Fin de la simulacion" severity failure;
 	end process Test_uart;
 
-	Test_sram: process
-		variable linea: line;
-		variable ch: character:= ' ';
-		--variable aux: bit;
-	begin
-		wait until rising_edge(ena_tb);
-		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
-			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
-			for j in 1 to SRAM_ROW_LEN loop
-				for i in 1 to 3 loop
-					wait until falling_edge(oe_n_tb); 
-					read(linea, ch);   -- se extrae un entero de la linea
-					dio_sram_tb(15 downto 8) <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					read(linea, ch);   -- se extrae un entero de la linea
-					dio_sram_tb(7 downto 0) <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					report "dio_sram: " & integer'image(to_integer(unsigned(dio_sram_tb)));
-				end loop;
-			end loop;
-		end loop;
-		file_close(datos_ram); -- cierra el archivo
-	end process Test_sram;
+	-- Test_sram: process
+		-- variable linea: line;
+		-- variable ch: character:= ' ';
+		-- --variable aux: bit;
+	-- begin
+		-- wait until rising_edge(ena_tb);
+		-- while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			-- readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+			-- for j in 1 to SRAM_ROW_LEN loop
+				-- for i in 1 to 3 loop
+					-- wait until falling_edge(oe_n_tb); 
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- dio_sram_tb(15 downto 8) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- dio_sram_tb(7 downto 0) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- report "dio_sram: " & integer'image(to_integer(unsigned(dio_sram_tb)));
+				-- end loop;
+			-- end loop;
+		-- end loop;
+		-- file_close(datos_ram); -- cierra el archivo
+	-- end process Test_sram;
     
 
 

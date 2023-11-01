@@ -158,51 +158,72 @@ architecture tp4_arq of tp4 is
         addr_tick : out std_logic
     );
     end component;
-
-    component sram2cordic is
-    generic(
-        COORD_W: natural := 13;
-        DATA_W: natural := 16;
+	
+	component reg_temporal is
+	generic(
+		COORD_W: natural := 13;
+		DATA_W: natural := 16;
 		ADDR_W: natural := 18
-    );
-    port(
-        clk, rst, ena : in std_logic;
-        -- a dual port ram
-        wr_dpr_tick: out std_logic;
-        -- hacia/desde rotador 3d
-        flag_fin: in std_logic;
-        x_coord: out std_logic_vector(COORD_W-1 downto 0);
-        y_coord: out std_logic_vector(COORD_W-1 downto 0);
-        z_coord: out std_logic_vector(COORD_W-1 downto 0);
-        -- a sram_ctrl
-        data_in: in std_logic_vector(DATA_W-1 downto 0);
-        mem: out std_logic;
-        ready: in std_logic;
-        ena_count_tick: out std_logic
-    );
-    end component;
+	);
+	port(
+		clk, rst, ena: in std_logic;
+		-- a dual port ram
+		wr_dpr_tick: out std_logic;
+		-- hacia/desde rotador 3d
+		x_coord: out std_logic_vector(COORD_W-1 downto 0);
+		y_coord: out std_logic_vector(COORD_W-1 downto 0);
+		z_coord: out std_logic_vector(COORD_W-1 downto 0);
+		-- a uart
+		data_in: in std_logic_vector(DATA_W-1 downto 0);
+		mem: in std_logic;
+		ready_uart: out std_logic
+	);
+	end component;
+
+    -- component sram2cordic is
+    -- generic(
+        -- COORD_W: natural := 13;
+        -- DATA_W: natural := 16;
+		-- ADDR_W: natural := 18
+    -- );
+    -- port(
+        -- clk, rst, ena : in std_logic;
+        -- -- a dual port ram
+        -- wr_dpr_tick: out std_logic;
+        -- -- hacia/desde rotador 3d
+        -- flag_fin: in std_logic;
+        -- x_coord: out std_logic_vector(COORD_W-1 downto 0);
+        -- y_coord: out std_logic_vector(COORD_W-1 downto 0);
+        -- z_coord: out std_logic_vector(COORD_W-1 downto 0);
+        -- -- a sram_ctrl
+        -- data_in: in std_logic_vector(DATA_W-1 downto 0);
+        -- mem: out std_logic;
+        -- ready: in std_logic;
+        -- ena_count_tick: out std_logic
+    -- );
+    -- end component;
  
-    component sram_ctrl is
-    generic(DATA_W: natural := 16;
-			ADDR_W: natural := 18);
-    port(
-        clk, reset: in std_logic;
-        -- to/from main system
-        mem: in std_logic;
-        rw: in std_logic;
-        addr: in std_logic_vector(ADDR_W-1 downto 0);
-        data_f2s: in std_logic_vector(DATA_W-1 downto 0);
-        ready: out std_logic;
-        data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
-        ce_in_n, lb_in_n, ub_in_n: in std_logic; 
-        -- to/from chip
-        ad: out std_logic_vector(ADDR_W-1 downto 0);
-        we_n, oe_n: out std_logic;
-        -- SRAM chip a
-        dio_a: inout std_logic_vector(DATA_W-1 downto 0);
-        ce_a_n, ub_a_n, lb_a_n: out std_logic
-    );
-    end component;
+    -- component sram_ctrl is
+    -- generic(DATA_W: natural := 16;
+			-- ADDR_W: natural := 18);
+    -- port(
+        -- clk, reset: in std_logic;
+        -- -- to/from main system
+        -- mem: in std_logic;
+        -- rw: in std_logic;
+        -- addr: in std_logic_vector(ADDR_W-1 downto 0);
+        -- data_f2s: in std_logic_vector(DATA_W-1 downto 0);
+        -- ready: out std_logic;
+        -- data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
+        -- ce_in_n, lb_in_n, ub_in_n: in std_logic; 
+        -- -- to/from chip
+        -- ad: out std_logic_vector(ADDR_W-1 downto 0);
+        -- we_n, oe_n: out std_logic;
+        -- -- SRAM chip a
+        -- dio_a: inout std_logic_vector(DATA_W-1 downto 0);
+        -- ce_a_n, ub_a_n, lb_a_n: out std_logic
+    -- );
+    -- end component;
 
 	component generador_direcciones is
 	
@@ -342,7 +363,6 @@ begin
 		ena => '1', -- que cuente siempre                 --#
 		count => count_3d                                 --#
 	);                                                    --#
-	
 	-- genero un tick cada 32 ciclos emulando el rotador 3D #
 	process(count_3d)                                     --# 
 	begin                                                 --#
@@ -362,80 +382,100 @@ begin
  -- |                                                                         |
  -- +-------------------------------------------------------------------------+
 
-    sram_ctrl_inst: sram_ctrl
-    generic map(
-        DATA_W => DATA_W,
-		ADDR_W => ADDR_W
-    )
-    port map(
-        clk => clk, reset => rst,
-        -- to/from main system
-        mem         => mem_wire,
-        rw          => rw_wire,
-        addr        => addr_sram_wire,
-        data_f2s    => data_f2s_wire,
-        ready       => ready_wire,
-        data_s2f_r  => data_s2f_r_wire,
-        data_s2f_ur => data_s2f_ur_wire,
-        ce_in_n     => '0',
-        lb_in_n     => '0',
-        ub_in_n     => '0',
-        -- to/from chip
-        ad      => address_sram,          
-        we_n    => we_n,
-        oe_n    => oe_n,
-        -- SRAM chip a
-        dio_a   => dio_sram,
-        ce_a_n  => ce_n,
-        ub_a_n  => ub_n,
-        lb_a_n  => lb_n 
-    );
+    -- sram_ctrl_inst: sram_ctrl
+    -- generic map(
+        -- DATA_W => DATA_W,
+		-- ADDR_W => ADDR_W
+    -- )
+    -- port map(
+        -- clk => clk, reset => rst,
+        -- -- to/from main system
+        -- mem         => mem_wire,
+        -- rw          => rw_wire,
+        -- addr        => addr_sram_wire,
+        -- data_f2s    => data_f2s_wire,
+        -- ready       => ready_wire,
+        -- data_s2f_r  => data_s2f_r_wire,
+        -- data_s2f_ur => data_s2f_ur_wire,
+        -- ce_in_n     => '0',
+        -- lb_in_n     => '0',
+        -- ub_in_n     => '0',
+        -- -- to/from chip
+        -- ad      => address_sram,          
+        -- we_n    => we_n,
+        -- oe_n    => oe_n,
+        -- -- SRAM chip a
+        -- dio_a   => dio_sram,
+        -- ce_a_n  => ce_n,
+        -- ub_a_n  => ub_n,
+        -- lb_a_n  => lb_n 
+    -- );
 
     uart2sram_inst: uart2sram
     generic map(
-        -- Default setting:
-        -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
-        DBIT_UART => DBIT_UART,
-        SB_TICK_UART => SB_TICK_UART,
-        DVSR_UART => DVSR_UART,
-        DVSR_BIT_UART => DVSR_BIT_UART,
-        FIFO_W_UART => FIFO_W_UART,
-        DATA_W => DATA_W,
+		-- Default setting:
+		-- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
+		DBIT_UART => DBIT_UART,
+		SB_TICK_UART => SB_TICK_UART,
+		DVSR_UART => DVSR_UART,
+		DVSR_BIT_UART => DVSR_BIT_UART,
+		FIFO_W_UART => FIFO_W_UART,
+		DATA_W => DATA_W,
 		ADDR_W => ADDR_W
     )
     port map(
-        clk => clk, rst => rst, ena => ena_uart2sram_wire,
-        rx => rx,
-        tx => tx,
-        -- a sram_ctrl
-        data_out => data_f2s_wire,
-        mem => mem_uart_wire,
-        ready => ready_wire, 
-        addr_tick => addr_tick_uart_wire
+		clk => clk, rst => rst, ena => ena_uart2sram_wire,
+		rx => rx,
+		tx => tx,
+		-- a sram_ctrl
+		data_out => data_f2s_wire,
+		mem => mem_uart_wire,
+		ready => ready_wire, 
+		addr_tick => addr_tick_uart_wire
     );
-
-    sram2cordic_inst: sram2cordic
-    generic map(
-        COORD_W => COORD_W,
-        DATA_W => DATA_W,
+	
+	reg_temporal_inst: reg_temporal
+	generic map(
+		COORD_W => COORD_W,
+		DATA_W => DATA_W,
 		ADDR_W => ADDR_W
-    )
-    port map(
-        clk => clk, rst => rst,
-        ena => ena_sram2cordic_wire,
+	)
+	port map(
+        clk => clk, rst => rst, ena => ena,
         -- a dual port ram
         wr_dpr_tick => wr_dpr_tick_wire,
         -- hacia/desde rotador 3d
-        flag_fin => flag_fin_3d,
         x_coord => x_coord_wire,
         y_coord => y_coord_wire,
         z_coord => z_coord_wire,
-        -- a sram_ctrl
-        data_in => data_s2f_r_wire,
-        mem => mem_cordic_wire,
-        ready => ready_wire,
-        ena_count_tick => addr_tick_cordic_wire 
-    );
+        -- a uart
+        data_in => data_f2s_wire,
+        mem => mem_uart_wire,
+        ready_uart => ready_wire
+	);
+
+    -- sram2cordic_inst: sram2cordic
+    -- generic map(
+        -- COORD_W => COORD_W,
+        -- DATA_W => DATA_W,
+		-- ADDR_W => ADDR_W
+    -- )
+    -- port map(
+        -- clk => clk, rst => rst,
+        -- ena => ena_sram2cordic_wire,
+        -- -- a dual port ram
+        -- wr_dpr_tick => wr_dpr_tick_wire,
+        -- -- hacia/desde rotador 3d
+        -- flag_fin => flag_fin_3d,
+        -- x_coord => x_coord_wire,
+        -- y_coord => y_coord_wire,
+        -- z_coord => z_coord_wire,
+        -- -- a sram_ctrl
+        -- data_in => data_s2f_r_wire,
+        -- mem => mem_cordic_wire,
+        -- ready => ready_wire,
+        -- ena_count_tick => addr_tick_cordic_wire 
+    -- );
     
     gral_ctrl_inst: gral_ctrl
     generic map(
@@ -526,11 +566,12 @@ begin
    vs <= vs_aux;
 
  	-- a SRAM externa --------------------------
-	adv <= '0';
-	mt_clk <= '0';
-	-- we_n, oe_n <= (sram_ctrl);
-	-- ce_n, ub_n, lb_n <= ce_a_n, ub_a_n, lb_a_n (sram_ctrl);
-	-- address_sram <= ad (sram_ctrl);
-	-- dio_sram <= dio_a (sram_ctrl);
+	adv <= '1';
+	mt_clk <= '1';
+	we_n <= '1';
+	oe_n <= '1';
+	dio_sram <= (others => '0');
+	ce_n <= '1'; ub_n <= '1'; lb_n <= '1';
+	address_sram <= (others => '0');
 	
 end;
