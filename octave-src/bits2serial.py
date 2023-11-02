@@ -11,7 +11,8 @@ print(ser)
 
 
 with open('../test_files/coordenadas_ptofijo-16.txt') as infile:
-#	with open('../test_files/coord_linea_ptofijo-16.txt') as infile:
+#with open('../test_files/coord_linea_ptofijo-16.txt') as infile:
+#with open('../test_files/coord_seno_ptofijo-16.txt') as infile:
     for line in infile:
         print(f'line\t\t: {line}, type : {type(line)}')
         # Initialize a binary string

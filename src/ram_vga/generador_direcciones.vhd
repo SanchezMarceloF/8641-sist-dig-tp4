@@ -65,7 +65,7 @@ begin
 
 	--sumo 160 para eliminar los numeros negativos.
 	xsum: sumador generic map (L) port map(x_mul, BIAS, '0', '0', addrx_aux, open);
-	ysum: sumador generic map (L) port map(y_mul, BIAS, '0', '0', addry_aux, open);
+	ysum: sumador generic map (L) port map(BIAS, y_mul, '1', '0', addry_aux, open);
 
 
 	--Salidas
