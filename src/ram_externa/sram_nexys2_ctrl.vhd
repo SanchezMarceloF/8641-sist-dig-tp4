@@ -42,11 +42,11 @@ architecture arch of sram_ctrl is
 	end component;
 
    --constant N: integer:= 10;	--limite contador
-   constant C_WR2: integer:= 3;	--cant ciclos estado wr2
+   constant C_WR2: integer:= 4;	--cant ciclos estado wr2
 	
    type state_type is (idle, rd1, rd2, wr1, wr2, wr3);
    signal state_reg, state_next: state_type;
-   constant RD_CLKS: integer:= 3; -- contador para lectura 
+   constant RD_CLKS: integer:= 4; -- contador para lectura 
    signal data_f2s_reg, data_f2s_next: std_logic_vector(DATA_W-1 downto 0);
    signal data_s2f_reg, data_s2f_next: std_logic_vector(DATA_W-1 downto 0);
    signal count_reg, count_next: unsigned(1 downto 0);
@@ -88,89 +88,90 @@ begin
 	);
 	
    
-   -- next-state logic
-   process(state_reg,count_reg,mem,rw,dio_a,addr,data_f2s,
-           data_f2s_reg,data_s2f_reg,addr_reg, flag_count)
-      --variable count: integer := 0;
-   begin
-      addr_next <= addr_reg;
-      data_f2s_next <= data_f2s_reg;
-      data_s2f_next <= data_s2f_reg;
-      count_next <= count_reg;
-      ready <= '0';
-      rst_count <= '1';
-      case state_reg is
-         when idle =>
-            if mem='0' then
-               state_next <= idle;
-            else
-               addr_next <= addr;
-               if rw='0' then --write
-                  state_next <= wr1;
-                  data_f2s_next <= data_f2s;
-               else -- read
-                  state_next <= rd1;
-               end if;
-            end if;
-            ready <= '1';
-         when wr1 =>
-		    state_next <= wr2;
-            rst_count <= '0'; 
-		 when wr2 =>
-            rst_count <= '0';
-			if flag_count = '1' then
-                state_next <= wr3;
-			else
+	-- next-state logic
+	process(state_reg,count_reg,mem,rw,dio_a,addr,data_f2s,
+			data_f2s_reg,data_s2f_reg,addr_reg, flag_count)
+	--variable count: integer := 0;
+	begin
+		addr_next <= addr_reg;
+		data_f2s_next <= data_f2s_reg;
+		data_s2f_next <= data_s2f_reg;
+		count_next <= count_reg;
+		ready <= '0';
+		rst_count <= '1';
+		case state_reg is
+			when idle =>
+				if mem='0' then
+					state_next <= idle;
+				else
+					addr_next <= addr;
+					if rw='0' then --write
+						state_next <= wr1;
+						data_f2s_next <= data_f2s;
+					else -- read
+						state_next <= rd1;
+					end if;
+				end if;
+				ready <= '1';
+			when wr1 =>
 				state_next <= wr2;
-			end if;
-         when wr3 =>
-            state_next <= idle;
-         when rd1 =>
-            if count_reg = RD_CLKS-1 then  
-               state_next <= rd2;
-               count_next <= (others => '0');
-            else   
-			   state_next <= rd1;
-               count_next <= count_reg+1;
-           end if;   
-         when rd2 =>      
-            data_s2f_next <= dio_a;
-            state_next <= idle;
-      end case;
-   end process;
+				rst_count <= '0'; 
+			when wr2 =>
+				rst_count <= '0';
+				if flag_count = '1' then
+					state_next <= wr3;
+				else
+					state_next <= wr2;
+				end if;
+			when wr3 =>
+				state_next <= idle;
+			when rd1 =>
+				if count_reg = RD_CLKS-1 then  
+					state_next <= rd2;
+					count_next <= (others => '0');
+				else   
+					state_next <= rd1;
+					count_next <= count_reg+1;
+				end if;   
+			when rd2 =>      
+				data_s2f_next <= dio_a;
+				state_next <= idle;
+		end case;
+	end process;
    
-   -- next-state logic
-   process(state_next)
-   begin
-      tri_buf <= '1';  -- signals are active low
-      we_buf <= '1';
-      oe_buf <= '1';
-      case state_next is
-         when idle =>
-         when wr1 =>
-            tri_buf <= '0';
-            --we_buf <= '0';
-		 when wr2 =>
-            tri_buf <= '0';
-            we_buf <= '0';
-         when wr3 =>
-            tri_buf <= '0';
-         when rd1 =>
-            oe_buf <= '0';
-         when rd2 =>
-            oe_buf <= '0';
-      end case;
-   end process;
-   -- to main system
-   data_s2f_r <= data_s2f_reg;
-   data_s2f_ur <= dio_a;
-   -- to sram
-   we_n <= we_reg;
-   oe_n <= oe_reg;
-   ad <= addr_reg;
-   --i/o for SRAM chip a
-   ce_a_n <= ce_in_n;
-   ub_a_n <= ub_in_n;
-   lb_a_n <= lb_in_n;
-   dio_a <= data_f2s_reg when tri_reg='0' else (others=>'Z');
+	-- next-state logic
+	process(state_next)
+	begin
+		tri_buf <= '1';  -- signals are active low
+		we_buf <= '1';
+		oe_buf <= '1';
+		case state_next is
+		when idle =>
+		when wr1 =>
+			tri_buf <= '0';
+			--we_buf <= '0';
+		when wr2 =>
+			tri_buf <= '0';
+			we_buf <= '0';
+		when wr3 =>
+			tri_buf <= '0';
+		when rd1 =>
+			oe_buf <= '0';
+		when rd2 =>
+			oe_buf <= '0';
+		end case;
+	end process;
+	
+	-- to main system
+	data_s2f_r <= data_s2f_reg;
+	data_s2f_ur <= dio_a;
+	-- to sram
+	we_n <= we_reg;
+	oe_n <= oe_reg;
+	ad <= addr_reg;
+	--i/o for SRAM chip a
+	ce_a_n <= ce_in_n;
+	ub_a_n <= ub_in_n;
+	lb_a_n <= lb_in_n;
+	dio_a <= data_f2s_reg when tri_reg='0' else (others=>'Z');
 end arch;

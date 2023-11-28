@@ -56,7 +56,7 @@ architecture sram2cordic_arch of sram2cordic is
     -- para SRAM externa
     signal mem_aux       : std_logic := '0';
     -- variables de estado ---------------------------
-    type t_estado is (REPOSO, LECTURA_SRAM, SHIFT_REG, ESPERA_SRAM,
+    type t_estado is (REPOSO, LECTURA_SRAM, SHIFT_REG, ESPERA_SRAM, ESPERA,
                       ESCRITURA_DPR, ESPERA_CORDIC);
     signal estado_act, estado_sig : t_estado;
     signal zcount_act, zcount_sig: unsigned(1 downto 0);
@@ -117,12 +117,14 @@ begin
 					estado_sig <= REPOSO;
 					zcount_sig <= (others => '0');
 				elsif (zcount_act = FLAG_Z-1) then
-					estado_sig <= ESCRITURA_DPR;
+					estado_sig <= ESPERA;
 					zcount_sig <= (others => '0');
 				else    
 					estado_sig <= LECTURA_SRAM;
 					zcount_sig <= zcount_act + 1;
-				end if;        
+				end if;
+			when ESPERA => -- duración 1 ciclo
+				estado_sig <= ESCRITURA_DPR;
 			when ESCRITURA_DPR => -- duración 1 ciclo
 				-- if (zcount_act = FLAG_DPR-1) then
 					-- estado_sig <= ESPERA_CORDIC;
@@ -158,9 +160,10 @@ begin
 				wr_reg_tick <= '1';
 				ena_count_aux <= '1';
 			when ESPERA_SRAM =>
+			when ESPERA =>
 			when ESCRITURA_DPR =>
-			when ESPERA_CORDIC =>
 				wr_dpr_tick_aux <= '1';
+			when ESPERA_CORDIC =>
 		end case;
 	end process;
 
@@ -180,16 +183,16 @@ begin
                         "001" when estado_act = LECTURA_SRAM else  --#
                         "010" when estado_act = ESPERA_SRAM else --#
                         "011" when estado_act = SHIFT_REG else  --#
-                        "100" when estado_act = ESCRITURA_DPR else --#
-                        "101" when estado_act = ESPERA_CORDIC else --#
-                        "111";                                     --#
+                        "100" when estado_act = ESPERA else --#
+                        "101" when estado_act = ESCRITURA_DPR else --#
+                        "111"; -- ESPERA CORDIC                     --#
                                                                    --#
     estado_siguiente <= "000" when estado_sig = REPOSO else        --#
                         "001" when estado_sig = LECTURA_SRAM else  --#
                         "010" when estado_sig = ESPERA_SRAM else --#
                         "011" when estado_sig = SHIFT_REG else  --#
-                        "100" when estado_sig = ESCRITURA_DPR else --#
-                        "101" when estado_sig = ESPERA_CORDIC else --#
+                        "100" when estado_sig = ESPERA else --#
+                        "101" when estado_sig = ESCRITURA_DPR else --#
                         "111";                                     --#  
 --####################################################################    
 

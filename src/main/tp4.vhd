@@ -43,7 +43,7 @@ entity tp4 is
 		pulsadores: in std_logic_vector(5 downto 0);
 		button: in std_logic;
 		-- a SRAM externa --------------------------
-		adv, mt_clk : out std_logic;
+		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
 		dio_sram : inout std_logic_vector(DATA_W-1 downto 0);
 		ce_n, ub_n, lb_n : out std_logic;
@@ -78,6 +78,7 @@ entity tp4 is
 --  -- SRAM externa
 --	attribute loc of adv: signal is "J4"; -- CHECK OK
 --	attribute loc of mt_clk: signal is "H5"; -- CHECK OK
+--	attribute loc of mt_cre: signal is "P7"; -- CHECK OK
 --	attribute loc of we_n: signal is "N7"; -- CHECK OK
 --	attribute loc of oe_n: signal is "T2"; -- CHECK OK
 --  -- dio_sram CHECK OK
@@ -523,11 +524,12 @@ begin
 	-- grn_o <= red_o(vga_ctrl)
 	blu_o <= blu_aux; ---CAMBIAR
 	hs <= hs_aux;
-   vs <= vs_aux;
+	vs <= vs_aux;
 
  	-- a SRAM externa --------------------------
 	adv <= '0';
 	mt_clk <= '0';
+	mt_cre <= '0';
 	-- we_n, oe_n <= (sram_ctrl);
 	-- ce_n, ub_n, lb_n <= ce_a_n, ub_a_n, lb_a_n (sram_ctrl);
 	-- address_sram <= ad (sram_ctrl);
