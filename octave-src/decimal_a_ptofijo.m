@@ -6,11 +6,17 @@ function ret = decimal_a_ptofijo (N, M, x)
  %x decimal a convertir
   
   if (x<0)
-    y = x*(2^M)+2^(N);
+	% le sumo 2^N si es negativo porque dec2bin solo acepta numeros
+    % positivos	
+    y = x*(2^M)+2^(M+1);
   else  
     y = x*(2^M);
   endif
+  
+  if (y >= (2**N))
+	    ret = dec2bin(0,N);
+  else	  
+      ret = dec2bin(floor(y),N);
+  endif
 
-  ret = dec2bin(floor(y),N);
- 
 endfunction

@@ -1,0 +1,94 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Thu Jun  9 20:33:25 2022
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/simulation/sram2cordic_tb.sav"
+[timestart] 0
+[size] 1280 996
+[pos] 1188 0
+*-29.350887 210000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] sram2cordic_tb.
+[treeopen] sram2cordic_tb.dut.
+[sst_width] 223
+[signals_width] 266
+[sst_expanded] 1
+[sst_vpaned_height] 217
+@28
+sram2cordic_tb.clk_tb
+sram2cordic_tb.rst_tb
+sram2cordic_tb.ena_tb
+@200
+-
+@28
+sram2cordic_tb.flag_fin_tb
+@200
+-
+-Señales a SRAM externa
+@28
+sram2cordic_tb.we_n_tb
+sram2cordic_tb.oe_n_tb
+@24
+sram2cordic_tb.ad_tb[17:0]
+@28
+sram2cordic_tb.ce_a_n_tb
+sram2cordic_tb.ub_a_n_tb
+sram2cordic_tb.lb_a_n_tb
+@22
+[color] 1
+sram2cordic_tb.dio_a_tb[15:0]
+@200
+-
+-Estados en sram2cordic
+@24
+[color] 2
+sram2cordic_tb.dut.estado_actual[2:0]
+[color] 2
+sram2cordic_tb.dut.estado_siguiente[2:0]
+[color] 3
+sram2cordic_tb.dut.zcount_act[1:0]
+[color] 3
+sram2cordic_tb.dut.zcount_sig[1:0]
+@28
+[color] 6
+sram2cordic_tb.dut.mem_aux
+sram2cordic_tb.dut.ready_aux
+@22
+[color] 1
+sram2cordic_tb.dut.data_s2f_r_aux[15:0]
+@28
+[color] 6
+sram2cordic_tb.dut.wr_reg_tick
+@200
+-
+-Señales a Rotador 3D
+@28
+sram2cordic_tb.wr_dpr_tick_tb
+@22
+[color] 1
+sram2cordic_tb.dut.coord_aux[12:0]
+[color] 3
+sram2cordic_tb.z_coord_tb[12:0]
+[color] 3
+sram2cordic_tb.y_coord_tb[12:0]
+[color] 3
+sram2cordic_tb.x_coord_tb[12:0]
+@200
+-
+-nexys2_sram_ctrl
+@28
+sram2cordic_tb.dut.sram_ctrl_inst.ready
+sram2cordic_tb.dut.sram_ctrl_inst.clk
+sram2cordic_tb.dut.sram_ctrl_inst.mem
+@22
+sram2cordic_tb.dut.sram_ctrl_inst.data_s2f_reg[15:0]
+@28
+sram2cordic_tb.dut.sram_ctrl_inst.oe_n
+@23
+sram2cordic_tb.dut.sram_ctrl_inst.ad[17:0]
+@22
+sram2cordic_tb.dut.sram_ctrl_inst.addr[17:0]
+@24
+sram2cordic_tb.dut.sram_ctrl_inst.dio_a[15:0]
+[pattern_trace] 1
+[pattern_trace] 0

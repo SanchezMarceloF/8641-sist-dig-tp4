@@ -6,6 +6,7 @@ entity counter is
     generic (N : natural := 8);
     port(
         rst : in std_logic;
+        rst_sync : in std_logic;
         clk : in std_logic;
         ena : in std_logic;
         count : out std_logic_vector(N-1 downto 0)
@@ -25,7 +26,9 @@ begin
         if rst='1' then
             aux_count <= (others => '0');
         elsif clk = '1' and clk'event then
-            if ena = '1' then
+            if rst_sync = '1' then
+                aux_count <= (others => '0');
+            elsif ena = '1' then
                 aux_count <= aux_count + 1;
             end if;
         end if;

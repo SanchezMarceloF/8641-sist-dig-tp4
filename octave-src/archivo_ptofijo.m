@@ -1,17 +1,39 @@
-close all
-clear all
-clc
+function archivo_ptofijo(file, ROW, COL, N_ROWS)
 
-datos = dlmread('coordenadas.txt', '\t', 5, 0); 
+  close all
+  %clear all
+  clc
 
-%res0 = valores_medios (datos(1:end,3), datos(1:end,4), datos(1:end,2));
-M = 13;   %longitud del numero
-N = 11;   %numero de decimales
+  %datos = dlmread('../files/coordenadas.txt', '\t', 5, 0);
+  datos = dlmread(file, '\t', ROW, COL);
 
-for i=1 : 11946
-  for j=0 : 2
-    datos_ptofijo(i , (j*M+1+j):((j+1)*M)+j) = decimal_a_ptofijo(M, N, datos(i, j+1));
+  N = 16;   %longitud del numero
+  M = 12;   %numero de decimales
+  %N_ROWS = 11946;
+
+  for i=1 : N_ROWS 
+    for j=0 : 2
+      datos_ptofijo(i , (j*N+1):((j+1)*N)) = decimal_a_ptofijo(N, M, datos(i, j+1));
+    endfor
   endfor
-endfor
- 
-dlmwrite('coordenadas_ptofijo.txt', datos_ptofijo);
+  % agregado del fin de archivo
+  datos_ptofijo(N_ROWS+1, 1:N*3) = dec2bin((2^(N*3))-1);
+
+  % salida en punto fijo
+  datos_ptofijo
+  % salida en decimal
+  for i=1 : N_ROWS+1 
+    for j=0 : 2
+     result = bin2dec(num2str(datos_ptofijo(i , (j*N+1):((j+1)*N))));
+    printf("%i\t",result); 
+    endfor
+    printf("\n");
+  endfor
+
+  % guarda en archivo
+  filename =  file(1:length(file)-4);
+  printf("output file: ");
+  output = [filename "_ptofijo-16.txt"]
+  dlmwrite(output,   datos_ptofijo, "delimiter", "");%"newline", "");
+
+endfunction

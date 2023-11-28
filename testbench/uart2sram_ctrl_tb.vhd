@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity uart2sram_tb is
+entity uart2sram_ctrl_tb is
     generic(
         -- Default setting:
         -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
@@ -17,9 +17,9 @@ entity uart2sram_tb is
         DATA_W: natural := 16;
 		ADDR_W: natural := 18
     );
-end uart2sram_tb;
+end uart2sram_ctrl_tb;
 
-architecture uart2sram_tb_arch of uart2sram_tb is 
+architecture uart2sram_ctrl_tb_arch of uart2sram_ctrl_tb is 
 
 --    constant BIT_W : time := 20 ns * DVSR_BIT_UART * 16; 
 
@@ -240,5 +240,5 @@ begin
         lb_a_n => lb_a_n_tb
     );
 
-end;    
+end uart2sram_ctrl_tb_arch;    
 

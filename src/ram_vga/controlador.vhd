@@ -33,7 +33,8 @@ architecture Behavioral of controlador is
 	--posiciones limites de escritura en pantalla
 	constant coleft: signed(M-1 downto 0):= to_signed(160,M);
 	constant colright: signed(M-1 downto 0):= to_signed(490,M);
-	constant rowsup: signed(M-1 downto 0):= to_signed(80,M);
+	constant rowsup: signed(M-1 downto 0):= to_signed(80,M); --(80,M)
+    -- HARDCODEADO para la simulación
 	constant rowinf: signed(M-1 downto 0):= to_signed(410,M);
 	
 	
@@ -47,6 +48,7 @@ architecture Behavioral of controlador is
 begin
 	
 	ctrl_portb: process(pixel_row, pixel_col, address_aux)
+
 	begin
 		--if ((rowsup <= signed(pixel_row)) and (signed(pixel_row) <= rowinf) and (coleft <= signed(pixel_col)) and (signed(pixel_col) <= colright)) then
 		if ((rowsup <= signed(pixel_row)) and (rowinf >= signed(pixel_row)) and (coleft <= signed(pixel_col)) and (colright >= signed(pixel_col))) then

@@ -3,7 +3,11 @@
 # se puede descomentar la linea de abajo para hacer permanente el archivo del testbench
 # sino (si se trabaja con distintos testbenchs) usar 'export TESTBENCH=algun_tb' desde
 # bash antes de ejecutar make
-# TESTBENCH = sram_tb
+
+ifndef TESTBENCH
+  TESTBENCH = tp4_tb
+endif  
+
 # vhdl files
 FILES = src/*/* # todos los archivos .vhd están guardos acá
 VHDLEX = .vhd 	# extensión archivos vhdl
@@ -14,7 +18,8 @@ TESTBENCHPATH = testbench/${TESTBENCH}$(VHDLEX)
 
 #GHDL CONFIG
 GHDL_CMD = ghdl
-GHDL_FLAGS  = --ieee=synopsys --warn-no-vital-generic
+# GHDL_CMD = /C/Users/MarceloFernando/GHDL/bin/ghdl # por si no funca el Path ( WIN :( )
+GHDL_FLAGS  = --ieee=standard --warn-no-vital-generic
 
 SIMDIR = simulation
 # Simulation break condition
@@ -22,6 +27,7 @@ SIMDIR = simulation
 GHDL_SIM_OPT = --stop-time=450000ns
 
 WAVEFORM_VIEWER = gtkwave
+# WAVEFORM_VIEWER = /C/Users/MarceloFernando/GTKWAVE/bin/gtkwave # por si no funca el Path ( WIN :( )
 
 all: compile run view
 
