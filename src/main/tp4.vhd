@@ -41,7 +41,7 @@ entity tp4 is
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores: in std_logic_vector(5 downto 0);
-		button: in std_logic;
+		vga_clear: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -56,6 +56,24 @@ entity tp4 is
 		-- a 7 segmentos
 		sal_7seg: out std_logic_vector(7 downto 0)
 	);
+	
+	-- *-----------------------* 
+    -- | baud rate | DVSR_UART |
+    -- *-----------+-----------*     
+    -- |      300    10416.7   |
+    -- |      600     5208.3   |
+    -- |     1200     2604.2   |
+    -- |     2400     1302.1   |
+    -- |     4800      651     |
+    -- |     9600      325.5   |
+    -- |    14400      217     |
+    -- |    19200      162.8   |
+    -- |    38400       81.4   |
+    -- |    57600       54.3   |
+    -- |   115200       27.1   |
+    -- |   230400       13.6   |
+    -- |   460800        6.8   |
+    -- *-----------------------*
     
 --  attribute loc: string;
 --	attribute iostandard: string;
@@ -69,7 +87,7 @@ entity tp4 is
 --  -- attribute loc of pulsadores: signal is "D18 E18 H13"; --CHECK OK
 --
 --	--Boton borrado dpr
---	attribute loc of button: signal is "H13"; --CHECK OK
+--	attribute loc of vga_clear: signal is "H13"; --CHECK OK
 --  
 --  -- UART
 --	attribute loc of rx: signal is "G15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
@@ -160,62 +178,75 @@ architecture tp4_arq of tp4 is
     );
     end component;
 
-    component sram2cordic is
-    generic(
-        COORD_W: natural := 13;
-        DATA_W: natural := 16;
-		ADDR_W: natural := 18
-    );
-    port(
-        clk, rst, ena : in std_logic;
-        -- a dual port ram
-        wr_dpr_tick: out std_logic;
-        -- hacia/desde rotador 3d
-        flag_fin: in std_logic;
-        x_coord: out std_logic_vector(COORD_W-1 downto 0);
-        y_coord: out std_logic_vector(COORD_W-1 downto 0);
-        z_coord: out std_logic_vector(COORD_W-1 downto 0);
-        -- a sram_ctrl
-        data_in: in std_logic_vector(DATA_W-1 downto 0);
-        mem: out std_logic;
-        ready: in std_logic;
-        ena_count_tick: out std_logic
-    );
-    end component;
- 
-    component sram_ctrl is
-    generic(DATA_W: natural := 16;
+	component sram_ctrl is
+	generic(DATA_W: natural := 16;
 			ADDR_W: natural := 18);
-    port(
-        clk, reset: in std_logic;
-        -- to/from main system
-        mem: in std_logic;
-        rw: in std_logic;
-        addr: in std_logic_vector(ADDR_W-1 downto 0);
-        data_f2s: in std_logic_vector(DATA_W-1 downto 0);
-        ready: out std_logic;
-        data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
-        ce_in_n, lb_in_n, ub_in_n: in std_logic; 
-        -- to/from chip
-        ad: out std_logic_vector(ADDR_W-1 downto 0);
-        we_n, oe_n: out std_logic;
-        -- SRAM chip a
-        dio_a: inout std_logic_vector(DATA_W-1 downto 0);
-        ce_a_n, ub_a_n, lb_a_n: out std_logic
-    );
-    end component;
-
-	component generador_direcciones is
-	
-	generic(N: integer := 13;	--longitud de los vectores
-			L: integer := 9);	--longitud de las direcciones
 	port(
-		--flag: in std_logic;	--me avisa cuando termina de rotar.
-		x, y: in std_logic_vector(N-1 downto 0);
-		Addrx, Addry: out std_logic_vector(L-1 downto 0)
-		--grabar: out std_logic
+		clk, reset: in std_logic;
+		-- to/from main system
+		mem: in std_logic;
+		rw: in std_logic;
+		addr: in std_logic_vector(ADDR_W-1 downto 0);
+		data_f2s: in std_logic_vector(DATA_W-1 downto 0);
+		ready: out std_logic;
+		data_s2f_r, data_s2f_ur: out std_logic_vector(DATA_W-1 downto 0);
+		ce_in_n, lb_in_n, ub_in_n: in std_logic; 
+		-- to/from chip
+		ad: out std_logic_vector(ADDR_W-1 downto 0);
+		we_n, oe_n: out std_logic;
+		-- SRAM chip a
+		dio_a: inout std_logic_vector(DATA_W-1 downto 0);
+		ce_a_n, ub_a_n, lb_a_n: out std_logic
 	);
 	end component;
+	
+	component sram2cordic is
+	generic(
+		COORD_W: natural := 13;
+		DATA_W: natural := 16;
+		ADDR_W: natural := 18
+	);
+	port(
+		clk, rst, ena : in std_logic;
+		-- a dual port ram
+		wr_dpr_tick: out std_logic;
+		-- hacia/desde rotador 3d
+		flag_fin: in std_logic;
+		x_coord: out std_logic_vector(COORD_W-1 downto 0);
+		y_coord: out std_logic_vector(COORD_W-1 downto 0);
+		z_coord: out std_logic_vector(COORD_W-1 downto 0);
+		-- a sram_ctrl
+		data_in: in std_logic_vector(DATA_W-1 downto 0);
+		mem: out std_logic;
+		ready: in std_logic;
+		ena_count_tick: out std_logic
+	);
+	end component;
+	
+	component rotador3d is
+	generic(COORD_W: natural := 13;	--longitud de los vectores
+			M: natural := 15;	--longitud de los angulos
+			ADDR_DP_W: natural := 9);   --longitud direcciones dpr
+	port(
+		rst, ena, clk: in std_logic;
+		pulsadores: in std_logic_vector(5 downto 0);
+		x_0, y_0, z_0: in std_logic_vector(COORD_W-1 downto 0);
+		addr_dpr: out std_logic_vector(2*ADDR_DP_W-1 downto 0);
+		data_tick: in std_logic;
+		dpr_tick: out std_logic
+	);
+	end component;
+
+	-- component generador_direcciones is	
+	-- generic(N: integer := 13;	--longitud de los vectores
+			-- L: integer := 9);	--longitud de las direcciones
+	-- port(
+		-- --flag: in std_logic;	--me avisa cuando termina de rotar.
+		-- x, y: in std_logic_vector(N-1 downto 0);
+		-- Addrx, Addry: out std_logic_vector(L-1 downto 0)
+		-- --grabar: out std_logic
+	-- );
+	-- end component;
 	
 	component borrado_dpr is
 	generic(
@@ -279,14 +310,13 @@ architecture tp4_arq of tp4 is
 
     -- Señales ----------------------------------------------
     signal count_3d: std_logic_vector(4 downto 0);
-    signal flag_fin_3d: std_logic:= '0';
 	-- Dual port RAM ----------------------------------------
-    signal wr_dpr_tick_wire: std_logic;
-    signal x_coord_wire: std_logic_vector(COORD_W-1 downto 0);
-    signal y_coord_wire: std_logic_vector(COORD_W-1 downto 0);
-    signal z_coord_wire: std_logic_vector(COORD_W-1 downto 0);
+    signal dpr_tick_wire: std_logic;
+    signal x_0_wire: std_logic_vector(COORD_W-1 downto 0);
+    signal y_0_wire: std_logic_vector(COORD_W-1 downto 0);
+    signal z_0_wire: std_logic_vector(COORD_W-1 downto 0);
     -- rotador 3D --------------------------------------------
-    --signal flag_fin_wire: std_logic;
+    signal ctrl_3d: std_logic;
     -- gral_ctrl ---------------------------------------------
     signal rx_uart_empty_wire: std_logic:= '0';
     -- uart2sram ---------------------------------------------
@@ -300,24 +330,24 @@ architecture tp4_arq of tp4 is
     signal addr_tick_cordic_wire: std_logic:= '0';
     -- sram_ctrl -----------------------------------------------------
     ----------------       lado fpga         -----------------
-    signal addr_sram_wire: std_logic_vector(ADDR_W-1 downto 0)
+	signal addr_sram_wire: std_logic_vector(ADDR_W-1 downto 0)
                   := (others => '0');
-    signal data_f2s_wire: std_logic_vector(DATA_W-1 downto 0)
+	signal data_f2s_wire: std_logic_vector(DATA_W-1 downto 0)
                       := (others => '0');
-    signal data_s2f_r_wire: std_logic_vector(DATA_W-1 downto 0)
+	signal data_s2f_r_wire: std_logic_vector(DATA_W-1 downto 0)
                         := (others => '0');
-    signal data_s2f_ur_wire: std_logic_vector(DATA_W-1 downto 0)
+	signal data_s2f_ur_wire: std_logic_vector(DATA_W-1 downto 0)
                          := (others => '0');
-    signal mem_wire, rw_wire, ready_wire: std_logic := '0';
-    ---------------------         lado SRAM          --------------------    
-    -- signal we_n_wire, oe_n_wire : std_logic;
-    --signal ad_wire: std_logic_vector(ADDR_W-1 downto 0)
-    --             := (others =>'0');
-    --signal ce_a_n_wire, ub_a_n_wire, lb_a_n_wire: std_logic;
+	signal mem_wire, rw_wire, ready_wire: std_logic := '0';
+	---------------------         lado SRAM          --------------------    
+	-- signal we_n_wire, oe_n_wire : std_logic;
+	--signal ad_wire: std_logic_vector(ADDR_W-1 downto 0)
+	--             := (others =>'0');
+	--signal ce_a_n_wire, ub_a_n_wire, lb_a_n_wire: std_logic;
 	-- generador_direcciones -------------------------------------------
-	signal Addrx_aux, Addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
+	-- signal Addrx_aux, Addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
 	-- señales para la dual port ram -----------------------------------
-	signal we_aux, we_button: std_logic;
+	signal we_aux, we_borrador: std_logic;
 	signal din_porta, dout_b_aux: std_logic_vector(DATA_DP_W-1 downto 0);
 	signal addr_porta, addr_porta_in, addr_portb: std_logic_vector(2*ADDR_DP_W-1 downto 0);
 	-- señales para controlador y vga --------------------------------------
@@ -325,7 +355,7 @@ architecture tp4_arq of tp4 is
 	signal blu_aux: std_logic_vector(1 downto 0);
 	signal vs_aux, hs_aux: std_logic;
 	signal pxl_col_aux, pxl_row_aux: std_logic_vector(9 downto 0);
-    -- señales para la sram externa ----------------------------------------
+	-- señales para la sram externa ----------------------------------------
 	signal dio_sram_aux : std_logic_vector(DATA_W-1 downto 0);
 	
 	
@@ -334,27 +364,27 @@ begin
 --###########################################################
      -- ::  Contador para emular fin del  rotador 3D  ::     #
      --------------------------------------------------------#
-	gen_tick3D: entity work.counter                       --#
-	generic map (N => 5) --quiero contar 32 ciclos        --#
-	port map(                                             --#
-		rst => rst,                                       --#
-		clk => clk,                                       --#
-		rst_sync => '0',                                  --#
-		ena => '1', -- que cuente siempre                 --#
-		count => count_3d                                 --#
-	);                                                    --#
+	-- gen_tick3D: entity work.counter                       --#
+	-- generic map (N => 5) --quiero contar 32 ciclos        --#
+	-- port map(                                             --#
+		-- rst => rst,                                       --#
+		-- clk => clk,                                       --#
+		-- rst_sync => '0',                                  --#
+		-- ena => '1', -- que cuente siempre                 --#
+		-- count => count_3d                                 --#
+	-- );                                                    --#
 	
-	-- genero un tick cada 32 ciclos emulando el rotador 3D #
-	process(count_3d)                                     --# 
-	begin                                                 --#
-		if(count_3d = "10001") then -- numero arbitrario  --#
-			flag_fin_3d <= '1';                           --#
-		else                                              --#
-			flag_fin_3d <= '0';                           --#
-		end if;                                           --#
-	end process;                                          --#
-                                                           --#
---###########################################################
+	-- -- genero un tick cada 32 ciclos emulando el rotador 3D #
+	-- process(count_3d)                                     --# 
+	-- begin                                                 --#
+		-- if(count_3d = "10001") then -- numero arbitrario  --#
+			-- flag_fin_3d <= '1';                           --#
+		-- else                                              --#
+			-- flag_fin_3d <= '0';                           --#
+		-- end if;                                           --#
+	-- end process;                                          --#
+                                                           -- --#
+-- --###########################################################
 
 
  -- +-------------------------------------------------------------------------+
@@ -363,95 +393,20 @@ begin
  -- |                                                                         |
  -- +-------------------------------------------------------------------------+
 
-    sram_ctrl_inst: sram_ctrl
-    generic map(
-        DATA_W => DATA_W,
+	gral_ctrl_inst: gral_ctrl
+	generic map(
+		COORD_W => COORD_W,
+		DATA_W => DATA_W,
 		ADDR_W => ADDR_W
-    )
-    port map(
-        clk => clk, reset => rst,
-        -- to/from main system
-        mem         => mem_wire,
-        rw          => rw_wire,
-        addr        => addr_sram_wire,
-        data_f2s    => data_f2s_wire,
-        ready       => ready_wire,
-        data_s2f_r  => data_s2f_r_wire,
-        data_s2f_ur => data_s2f_ur_wire,
-        ce_in_n     => '0',
-        lb_in_n     => '0',
-        ub_in_n     => '0',
-        -- to/from chip
-        ad      => address_sram,          
-        we_n    => we_n,
-        oe_n    => oe_n,
-        -- SRAM chip a
-        dio_a   => dio_sram,
-        ce_a_n  => ce_n,
-        ub_a_n  => ub_n,
-        lb_a_n  => lb_n 
-    );
-
-    uart2sram_inst: uart2sram
-    generic map(
-        -- Default setting:
-        -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
-        DBIT_UART => DBIT_UART,
-        SB_TICK_UART => SB_TICK_UART,
-        DVSR_UART => DVSR_UART,
-        DVSR_BIT_UART => DVSR_BIT_UART,
-        FIFO_W_UART => FIFO_W_UART,
-        DATA_W => DATA_W,
-		ADDR_W => ADDR_W
-    )
-    port map(
-        clk => clk, rst => rst, ena => ena_uart2sram_wire,
-        rx => rx,
-        tx => tx,
-        -- a sram_ctrl
-        data_out => data_f2s_wire,
-        mem => mem_uart_wire,
-        ready => ready_wire, 
-        addr_tick => addr_tick_uart_wire
-    );
-
-    sram2cordic_inst: sram2cordic
-    generic map(
-        COORD_W => COORD_W,
-        DATA_W => DATA_W,
-		ADDR_W => ADDR_W
-    )
-    port map(
-        clk => clk, rst => rst,
-        ena => ena_sram2cordic_wire,
-        -- a dual port ram
-        wr_dpr_tick => wr_dpr_tick_wire,
-        -- hacia/desde rotador 3d
-        flag_fin => flag_fin_3d,
-        x_coord => x_coord_wire,
-        y_coord => y_coord_wire,
-        z_coord => z_coord_wire,
-        -- a sram_ctrl
-        data_in => data_s2f_r_wire,
-        mem => mem_cordic_wire,
-        ready => ready_wire,
-        ena_count_tick => addr_tick_cordic_wire 
-    );
-    
-    gral_ctrl_inst: gral_ctrl
-    generic map(
-        COORD_W => COORD_W,
-        DATA_W => DATA_W,
-		ADDR_W => ADDR_W
-     )
-    port map(
+	)
+	port map(
 		clk => clk, rst => rst, ena => ena,
-       -- a sram2cordic
+	   -- a sram2cordic
 		ena_sram2cordic => ena_sram2cordic_wire,
 		addr_tick_cordic => addr_tick_cordic_wire,
 		mem_cordic => mem_cordic_wire,
 		-- a uart2sram
-       ena_uart2sram => ena_uart2sram_wire,
+	   ena_uart2sram => ena_uart2sram_wire,
 		rx_uart_empty => rx_uart_empty_wire,
 		addr_tick_uart => addr_tick_uart_wire,
 		mem_uart => mem_uart_wire,
@@ -462,32 +417,120 @@ begin
 		mem => mem_wire,
 		rw => rw_wire,
 		sal_7seg => sal_7seg
-    );
-
-	gen_dir: generador_direcciones
-	generic map(N => COORD_W, L => ADDR_DP_W)	--longitud de las direcciones
-	port map(
-		x => x_coord_wire, y => y_coord_wire,
-		Addrx => Addrx_aux, Addry => Addry_aux --direcciones a port A dual port RAM
 	);
+
+	uart2sram_inst: uart2sram
+	generic map(
+		-- Default setting:
+		-- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
+		DBIT_UART => DBIT_UART,
+		SB_TICK_UART => SB_TICK_UART,
+		DVSR_UART => DVSR_UART,
+		DVSR_BIT_UART => DVSR_BIT_UART,
+		FIFO_W_UART => FIFO_W_UART,
+		DATA_W => DATA_W,
+		ADDR_W => ADDR_W
+	)
+	port map(
+		clk => clk, rst => rst, ena => ena_uart2sram_wire,
+		rx => rx,
+		tx => tx,
+		-- a sram_ctrl
+		data_out => data_f2s_wire,
+		mem => mem_uart_wire,
+		ready => ready_wire, 
+		addr_tick => addr_tick_uart_wire
+	);
+
+	sram_ctrl_inst: sram_ctrl
+	generic map(
+		DATA_W => DATA_W,
+		ADDR_W => ADDR_W
+	)
+	port map(
+		clk => clk, reset => rst,
+		-- to/from main system
+		mem         => mem_wire,
+		rw          => rw_wire,
+		addr        => addr_sram_wire,
+		data_f2s    => data_f2s_wire,
+		ready       => ready_wire,
+		data_s2f_r  => data_s2f_r_wire,
+		data_s2f_ur => data_s2f_ur_wire,
+		ce_in_n     => '0',
+		lb_in_n     => '0',
+		ub_in_n     => '0',
+		-- to/from chip
+		ad      => address_sram,          
+		we_n    => we_n,
+		oe_n    => oe_n,
+		-- SRAM chip a
+		dio_a   => dio_sram,
+		ce_a_n  => ce_n,
+		ub_a_n  => ub_n,
+		lb_a_n  => lb_n 
+	);
+
+	sram2cordic_inst: sram2cordic
+	generic map(
+		COORD_W => COORD_W,
+		DATA_W => DATA_W,
+		ADDR_W => ADDR_W
+	)
+	port map(
+		clk => clk, rst => rst,
+		ena => ena_sram2cordic_wire,
+		-- a dual port ram
+		wr_dpr_tick => ctrl_3d,
+		-- hacia/desde rotador 3d
+		flag_fin => ctrl_3d,
+		x_coord => x_0_wire,
+		y_coord => y_0_wire,
+		z_coord => z_0_wire,
+		-- a sram_ctrl
+		data_in => data_s2f_r_wire,
+		mem => mem_cordic_wire,
+		ready => ready_wire,
+		ena_count_tick => addr_tick_cordic_wire 
+	);
+	
+   rotador_3d_inst: rotador3d
+	generic map(
+		COORD_W => COORD_W, 	--longitud de los vectores
+		M => 15,		--longitud de los angulos
+		ADDR_DP_W => ADDR_DP_W	--longitud direcciones dpr
+	)	
+	port map(
+		rst => rst, ena => ena, clk => clk,
+		pulsadores => pulsadores,
+		x_0 => x_0_wire,
+		y_0 => y_0_wire,
+		z_0 => z_0_wire,
+		addr_dpr => addr_porta_in,
+		data_tick => ctrl_3d,
+		dpr_tick => dpr_tick_wire
+	);
+
+	-- gen_dir: generador_direcciones
+	-- generic map(N => COORD_W, L => ADDR_DP_W)	--longitud de las direcciones
+	-- port map(
+		-- x => x_n_wire, y => y_n_wire,
+		-- Addrx => Addrx_aux, Addry => Addry_aux --direcciones a port A dual port RAM
+	-- );
 	
 	borrador: borrado_dpr
 	generic map(ADDR_W => 2*ADDR_DP_W, --long vectores direccionamiento
 				DATA_W => DATA_DP_W)   --len of data
 	port map(
 		clk => clk, rst => rst,
-		button => button,
+		button => vga_clear,
 		addr_in => addr_porta_in,
 		addr_out => addr_porta,
-		we => we_button,
+		we => we_borrador,
 		data => din_porta
 	);
 	
-	we_aux <= wr_dpr_tick_wire or we_button;
-	addr_porta_in <= Addry_aux & Addrx_aux;
-	--CAMBIAR DESDE CONTROLADOR------------------------
-	-- din_porta <= "1";				
-	--#################################################
+	we_aux <= dpr_tick_wire or we_borrador;
 	
 	dualport_ram: xilinx_dual_port_ram_sync
 	generic map(ADDR_WIDTH => 2*ADDR_DP_W, DATA_WIDTH => DATA_DP_W)

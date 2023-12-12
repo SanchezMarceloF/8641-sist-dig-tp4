@@ -75,9 +75,9 @@ architecture tp4_tb_arq of tp4_tb is
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores: in std_logic_vector(5 downto 0);
-		button: in std_logic;
-        -- a SRAM externa --------------------------
-		adv, mt_clk : out std_logic;
+		vga_clear: in std_logic;
+		-- a SRAM externa --------------------------
+		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
 		dio_sram : inout std_logic_vector(DATA_W-1 downto 0);
 		ce_n, ub_n, lb_n : out std_logic;
@@ -109,10 +109,10 @@ architecture tp4_tb_arq of tp4_tb is
 	signal rx_tb : std_logic:= '1';
 	signal tx_tb, tx_ena: std_logic:='0';
 	signal pulsadores_tb: std_logic_vector(5 downto 0);
-	signal button_tb: std_logic:= '0';
+	signal vga_clear_tb: std_logic:= '0';
 	--signal  xin, yin, zin: std_logic_vector(COORD_W-1 downto 0);
     -- a SRAM externa --------------------------
-	signal adv_tb, mt_clk_tb : std_logic;
+	signal adv_tb, mt_clk_tb, mt_cre_tb : std_logic;
 	signal we_n_tb, oe_n_tb : std_logic;
 	signal dio_sram_tb: std_logic_vector(DATA_W-1 downto 0)
                     := (others =>'0');
@@ -140,7 +140,7 @@ begin
 	rst_tb <= '1' after 20 ns, '0' after 100 ns;
 	ena_tb <= '0' after 40 ns, '1' after 203 ns;
 	tx_ena <= '1' after 500 ns;
-	button_tb <= '1' after 350 us;
+	vga_clear_tb <= '1' after 350 us;
 
 
 	Test_uart: process
@@ -260,9 +260,9 @@ begin
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores => pulsadores_tb,
-		button => button_tb,
+		vga_clear => vga_clear_tb,
 		-- a SRAM externa --------------------------
-	   adv => adv_tb, mt_clk => mt_clk_tb,
+	   adv => adv_tb, mt_clk => mt_clk_tb, mt_cre => mt_cre_tb,
 		we_n => we_n_tb, oe_n => oe_n_tb,
 		dio_sram => dio_sram_tb,
 		ce_n => ce_n_tb, ub_n => ub_n_tb, lb_n => lb_n_tb,

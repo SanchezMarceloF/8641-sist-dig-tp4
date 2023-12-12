@@ -185,7 +185,7 @@ begin
                         "011" when estado_act = SHIFT_REG else  --#
                         "100" when estado_act = ESPERA else --#
                         "101" when estado_act = ESCRITURA_DPR else --#
-                        "111"; -- ESPERA CORDIC                     --#
+                        "110"; -- ESPERA CORDIC                     --#
                                                                    --#
     estado_siguiente <= "000" when estado_sig = REPOSO else        --#
                         "001" when estado_sig = LECTURA_SRAM else  --#
@@ -193,7 +193,7 @@ begin
                         "011" when estado_sig = SHIFT_REG else  --#
                         "100" when estado_sig = ESPERA else --#
                         "101" when estado_sig = ESCRITURA_DPR else --#
-                        "111";                                     --#  
+                        "110";                                     --#  
 --####################################################################    
 
 end sram2cordic_arch;    

@@ -42,19 +42,19 @@ architecture cordic3d_arq of cordic3d is
 		);
 	end component;
 	
-	component detect_flanco is
-	port(
-		clk, rst: in std_logic; 
-		secuencia: in std_logic;
-		salida: out std_logic
-		);
-	end component;
+	-- component detect_flanco is
+	-- port(
+		-- clk, rst: in std_logic; 
+		-- secuencia: in std_logic;
+		-- salida: out std_logic
+		-- );
+	-- end component;
 	
 	--señales 
 	
 	signal x1_aux, x2_aux, x3_aux: std_logic_vector(N-1 downto 0);
 	signal y1_aux, y2_aux, y3_aux: std_logic_vector(N-1 downto 0);
-	signal ctrl_2, ctrl_3, flag_aux, pulso: std_logic;
+	signal ctrl_2, ctrl_3, flag_aux : std_logic;
 	
 		
 begin
@@ -108,13 +108,13 @@ begin
 	--genero pulso para controlar el lector de datos
 	--y actualizacion del registro de salida
 	
-	gen_ctrl: detect_flanco	port map(clk, '0', flag_aux, pulso);
+	-- gen_ctrl: detect_flanco	port map(clk, '0', flag_aux, pulso);
 	
 	--Salidas
 		
 	x_n <= x3_aux;
 	y_n <= y3_aux;
 	z_n	<= x2_aux;
-	flag_rot <= pulso;
+	flag_rot <= flag_aux;
 	
 end;

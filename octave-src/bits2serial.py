@@ -2,11 +2,12 @@ import serial
 import time
 from os import listdir #, getcwd, chdir #mkdir,startfile
 from os.path import isfile, join #, exists, dirname
+from sys import argv
 
 path = '../test_files/'
 # ser = serial.Serial('/dev/ttyUSB0')  # open serial port linux
 ser = serial.Serial('COM5')  # open serial port windows
-ser.baudrate = 19200
+ser.baudrate = argv[1]
 ser.bytesize = 8
 ser.stopbits = 1
 parity = 'N'

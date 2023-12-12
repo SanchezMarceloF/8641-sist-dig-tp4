@@ -14,16 +14,16 @@ use IEEE.numeric_std.all;
 -- declaracion de entidad
 
 entity rotador3d is
-	generic(N: natural := 13;	--longitud de los vectores
+	generic(COORD_W: natural := 13;	--longitud de los vectores
 			M: natural := 15;	--longitud de los angulos
-			R: natural := 10);	--tamaño del puntero a memoria ROM externa
+			ADDR_DP_W: natural := 9);   --longitud direcciones dpr
 	port(
-		x_0, y_0, z_0: in std_logic_vector(N-1 downto 0);
-		pulsadores: in std_logic_vector(5 downto 0);
 		rst, ena, clk: in std_logic;
-		x_n, y_n, z_n: out std_logic_vector(N-1 downto 0);
-		addr: out std_logic_vector(R-1 downto 0);
-		flag_fin: out std_logic
+		pulsadores: in std_logic_vector(5 downto 0);
+		x_0, y_0, z_0: in std_logic_vector(COORD_W-1 downto 0);
+		addr_dpr: out std_logic_vector(2*ADDR_DP_W-1 downto 0);
+		data_tick: in std_logic;
+		dpr_tick: out std_logic
 	);
 end;
 
@@ -31,15 +31,12 @@ end;
 
 architecture rotador3d_arq of rotador3d is
 
-	component lector_datos is
-		generic(N: integer := 14; 	--longitud del dato 
-				R: integer := 12);	--longitud del puntero a ROM
-		port(
-			x_in, y_in, z_in: in std_logic_vector(N-1 downto 0);
-			clk, rst, ena: in std_logic;
-			puntero: out std_logic_vector(R-1 downto 0);
-			x_out, y_out, z_out: out std_logic_vector(N-1 downto 0);
-			ctrl_cordic3D: out std_logic
+	component registro is
+	generic(N: natural := 4);
+	port(
+		D: in std_logic_vector(N-1 downto 0);
+		clk, rst, ena: in std_logic;
+		Q: out std_logic_vector(N-1 downto 0)
 	);
 	end component;
 	
@@ -79,76 +76,186 @@ architecture rotador3d_arq of rotador3d is
 			);
 	end component;
 	
-	component detect_flanco is
-		port(
-			clk, rst: in std_logic; 
-			secuencia: in std_logic;
-			salida: out std_logic
-			);
+	component generador_direcciones is
+	
+	generic(N: integer := 13;	--longitud de los vectores
+			L: integer := 9);	--longitud de las direcciones
+	port(
+		--flag: in std_logic;	--me avisa cuando termina de rotar.
+		x, y: in std_logic_vector(N-1 downto 0);
+		Addrx, Addry: out std_logic_vector(L-1 downto 0)
+		--grabar: out std_logic
+	);
 	end component;
 	
-	--señales 
-	
-	signal x0_aux, y0_aux, z0_aux: std_logic_vector(N-1 downto 0);
-	signal xn_aux, yn_aux, zn_aux: std_logic_vector(N-1 downto 0);
+	-- señales ----------------------------------------------------------
+	-- a registros
+	signal regin_tick, regout_tick : std_logic:= '0';
+	-- a Cordic 3d
+	signal rot_ctrl, flag_fin : std_logic:= '0';
+	signal x0_aux, y0_aux, z0_aux: std_logic_vector(COORD_W-1 downto 0);
+	signal xn_aux, yn_aux, zn_aux: std_logic_vector(COORD_W-1 downto 0);
+	-- salidas
+	signal xn_reg, yn_reg, zn_reg: std_logic_vector(COORD_W-1 downto 0);
+	signal dpr_tick_aux : std_logic:= '0';
+	-- a rotacion_ctrl
 	signal alfa_aux, beta_aux, gamma_aux: std_logic_vector(M-1 downto 0);
-	signal addr_aux :std_logic_vector(R-1 downto 0);
-	signal ctrl_cordic, flag_fin_aux, ena_ang: std_logic:= '0';
-	signal iniciar, ena_lector, ena_lector_aux, ena_rot: std_logic;
+	signal ena_ang, ena_rot : std_logic:= '0';
+	-- generador_direcciones 
+	signal addrx_aux, addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
+	-- variables de estado ---------------------------
+	type t_estado is (REPOSO, SHIFT_REG, ROTAR, SHIFT_REG_DPR,
+						ESCRITURA_DPR);
+	signal estado_act, estado_sig : t_estado;
+
+	-- señales para visualizar los estados en gtkwave ------------------
+	signal estado_actual        : std_logic_vector(2 downto 0) := "000";
+	signal estado_siguiente     : std_logic_vector(2 downto 0) := "000";
 
 begin
 
+	--############  Registro de las coordenadas de entrada ###############--
+	x_0_reg: registro generic map(COORD_W) 
+                          port map(x_0, clk, rst, regin_tick, x0_aux);
+	y_0_reg: registro generic map(COORD_W)
+                          port map(y_0, clk, rst, regin_tick, y0_aux);
+	z_0_reg: registro generic map(COORD_W) 
+                          port map(z_0, clk, rst, regin_tick, z0_aux);
+	--#############  Registro de las coordenadas de salida ################--
+	x_n_reg: registro generic map(COORD_W) 
+                          port map(xn_aux, clk, rst, regout_tick, xn_reg);
+	y_n_reg: registro generic map(COORD_W)
+                          port map(yn_aux, clk, rst, regout_tick, yn_reg);
+	z_n_reg: registro generic map(COORD_W) 
+                          port map(zn_aux, clk, rst, regout_tick, zn_reg);
+	--######################################################################--
+	
+	rotador: cordic3d
+	generic map(N => COORD_W,
+				M => M)
+	port map(
+		x_0 => x0_aux, y_0 => y0_aux, z_0 => z0_aux,
+		alfa => alfa_aux, beta => beta_aux, gama => gamma_aux,
+		ctrl => rot_ctrl,  clk => clk,	--'0' => X_0; '1' => X_i (comienza a rotar)
+		x_n => xn_aux, y_n => yn_aux, z_n => zn_aux,
+		flag_rot => flag_fin
+	);
+
+   	-- Máquina de estados ------------------------------
+	--##################################################
+
+	-- estados ----------------------------------------- 
+
+	estados: process(clk,rst)
+	begin
+		if (rst = '1') then
+			estado_act <= REPOSO;
+		elsif rising_edge(clk) then
+			estado_act <= estado_sig;
+		end if;
+	end process;
+   
+	-- lógica de próximo estado -------------------------
+  
+	prox_estado: process(estado_act, ena, data_tick, flag_fin)
+	begin
+		-- asignaciones por defecto
+		estado_sig <= estado_act;
+		-- zcount_sig <= zcount_act;
+		case estado_act is
+			when REPOSO =>
+				if (ena = '1' and data_tick = '1') then
+					estado_sig <= SHIFT_REG;
+					end if;        
+			when SHIFT_REG => -- duración 1 ciclo
+					estado_sig <= ROTAR;
+			when ROTAR =>
+				if (flag_fin = '1') then
+					estado_sig <= SHIFT_REG_DPR;
+				end if;
+			when SHIFT_REG_DPR => -- duración 1 ciclo
+				estado_sig <= ESCRITURA_DPR;
+			when ESCRITURA_DPR => -- duración 1 ciclo
+				if ena = '1' then
+					estado_sig <= SHIFT_REG;
+				else
+					estado_sig <= REPOSO;
+				end if;
+ 		end case;
+	end process;
+	
+    -- salidas del fsm -----------------------------------------
+
+	salidas: process(estado_act)
+	begin
+	-- asignación por defecto 
+		regin_tick <= '0';  
+		regout_tick <= '0';
+		rot_ctrl <= '0';
+		dpr_tick_aux <= '0';
+		case estado_act is
+			when REPOSO =>
+			when SHIFT_REG =>
+				regin_tick <= '1';
+			when ROTAR =>
+				rot_ctrl <= '1';
+			when SHIFT_REG_DPR =>
+				regout_tick <= '1';
+			when ESCRITURA_DPR =>
+				dpr_tick_aux <= '1';
+		end case;
+	end process;
+
 	enable_ang: ena_20mili --habilita cada 20 ms el cambio de angulo
-		generic map( N => 1024 )	-- cantidad de ciclos a contar
-		port map(
+	generic map( N => 512 )
+		--generic map( N => 1048576 )	-- cantidad de ciclos a contar
+	port map(
 			clk => clk, rst => rst, ena => ena,
 			sal => ena_ang
-	);
-	
-
-	ena_lector_aux <= flag_fin_aux and ena; --PONGO '1' PARA SIMULAR--
-	--genero una señal para inicializar el lector de datos cuando reseteo
-	ena_lect_ini: detect_flanco port map(clk, '0', rst, iniciar);
-	ena_lector <= ena_lector_aux or iniciar;
-	
-	lector: lector_datos
-		generic map(N => N, 	--longitud del dato 
-				R => R)	--longitud del puntero
-		port map(
-			x_in => x_0 , y_in => y_0, z_in => z_0,
-			clk => clk, rst => rst, ena => ena_lector,
-			puntero => addr_aux, --direccionamiento memoria ROM externa
-			x_out => x0_aux, y_out => y0_aux, z_out => z0_aux,
-			ctrl_cordic3D => ctrl_cordic
 	);
 	
 	ena_rot <= ena and ena_ang;
 	
 	ctrl_rot: rotacion_ctrl
 		generic map(M => M, 	--longitud del angulo a rotar
-				N => N) 	--longitud del dato a rotar
+				N => COORD_W) 	--longitud del dato a rotar
 		port map(
 			clk => clk, rst => rst, ena => ena_rot,
 			sel => pulsadores,
 			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
 	);
 	
-	rotador: cordic3d
-		generic map(N => N,
-					M => M)
-		port map(
-			x_0 => x0_aux, y_0 => y0_aux, z_0 => z0_aux,
-			alfa => alfa_aux, beta => beta_aux, gama => gamma_aux,
-			ctrl => ctrl_cordic,  clk => clk,	--'0' => X_0; '1' => X_i (comienza a rotar)
-			x_n => xn_aux, y_n => yn_aux, z_n => zn_aux,
-			flag_rot => flag_fin_aux
+	gen_dir: generador_direcciones
+	generic map(
+		N => COORD_W, 
+		L => ADDR_DP_W --longitud de las direcciones
+	)
+	port map(
+		x => xn_reg, y => yn_reg,
+		Addrx => addrx_aux, Addry => addry_aux --direcciones a port A dual port RAM
 	);
 	
-	--Salidas
-	addr <= addr_aux;
-	x_n <= xn_aux;
-	y_n <= yn_aux;
-	z_n	<= zn_aux;
-	flag_fin <= flag_fin_aux;
+	-- Salidas ------------------------------------------------
+	-- ########################################################
+
+	addr_dpr <= addrx_aux & addry_aux;
+	dpr_tick <= dpr_tick_aux;
+	   
+--####################################################################    
+--#------ Señales para visualizar los estados en gtkwave ------------#
+    estado_actual    <= "000" when estado_act = REPOSO else        --# 
+                        "001" when estado_act = SHIFT_REG else  --#
+                        "010" when estado_act = ROTAR else --#
+                        "011" when estado_act = SHIFT_REG_DPR else  --#
+                        "100" when estado_act = ESCRITURA_DPR else --#
+                        "111"; 			                    --#
+                                                                   --#
+    estado_siguiente <= "000" when estado_sig = REPOSO else        --#
+                        "001" when estado_sig = SHIFT_REG else  --#
+                        "010" when estado_sig = ROTAR else --#
+                        "011" when estado_sig = SHIFT_REG_DPR else  --#
+                        "100" when estado_sig = ESCRITURA_DPR else --#
+                        "111";                                     --#  
+--#################################################################### 
 
 end;
