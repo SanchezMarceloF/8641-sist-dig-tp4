@@ -15,7 +15,7 @@ use IEEE.numeric_std.all;
 
 -- declaracion de entidad
 entity tp4 is
-	generic(COORD_W: integer:= 13;  --long coordenadas x, y, z.
+	generic(COORD_W: integer:= 14;  --long coordenadas x, y, z.
 			ANG_W: integer:= 15;    --long angulos de rotacion
 			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
 			DATA_DP_W: natural:= 1;
@@ -201,17 +201,16 @@ architecture tp4_arq of tp4 is
 	end component;
 	
 	component sram2cordic is
-	generic(
+		generic(
 		COORD_W: natural := 13;
 		DATA_W: natural := 16;
 		ADDR_W: natural := 18
 	);
 	port(
 		clk, rst, ena : in std_logic;
-		-- a dual port ram
-		wr_dpr_tick: out std_logic;
 		-- hacia/desde rotador 3d
-		flag_fin: in std_logic;
+		coord_ready: out std_logic;
+		flag_fin3d: in std_logic;
 		x_coord: out std_logic_vector(COORD_W-1 downto 0);
 		y_coord: out std_logic_vector(COORD_W-1 downto 0);
 		z_coord: out std_logic_vector(COORD_W-1 downto 0);
@@ -224,29 +223,22 @@ architecture tp4_arq of tp4 is
 	end component;
 	
 	component rotador3d is
-	generic(COORD_W: natural := 13;	--longitud de los vectores
-			M: natural := 15;	--longitud de los angulos
-			ADDR_DP_W: natural := 9);   --longitud direcciones dpr
+	generic(COORD_W: natural := 13;		--longitud de los vectores
+			ANG_WIDE: natural := 15;	--longitud de los angulos
+			ADDR_DP_W: natural := 9);	--longitud direcciones dpr
 	port(
 		rst, ena, clk: in std_logic;
+		-- desde botones 
 		pulsadores: in std_logic_vector(5 downto 0);
+		-- desde/hacia sram2cordic
 		x_0, y_0, z_0: in std_logic_vector(COORD_W-1 downto 0);
+		coord_ready: in std_logic;
+		coord_ok: out std_logic;
+		-- hacia dual port ram
 		addr_dpr: out std_logic_vector(2*ADDR_DP_W-1 downto 0);
-		data_tick: in std_logic;
 		dpr_tick: out std_logic
 	);
 	end component;
-
-	-- component generador_direcciones is	
-	-- generic(N: integer := 13;	--longitud de los vectores
-			-- L: integer := 9);	--longitud de las direcciones
-	-- port(
-		-- --flag: in std_logic;	--me avisa cuando termina de rotar.
-		-- x, y: in std_logic_vector(N-1 downto 0);
-		-- Addrx, Addry: out std_logic_vector(L-1 downto 0)
-		-- --grabar: out std_logic
-	-- );
-	-- end component;
 	
 	component borrado_dpr is
 	generic(
@@ -316,7 +308,7 @@ architecture tp4_arq of tp4 is
     signal y_0_wire: std_logic_vector(COORD_W-1 downto 0);
     signal z_0_wire: std_logic_vector(COORD_W-1 downto 0);
     -- rotador 3D --------------------------------------------
-    signal ctrl_3d: std_logic;
+    signal ctrl_3d, flag_fin3d_wire: std_logic;
     -- gral_ctrl ---------------------------------------------
     signal rx_uart_empty_wire: std_logic:= '0';
     -- uart2sram ---------------------------------------------
@@ -480,10 +472,9 @@ begin
 	port map(
 		clk => clk, rst => rst,
 		ena => ena_sram2cordic_wire,
-		-- a dual port ram
-		wr_dpr_tick => ctrl_3d,
 		-- hacia/desde rotador 3d
-		flag_fin => ctrl_3d,
+		coord_ready => ctrl_3d,
+		flag_fin3d => flag_fin3d_wire,
 		x_coord => x_0_wire,
 		y_coord => y_0_wire,
 		z_coord => z_0_wire,
@@ -497,17 +488,18 @@ begin
    rotador_3d_inst: rotador3d
 	generic map(
 		COORD_W => COORD_W, 	--longitud de los vectores
-		M => 15,		--longitud de los angulos
+		ANG_WIDE => ANG_W,		--longitud de los angulos
 		ADDR_DP_W => ADDR_DP_W	--longitud direcciones dpr
-	)	
+	)
 	port map(
 		rst => rst, ena => ena, clk => clk,
 		pulsadores => pulsadores,
 		x_0 => x_0_wire,
 		y_0 => y_0_wire,
 		z_0 => z_0_wire,
+		coord_ready => ctrl_3d,
+		coord_ok => flag_fin3d_wire,
 		addr_dpr => addr_porta_in,
-		data_tick => ctrl_3d,
 		dpr_tick => dpr_tick_wire
 	);
 

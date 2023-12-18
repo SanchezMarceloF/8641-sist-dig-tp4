@@ -10,10 +10,9 @@ entity sram2cordic is
 	);
 	port(
 		clk, rst, ena : in std_logic;
-		-- a dual port ram
-		wr_dpr_tick: out std_logic;
 		-- hacia/desde rotador 3d
-		flag_fin: in std_logic;
+		coord_ready: out std_logic;
+		flag_fin3d: in std_logic;
 		x_coord: out std_logic_vector(COORD_W-1 downto 0);
 		y_coord: out std_logic_vector(COORD_W-1 downto 0);
 		z_coord: out std_logic_vector(COORD_W-1 downto 0);
@@ -50,14 +49,14 @@ architecture sram2cordic_arch of sram2cordic is
     signal y_reg         : std_logic_vector(COORD_W-1 downto 0);
     signal x_reg         : std_logic_vector(COORD_W-1 downto 0);
     -- para dual port ram
-    signal wr_dpr_tick_aux : std_logic := '0';
+    signal coord_ready_aux : std_logic := '0';
     -- para contador (direcciones a sram)
     signal ena_count_aux : std_logic := '0';
     -- para SRAM externa
     signal mem_aux       : std_logic := '0';
     -- variables de estado ---------------------------
-    type t_estado is (REPOSO, LECTURA_SRAM, SHIFT_REG, ESPERA_SRAM, ESPERA,
-                      ESCRITURA_DPR, ESPERA_CORDIC);
+    type t_estado is (REPOSO, LECTURA_SRAM, SHIFT_REG, ESPERA_SRAM,
+                      ESPERA_ROTADOR);
     signal estado_act, estado_sig : t_estado;
     signal zcount_act, zcount_sig: unsigned(1 downto 0);
 
@@ -96,7 +95,7 @@ begin
    
 	-- lógica de próximo estado -------------------------
   
-	prox_estado: process(estado_act, zcount_act, ena, ready, data_in, flag_fin)
+	prox_estado: process(estado_act, zcount_act, ena, ready, data_in, flag_fin3d)
 	begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
@@ -117,27 +116,16 @@ begin
 					estado_sig <= REPOSO;
 					zcount_sig <= (others => '0');
 				elsif (zcount_act = FLAG_Z-1) then
-					estado_sig <= ESPERA;
+					estado_sig <= ESPERA_ROTADOR;
 					zcount_sig <= (others => '0');
 				else    
 					estado_sig <= LECTURA_SRAM;
 					zcount_sig <= zcount_act + 1;
 				end if;
-			when ESPERA => -- duración 1 ciclo
-				estado_sig <= ESCRITURA_DPR;
-			when ESCRITURA_DPR => -- duración 1 ciclo
-				-- if (zcount_act = FLAG_DPR-1) then
-					-- estado_sig <= ESPERA_CORDIC;
-					-- zcount_sig <= (others => '0');
-				-- else    
-					-- estado_sig <= ESCRITURA_DPR;
-					-- zcount_sig <= zcount_act + 1;
-				-- end if;
-				estado_sig <= ESPERA_CORDIC;
-			when ESPERA_CORDIC => 	
+			when ESPERA_ROTADOR => 	
 				if (ena = '0') then
 					estado_sig <= REPOSO;
-				elsif (flag_fin = '1') then
+				elsif (flag_fin3d = '1') then
 					estado_sig <= LECTURA_SRAM;
 				end if;    
 		end case;
@@ -151,7 +139,7 @@ begin
 		mem_aux <= '0';  
 		wr_reg_tick <= '0';
 		ena_count_aux <= '0';
-		wr_dpr_tick_aux <= '0';
+		coord_ready_aux <= '0';
 		case estado_act is
 			when REPOSO =>
 			when LECTURA_SRAM =>
@@ -160,10 +148,8 @@ begin
 				wr_reg_tick <= '1';
 				ena_count_aux <= '1';
 			when ESPERA_SRAM =>
-			when ESPERA =>
-			when ESCRITURA_DPR =>
-				wr_dpr_tick_aux <= '1';
-			when ESPERA_CORDIC =>
+			when ESPERA_ROTADOR =>
+				coord_ready_aux <= '1';
 		end case;
 	end process;
 
@@ -172,7 +158,7 @@ begin
 
     mem <= mem_aux;
     ena_count_tick <= ena_count_aux;
-    wr_dpr_tick <= wr_dpr_tick_aux;
+    coord_ready <= coord_ready_aux;
     x_coord <= x_reg;
     y_coord <= y_reg;
     z_coord <= z_reg;
@@ -183,17 +169,15 @@ begin
                         "001" when estado_act = LECTURA_SRAM else  --#
                         "010" when estado_act = ESPERA_SRAM else --#
                         "011" when estado_act = SHIFT_REG else  --#
-                        "100" when estado_act = ESPERA else --#
-                        "101" when estado_act = ESCRITURA_DPR else --#
-                        "110"; -- ESPERA CORDIC                     --#
+                        "100" when estado_act = ESPERA_ROTADOR else --#
+                        "101";                    --#
                                                                    --#
     estado_siguiente <= "000" when estado_sig = REPOSO else        --#
                         "001" when estado_sig = LECTURA_SRAM else  --#
                         "010" when estado_sig = ESPERA_SRAM else --#
                         "011" when estado_sig = SHIFT_REG else  --#
-                        "100" when estado_sig = ESPERA else --#
-                        "101" when estado_sig = ESCRITURA_DPR else --#
-                        "110";                                     --#  
+                        "100" when estado_sig = ESPERA_ROTADOR else --#
+                        "101";                              --#  
 --####################################################################    
 
 end sram2cordic_arch;    

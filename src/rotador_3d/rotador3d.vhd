@@ -14,15 +14,19 @@ use IEEE.numeric_std.all;
 -- declaracion de entidad
 
 entity rotador3d is
-	generic(COORD_W: natural := 13;	--longitud de los vectores
-			M: natural := 15;	--longitud de los angulos
-			ADDR_DP_W: natural := 9);   --longitud direcciones dpr
+	generic(COORD_W: natural := 13;		--longitud de los vectores
+			ANG_WIDE: natural := 15;	--longitud de los angulos
+			ADDR_DP_W: natural := 9);	--longitud direcciones dpr
 	port(
 		rst, ena, clk: in std_logic;
+		-- desde botones 
 		pulsadores: in std_logic_vector(5 downto 0);
+		-- desde/hacia sram2cordic
 		x_0, y_0, z_0: in std_logic_vector(COORD_W-1 downto 0);
+		coord_ready: in std_logic;
+		coord_ok: out std_logic;
+		-- hacia dual port ram
 		addr_dpr: out std_logic_vector(2*ADDR_DP_W-1 downto 0);
-		data_tick: in std_logic;
 		dpr_tick: out std_logic
 	);
 end;
@@ -64,16 +68,16 @@ architecture rotador3d_arq of rotador3d is
 	end component;
 	
 	component cordic3d is
-		generic(N: natural := 13;
-				M: natural := 15);
-		port(
-			x_0, y_0, z_0: in std_logic_vector(N-1 downto 0);
-			alfa, beta, gama: in std_logic_vector(M-1 downto 0);
-			ctrl: in std_logic;		--'0' => x_0; '1' => x_i (comienza a rotar)
-			clk: in std_logic;
-			x_n, y_n, z_n: out std_logic_vector(N-1 downto 0);
-			flag_rot: out std_logic	
-			);
+	generic(VECT_WIDE: natural := 13;
+			ANG_WIDE: natural := 15);
+	port(
+		x_0, y_0, z_0: in std_logic_vector(VECT_WIDE-1 downto 0);
+		alfa, beta, gama: in std_logic_vector(ANG_WIDE-1 downto 0);
+		ctrl: in std_logic;		--'0' => x_0; '1' => x_i (comienza a rotar)
+		clk: in std_logic;
+		x_n, y_n, z_n: out std_logic_vector(VECT_WIDE-1 downto 0);
+		flag_rot: out std_logic	
+		);
 	end component;
 	
 	component generador_direcciones is
@@ -99,18 +103,18 @@ architecture rotador3d_arq of rotador3d is
 	signal xn_reg, yn_reg, zn_reg: std_logic_vector(COORD_W-1 downto 0);
 	signal dpr_tick_aux : std_logic:= '0';
 	-- a rotacion_ctrl
-	signal alfa_aux, beta_aux, gamma_aux: std_logic_vector(M-1 downto 0);
+	signal alfa_aux, beta_aux, gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0);
 	signal ena_ang, ena_rot : std_logic:= '0';
 	-- generador_direcciones 
 	signal addrx_aux, addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
+	
 	-- variables de estado ---------------------------
 	type t_estado is (REPOSO, SHIFT_REG, ROTAR, SHIFT_REG_DPR,
 						ESCRITURA_DPR);
 	signal estado_act, estado_sig : t_estado;
-
 	-- señales para visualizar los estados en gtkwave ------------------
-	signal estado_actual        : std_logic_vector(2 downto 0) := "000";
-	signal estado_siguiente     : std_logic_vector(2 downto 0) := "000";
+	signal estado_actual		: std_logic_vector(2 downto 0) := "000";
+	signal estado_siguiente   	: std_logic_vector(2 downto 0) := "000";
 
 begin
 
@@ -131,8 +135,8 @@ begin
 	--######################################################################--
 	
 	rotador: cordic3d
-	generic map(N => COORD_W,
-				M => M)
+	generic map(VECT_WIDE => COORD_W,
+				ANG_WIDE => ANG_WIDE)
 	port map(
 		x_0 => x0_aux, y_0 => y0_aux, z_0 => z0_aux,
 		alfa => alfa_aux, beta => beta_aux, gama => gamma_aux,
@@ -157,14 +161,14 @@ begin
    
 	-- lógica de próximo estado -------------------------
   
-	prox_estado: process(estado_act, ena, data_tick, flag_fin)
+	prox_estado: process(estado_act, ena, coord_ready, flag_fin)
 	begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
 		-- zcount_sig <= zcount_act;
 		case estado_act is
 			when REPOSO =>
-				if (ena = '1' and data_tick = '1') then
+				if (ena = '1' and coord_ready = '1') then
 					estado_sig <= SHIFT_REG;
 					end if;        
 			when SHIFT_REG => -- duración 1 ciclo
@@ -208,7 +212,7 @@ begin
 
 	enable_ang: ena_20mili --habilita cada 20 ms el cambio de angulo
 	generic map( N => 512 )
-		--generic map( N => 1048576 )	-- cantidad de ciclos a contar
+	--generic map( N => 1048576 )	-- cantidad de ciclos a contar
 	port map(
 			clk => clk, rst => rst, ena => ena,
 			sal => ena_ang
@@ -217,7 +221,7 @@ begin
 	ena_rot <= ena and ena_ang;
 	
 	ctrl_rot: rotacion_ctrl
-		generic map(M => M, 	--longitud del angulo a rotar
+		generic map(M => ANG_WIDE, 	--longitud del angulo a rotar
 				N => COORD_W) 	--longitud del dato a rotar
 		port map(
 			clk => clk, rst => rst, ena => ena_rot,
@@ -238,6 +242,7 @@ begin
 	-- Salidas ------------------------------------------------
 	-- ########################################################
 
+	coord_ok <= regin_tick;
 	addr_dpr <= addrx_aux & addry_aux;
 	dpr_tick <= dpr_tick_aux;
 	   

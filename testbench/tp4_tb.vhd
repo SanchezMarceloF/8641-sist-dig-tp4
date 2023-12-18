@@ -6,7 +6,7 @@ use std.textio.all;
 
 -- declaracion de entidad
 entity tp4_tb is
-	generic(COORD_W: integer:= 13;  --long coordenadas x, y, z.
+	generic(COORD_W: integer:= 14;  --long coordenadas x, y, z.
 			ANG_W: integer:= 15;    --long angulos de rotacion
 			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
 	        DATA_DP_W: natural:= 1;
@@ -110,7 +110,6 @@ architecture tp4_tb_arq of tp4_tb is
 	signal tx_tb, tx_ena: std_logic:='0';
 	signal pulsadores_tb: std_logic_vector(5 downto 0);
 	signal vga_clear_tb: std_logic:= '0';
-	--signal  xin, yin, zin: std_logic_vector(COORD_W-1 downto 0);
     -- a SRAM externa --------------------------
 	signal adv_tb, mt_clk_tb, mt_cre_tb : std_logic;
 	signal we_n_tb, oe_n_tb : std_logic;
@@ -129,14 +128,15 @@ architecture tp4_tb_arq of tp4_tb is
     -- file datos  : text open read_mode is "test_files/datos.bin";
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
 	file datos_ram  : text open read_mode is
-        "test_files/coord_linea_ptofijo-16_ram.bin";
+        "test_files/coord_linea_ptofijo-16_ram.txt";
 	signal word : std_logic_vector(7 downto 0);
+	signal word_sram : std_logic_vector(7 downto 0);
     
 	
 begin 
 
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
-	pulsadores_tb <= "010010";
+	pulsadores_tb <= "010000";
 	rst_tb <= '1' after 20 ns, '0' after 100 ns;
 	ena_tb <= '0' after 40 ns, '1' after 203 ns;
 	tx_ena <= '1' after 500 ns;
@@ -186,53 +186,41 @@ begin
 		wait until rising_edge(ena_tb);
 		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
 			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
-			for j in 1 to SRAM_ROW_LEN loop
-				for i in 1 to 3 loop
-					wait until falling_edge(oe_n_tb); 
+			for i in 1 to 3 loop
+				wait until falling_edge(oe_n_tb);
+				for j in 0 to 15 loop
 					read(linea, ch);   -- se extrae un entero de la linea
-					dio_sram_tb(15 downto 8) <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					read(linea, ch);   -- se extrae un entero de la linea
-					dio_sram_tb(7 downto 0) <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					report "dio_sram: " & integer'image(to_integer(unsigned(dio_sram_tb)));
+					word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					wait for 1 ps;
+					dio_sram_tb (15-j) <= word_sram(0);
 				end loop;
 			end loop;
 		end loop;
 		file_close(datos_ram); -- cierra el archivo
 	end process Test_sram;
+	
+	-- Test_sram: process
+		-- variable linea: line;
+		-- variable ch: character:= ' ';
+		-- --variable aux: bit;
+	-- begin
+		-- wait until rising_edge(ena_tb);
+		-- while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			-- readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+			-- for j in 1 to SRAM_ROW_LEN loop
+				-- for i in 1 to 3 loop
+					-- wait until falling_edge(oe_n_tb); 
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- dio_sram_tb(15 downto 8) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- dio_sram_tb(7 downto 0) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- report "dio_sram: " & integer'image(to_integer(unsigned(dio_sram_tb)));
+				-- end loop;
+			-- end loop;
+		-- end loop;
+		-- file_close(datos_ram); -- cierra el archivo
+	-- end process Test_sram;
     
-
-
-
-
-----#################################################################
---     --   ::    Contador para generar datos aleatorios    ::      #         
---     --   ::    para emular comportamiento desde SRAM     ::      #
---------------------------------------------------------------------#
---    gen_data: entity work.counter                               --#
---    generic map(N => DATA_W+3)                                  --#
---    port map(                                                   --#
---        rst => rst_tb,                                          --#
---        rst_sync => '0',                                        --#
---        clk => clk_tb,                                          --#
---        ena => ena_gen_data,                                    --#
---        count => dio_sram_tb_aux                                --#
---    );                                                          --#
---    --ena_gen_data <= '1' after 119300 ns;                      --#
---    ena_gen_data <= not oe_n_tb;                                --#
---    process(dio_sram_tb_aux, ena_gen_data)                      --#
---    begin                                                       --#
---    if ena_gen_data = '1' then                                  --#
---        if dio_sram_tb_aux(DATA_W+2 downto 3) = DATA_MATCH then --#
---            dio_sram_tb <= EOF_WORD;                           --#
---        else                                                    --#
---            dio_sram_tb <= dio_sram_tb_aux(DATA_W+2 downto 3);  --#
---        end if;                                                 --#
---    else                                                        --#
---        dio_sram_tb <= (others => 'Z');                         --#
---    end if;                                                     --#
---    end process;                                                --#
-----#################################################################
-
 	DUT: tp4
 	generic map(COORD_W => COORD_W, --long coordenadas x, y, z.
 				ANG_W => ANG_W,    --long angulos de rotacion

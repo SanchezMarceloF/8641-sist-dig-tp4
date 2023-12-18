@@ -9,22 +9,22 @@ use IEEE.numeric_std.all;
 
 -- declaracion de entidad
 entity cordic is
-	generic(N: natural := 13;	--longitud de los vectores a rotar
-			M: natural := 15); 	--longitud del angulo
+	generic(VECT_WIDE: natural := 13;	--longitud de los vectores a rotar
+			ANG_WIDE: natural := 15); 	--longitud del angulo
 	port(
-		x_0, y_0: in std_logic_vector(N-1 downto 0);
-		phi_0: in std_logic_vector(M-1 downto 0); --angulo a rotar 
+		x_0, y_0: in std_logic_vector(VECT_WIDE-1 downto 0);
+		phi_0: in std_logic_vector(ANG_WIDE-1 downto 0); --angulo a rotar 
 		ctrl: in std_logic;		--'0' => x_0; '1' => x_i 
 		clk: in std_logic;
-		x_n, y_n: out std_logic_vector(N-1 downto 0);
-		phi_n: out std_logic_vector(M-1 downto 0);
+		x_n, y_n: out std_logic_vector(VECT_WIDE-1 downto 0);
+		phi_n: out std_logic_vector(ANG_WIDE-1 downto 0);
 		flag: out std_logic
 	);
 end;
 
 architecture cordic_arq of cordic is
 
-	--constant ANG_CERO: std_logic_vector(M-1 downto 0):=(others => '0');
+	constant BITS_DIV: natural:= 9;
 	
 	component mux is
 		generic(N :integer:= 17);
@@ -83,28 +83,28 @@ architecture cordic_arq of cordic is
 	end component;
 	
 	component acumulador_ang is
-		generic(N: integer:= 15);
+	generic(ANG_WIDE: integer:= 13);
 	port(
-		phi_0: in std_logic_vector(N-1 downto 0);
+		phi_0: in std_logic_vector(ANG_WIDE-1 downto 0);
 		count: in std_logic_vector(3 downto 0);
 		clk: in std_logic;
 		ctrl: in std_logic;		--'0' => phi_0; '1' => z_i
 		di: out std_logic;
-		phi_n: out std_logic_vector(N-1 downto 0)
+		phi_n: out std_logic_vector(ANG_WIDE-1 downto 0)
 		);
 	end component;
 	
 	
 	--declaracion de señales
 	
-	signal A1_up, sal_mux_up, xn_bef, sal_shift_up: std_logic_vector(N-1 downto 0);
-	signal A1_down, sal_mux_down, yn_bef, sal_shift_down: std_logic_vector(N-1 downto 0);
+	signal A1_up, sal_mux_up, xn_bef, sal_shift_up: std_logic_vector(VECT_WIDE-1 downto 0);
+	signal A1_down, sal_mux_down, yn_bef, sal_shift_down: std_logic_vector(VECT_WIDE-1 downto 0);
 	signal sal_count: std_logic_vector(3 downto 0);
 	signal ctrlbrr_up, ctrlbrr_d: std_logic_vector(1 downto 0);
 	signal ctrl_aux, di_up, di_down, flag_aux, flag_angulo: std_logic;
-	signal zn_aux: std_logic_vector(M-1 downto 0);
-	signal yn_aux1, xn_aux1: std_logic_vector(N+5 downto 0);
-	signal yn_aux2, xn_aux2: std_logic_vector(N-1 downto 0);
+	signal zn_aux: std_logic_vector(ANG_WIDE-1 downto 0);
+	signal yn_aux1, xn_aux1: std_logic_vector(VECT_WIDE-1+BITS_DIV downto 0);
+	signal yn_aux2, xn_aux2: std_logic_vector(VECT_WIDE-1 downto 0);
 	
 begin
 	
@@ -112,7 +112,7 @@ begin
 --=======================================================
 	
 	mux_up: mux
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			A_0 => x_0,
 			A_1 => A1_up,
@@ -121,7 +121,7 @@ begin
 	);
 	
 	reg_up: registro
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			D => sal_mux_up,
 			clk => clk,
@@ -130,10 +130,10 @@ begin
 			Q => xn_bef
 	);
 	
-	ctrlbrr_up <= yn_bef(N-1) & "0";
+	ctrlbrr_up <= yn_bef(VECT_WIDE-1) & "0";
 	
 	shift_up: barrer_shifter
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			ent => yn_bef,
 			shift => sal_count,
@@ -144,7 +144,7 @@ begin
 	di_down <= not di_up;
 	
 	sum_up: sumador
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			A => xn_bef,
 			B => sal_shift_up, 
@@ -157,7 +157,7 @@ begin
 	ctrl_aux <= not ctrl;
 	
 	cont: contador
-		generic map (L => N)
+		generic map (L => VECT_WIDE)
 		port map(
 			clk => clk,
 			rst => ctrl_aux,
@@ -169,7 +169,7 @@ begin
 --Bloque inferior	
 	
 	sum_down: sumador
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			A => yn_bef,
 			B => sal_shift_down, 
@@ -180,10 +180,10 @@ begin
     );
 	
 
-	ctrlbrr_d <= xn_bef(N-1) & "0";
+	ctrlbrr_d <= xn_bef(VECT_WIDE-1) & "0";
 	
 	shift_down: barrer_shifter
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			ent => xn_bef,
 			shift => sal_count,
@@ -192,7 +192,7 @@ begin
 	);
 	
 	reg_down: registro
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			D => sal_mux_down,
 			clk => clk,
@@ -202,7 +202,7 @@ begin
 	);
 	
 	mux_down: mux
-		generic map(N => N)
+		generic map(N => VECT_WIDE)
 		port map(
 			A_0 => y_0,
 			A_1 => A1_down,
@@ -214,7 +214,7 @@ begin
 	--============================================================
 	
 	acum: acumulador_ang
-		generic map(N => M)
+		generic map(ANG_WIDE => ANG_WIDE)
 		port map(
 			phi_0 => phi_0,
 			count => sal_count,
@@ -227,10 +227,10 @@ begin
 	--Escalamiento
 	--============================================================
 	
-	--se divide el vector por 1,64102564=[64/39] (aprox ganancia del Cordic)
+	--se divide el vector por 1,646302=[512/311] (aprox ganancia del Cordic)
 	--así se igualan los módulos para poder rotar en la siguiente etapa.
-	xn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_up)) * 39, N+6));
-	yn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_down)) * 39, N+6));
+	xn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_up)) * 311, VECT_WIDE+BITS_DIV));
+	yn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_down)) * 311, VECT_WIDE+BITS_DIV));
 	
 	
 	--Para ángulo nulo salida igual a la entrada
@@ -241,8 +241,8 @@ begin
 			xn_aux2 <= x_0;
 			yn_aux2 <= y_0;
 		else
-			xn_aux2 <= xn_aux1(N+5 downto 6);
-			yn_aux2 <= yn_aux1(N+5 downto 6);
+			xn_aux2 <= xn_aux1(VECT_WIDE-1+BITS_DIV downto BITS_DIV);
+			yn_aux2 <= yn_aux1(VECT_WIDE-1+BITS_DIV downto BITS_DIV);
 		end if;
 	end process;
 

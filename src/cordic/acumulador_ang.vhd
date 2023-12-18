@@ -5,14 +5,14 @@ use IEEE.numeric_std.all;
 
 -- declaracion de entidad
 entity acumulador_ang is
-	generic(N: integer:= 13);
+	generic(ANG_WIDE: integer:= 13);
 	port(
-		phi_0: in std_logic_vector(N-1 downto 0);
+		phi_0: in std_logic_vector(ANG_WIDE-1 downto 0);
 		count: in std_logic_vector(3 downto 0);
 		clk: in std_logic;
 		ctrl: in std_logic;		--'0' => phi_0; '1' => z_i
 		di: out std_logic;
-		phi_n: out std_logic_vector(N-1 downto 0)
+		phi_n: out std_logic_vector(ANG_WIDE-1 downto 0)
 		);
 end;
 
@@ -56,8 +56,8 @@ architecture acumulador_ang_arq of acumulador_ang is
 
 	--señales
 	
-	signal zn_aux, sal_rom, B1_aux: std_logic_vector(N-1 downto 0);
-	signal sal_mux, sal_reg: std_logic_vector(N-1 downto 0);
+	signal zn_aux, sal_rom, B1_aux: std_logic_vector(ANG_WIDE-1 downto 0);
+	signal sal_mux, sal_reg: std_logic_vector(ANG_WIDE-1 downto 0);
 	signal di_aux: std_logic;
 	
 
@@ -65,7 +65,7 @@ begin
 	
 
 	mux_up: mux
-		generic map(N => N)
+		generic map(N => ANG_WIDE)
 		port map(
 			A_0 => phi_0,
 			A_1 => zn_aux,
@@ -74,7 +74,7 @@ begin
 	);
 	
 	reg_z: registro
-		generic map(N => N)
+		generic map(N => ANG_WIDE)
 		port map(
 			D => sal_mux,
 			clk => clk,
@@ -101,10 +101,10 @@ begin
 				"000000000000011" when to_integer(unsigned(count)) = 12 else
 				"000000000000001";
 
-	di_aux <= not sal_reg(N-1);		
+	di_aux <= not sal_reg(ANG_WIDE-1);		
 				
 	sum_z: sumador
-		generic map(N => N)
+		generic map(N => ANG_WIDE)
 		port map(
 			A => sal_reg,
 			B => sal_rom, 
