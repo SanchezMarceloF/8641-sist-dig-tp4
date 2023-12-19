@@ -88,12 +88,8 @@ architecture tp4_tb_arq of tp4_tb is
 		blu_o: out std_logic_vector(1 downto 0);	
 		hs, vs: out std_logic;	
 		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0);
-		-- para capturar en simulacion
-		tick_dpr: out std_logic;
-		pxl_x: out std_logic_vector(ADDR_DP_W-1 downto 0);
-		pxl_y: out std_logic_vector(ADDR_DP_W-1 downto 0)
-	);
+		sal_7seg: out std_logic_vector(7 downto 0)
+		);
    end component;
     
 	-- señales de prueba -----------------------------------------
@@ -127,21 +123,17 @@ architecture tp4_tb_arq of tp4_tb is
 	signal red_o_tb: std_logic_vector(2 downto 0);
 	signal grn_o_tb: std_logic_vector(2 downto 0);
 	signal blu_o_tb: std_logic_vector(1 downto 0);	
-	signal hs_tb, vs_tb: std_logic;	
-	-- para capturar datos y escribir en archivo
-	signal tick_dpr_tb: std_logic;
-	signal pxl_x_tb, pxl_y_tb:	std_logic_vector(ADDR_DP_W-1 downto 0);
-	-- para operar con archivo de datos -------------
-	-- file datos  : text open read_mode is "test_files/datos.bin";
+	signal hs_tb, vs_tb: std_logic;		
+    -- para operar con archivo de datos -------------
+    -- file datos  : text open read_mode is "test_files/datos.bin";
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
 	file datos_ram 	: text open read_mode is
 					--"test_files/coor_linea_ptofijo-16_ram.txt";
 					"test_files/coordenadas_ptofijoDEC100-16.txt";
-	file output	: text open write_mode is
-					"test_files/output.txt";
 	signal word : std_logic_vector(7 downto 0);
 	signal word_sram : std_logic_vector(7 downto 0);
-    	
+    
+	
 begin 
 
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
@@ -151,36 +143,6 @@ begin
 	tx_ena <= '1' after 500 ns;
 	vga_clear_tb <= '1' after 350 us;
 
-	Test_sram: process
-		variable linea: line;
-		variable ch: character:= ' ';
-	begin
-		wait until rising_edge(ena_tb);
-		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
-			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
-			for i in 1 to 3 loop
-				wait until falling_edge(oe_n_tb);
-				for j in 0 to 15 loop
-					read(linea, ch);   -- se extrae un entero de la linea
-					word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					wait for 1 ps;
-					dio_sram_tb (15-j) <= word_sram(0);
-				end loop;
-			end loop;
-		end loop;
-		file_close(datos_ram); -- cierra el archivo
-	end process Test_sram;
-	
-	output_file: process
-	variable linea: line;
-	variable ch: character:= ' ';
-	begin
-		wait until falling_edge(tick_dpr_tb);
-		write(linea, to_integer(unsigned(pxl_x_tb)));
-		write(linea, ch);
-		write(linea, to_integer(unsigned(pxl_y_tb)));
-		writeline(output, linea);
-	end process output_file;
 
 	Test_uart: process
 		variable linea: line;
@@ -199,17 +161,14 @@ begin
 					wait for 960 ns;
 					-- bits de datos -------
 					for i in 0 to 7 loop
-						if j = 1 then
-							rx_tb <= '1';
-						else
-							rx_tb <= word(i);
-						end if;
+						--word(i) <= std_logic_vector(to_unsigned(character'pos(ch),i));
+						rx_tb <= word(i);
 						wait for 960 ns;
 					end loop;    
 					-- reposo ---------------
 					rx_tb <= '1'; 
 					wait for 4000 ns;
-					-- report "ch uart: " & integer'image(to_integer(unsigned(word)));
+					report "ch uart: " & integer'image(to_integer(unsigned(word)));
 				end loop;    
 			end loop;
 		end loop;
@@ -220,7 +179,49 @@ begin
 		--	"Fin de la simulacion" severity failure;
 	end process Test_uart;
 
-	  
+	Test_sram: process
+		variable linea: line;
+		variable ch: character:= ' ';
+		--variable aux: bit;
+	begin
+		wait until rising_edge(ena_tb);
+		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+			for i in 1 to 3 loop
+				wait until falling_edge(oe_n_tb);
+				for j in 0 to 15 loop
+					read(linea, ch);   -- se extrae un entero de la linea
+					word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					wait for 1 ps;
+					dio_sram_tb (15-j) <= word_sram(0);
+				end loop;
+			end loop;
+		end loop;
+		file_close(datos_ram); -- cierra el archivo
+	end process Test_sram;
+	
+	-- Test_sram: process
+		-- variable linea: line;
+		-- variable ch: character:= ' ';
+		-- --variable aux: bit;
+	-- begin
+		-- wait until rising_edge(ena_tb);
+		-- while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			-- readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+			-- for j in 1 to SRAM_ROW_LEN loop
+				-- for i in 1 to 3 loop
+					-- wait until falling_edge(oe_n_tb); 
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- dio_sram_tb(15 downto 8) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- dio_sram_tb(7 downto 0) <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- report "dio_sram: " & integer'image(to_integer(unsigned(dio_sram_tb)));
+				-- end loop;
+			-- end loop;
+		-- end loop;
+		-- file_close(datos_ram); -- cierra el archivo
+	-- end process Test_sram;
+    
 	DUT: tp4
 	generic map(COORD_W => COORD_W, --long coordenadas x, y, z.
 				ANG_W => ANG_W,    --long angulos de rotacion
@@ -261,11 +262,7 @@ begin
 		blu_o => blu_o_tb,	
 		hs => hs_tb, vs => vs_tb,
 		-- a 7 segmentos
-		sal_7seg => open,
-		-- para capturar en simulacion
-		tick_dpr => tick_dpr_tb,
-		pxl_x => pxl_x_tb,
-		pxl_y => pxl_y_tb
+		sal_7seg => open		
 	);
   
 end tp4_tb_arq;

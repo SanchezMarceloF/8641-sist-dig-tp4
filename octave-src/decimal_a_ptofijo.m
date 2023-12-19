@@ -8,7 +8,7 @@ function ret = decimal_a_ptofijo (N, M, x)
   if (x<0)
 	% le sumo 2^N si es negativo porque dec2bin solo acepta numeros
     % positivos	
-    y = x*(2^M)+2^(M+1);
+    y = x*(2^M)+2^(N);
   else  
     y = x*(2^M);
   endif

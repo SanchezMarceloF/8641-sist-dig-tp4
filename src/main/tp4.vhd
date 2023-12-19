@@ -54,7 +54,11 @@ entity tp4 is
 		blu_o: out std_logic_vector(1 downto 0);	
 		hs, vs: out std_logic;
 		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0)
+		sal_7seg: out std_logic_vector(7 downto 0);
+		-- para capturar en simulacion
+		tick_dpr: out std_logic;
+		pxl_x: out std_logic_vector(ADDR_DP_W-1 downto 0);
+		pxl_y: out std_logic_vector(ADDR_DP_W-1 downto 0)
 	);
 	
 	-- *-----------------------* 
@@ -554,17 +558,21 @@ begin
  -- |                               Salidas                                   |
  -- |                                                                         |
  -- +-------------------------------------------------------------------------+
-    -- a VGA ----------------------------------- 
+	-- a VGA ----------------------------------- 
 	-- red_o <= red_o(vga_ctrl)
 	-- grn_o <= red_o(vga_ctrl)
 	blu_o <= blu_aux; ---CAMBIAR
 	hs <= hs_aux;
 	vs <= vs_aux;
-
  	-- a SRAM externa --------------------------
 	adv <= '0';
 	mt_clk <= '0';
 	mt_cre <= '0';
+	-- a testbench (para simulación)
+	tick_dpr <= dpr_tick_wire;
+	pxl_x	<= addr_porta_in(ADDR_DP_W*2-1 downto ADDR_DP_W);
+	pxl_y <= addr_porta_in(ADDR_DP_W-1 downto 0);
+	
 	-- we_n, oe_n <= (sram_ctrl);
 	-- ce_n, ub_n, lb_n <= ce_a_n, ub_a_n, lb_a_n (sram_ctrl);
 	-- address_sram <= ad (sram_ctrl);
