@@ -103,7 +103,10 @@ architecture rotador3d_arq of rotador3d is
 	signal xn_reg, yn_reg, zn_reg: std_logic_vector(COORD_W-1 downto 0);
 	signal dpr_tick_aux : std_logic:= '0';
 	-- a rotacion_ctrl
-	signal alfa_aux, beta_aux, gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0);
+	signal alfa_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "010100000000000";
+	signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "101000000000000";	
+	--signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000101000000000";	
+	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
 	signal ena_ang, ena_rot : std_logic:= '0';
 	-- generador_direcciones 
 	signal addrx_aux, addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
@@ -161,7 +164,7 @@ begin
    
 	-- lógica de próximo estado -------------------------
   
-	prox_estado: process(estado_act, ena, coord_ready, flag_fin)
+	prox_estado: process(estado_act, ena, coord_ready, flag_fin, xn_aux)
 	begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
@@ -175,12 +178,16 @@ begin
 					estado_sig <= ROTAR;
 			when ROTAR =>
 				if (flag_fin = '1') then
-					estado_sig <= SHIFT_REG_DPR;
+					if (signed(xn_aux) >= 0) then -- elimina transparencia
+						estado_sig <= SHIFT_REG_DPR;
+					else 
+						estado_sig <= ESCRITURA_DPR;
+					end if;
 				end if;
 			when SHIFT_REG_DPR => -- duración 1 ciclo
 				estado_sig <= ESCRITURA_DPR;
 			when ESCRITURA_DPR => -- duración 1 ciclo
-				if ena = '1' then
+				if (ena = '1' and coord_ready = '1') then
 					estado_sig <= SHIFT_REG;
 				else
 					estado_sig <= REPOSO;
@@ -211,8 +218,8 @@ begin
 	end process;
 
 	enable_ang: ena_20mili --habilita cada 20 ms el cambio de angulo
-	generic map( N => 512 )
-	--generic map( N => 1048576 )	-- cantidad de ciclos a contar
+	--generic map( N => 512 )
+	generic map( N => 1048576 )	-- cantidad de ciclos a contar
 	port map(
 			clk => clk, rst => rst, ena => ena,
 			sal => ena_ang
@@ -226,7 +233,8 @@ begin
 		port map(
 			clk => clk, rst => rst, ena => ena_rot,
 			sel => pulsadores,
-			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
+			--alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
+			alfa => open, beta => open, gamma => open
 	);
 	
 	gen_dir: generador_direcciones
@@ -235,7 +243,8 @@ begin
 		L => ADDR_DP_W --longitud de las direcciones
 	)
 	port map(
-		x => xn_reg, y => yn_reg,
+		--x => xn_reg, y => yn_reg,
+		x => yn_reg, y => zn_reg,
 		Addrx => addrx_aux, Addry => addry_aux --direcciones a port A dual port RAM
 	);
 	

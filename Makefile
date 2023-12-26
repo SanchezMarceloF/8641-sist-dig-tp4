@@ -14,7 +14,6 @@ VHDLEX = .vhd 	# extensión archivos vhdl
 
 # testbench
 TESTBENCHPATH = testbench/${TESTBENCH}$(VHDLEX)
-#
 
 #GHDL CONFIG
 GHDL_CMD = ghdl
@@ -24,12 +23,18 @@ GHDL_FLAGS  = --ieee=standard --warn-no-vital-generic
 SIMDIR = simulation
 # Simulation break condition
 #GHDL_SIM_OPT = --assert-level=error
-GHDL_SIM_OPT = --stop-time=450000ns
+GHDL_SIM_OPT = --stop-time=3451000ns
 
 WAVEFORM_VIEWER = gtkwave
 # WAVEFORM_VIEWER = /C/Users/MarceloFernando/GTKWAVE/bin/gtkwave # por si no funca el Path ( WIN :( )
 
-all: compile run view
+# plot path
+PLOT_PATH = octave-src/outploter
+# PLOTER = octave-cli --persist
+PLOTER = python
+PLOT_EXT = py
+
+all: compile run view plot
 
 new:
 	@echo "Setting up project ${PROJECT}"
@@ -48,7 +53,7 @@ endif
 
 run:
 	#$(SIMDIR)/$(TESTBENCH) $(GHDL_SIM_OPT) --vcdgz=$(SIMDIR)/$(TESTBENCH).vcdgz
-	#lo cambio por el directorio actual porque no se genera el objeto en binario
+	# lo cambio por el directorio actual porque no se genera el objeto en binario
 	$(GHDL_CMD) -r --workdir=$(SIMDIR) $(TESTBENCH) $(GHDL_SIM_OPT) --vcdgz=$(SIMDIR)/$(TESTBENCH).vcdgz
 
 view:
@@ -56,6 +61,10 @@ view:
 	# luego lo toma gktwave y recupera las señales guardadas que se guardaron con "ctrl+s" desde gui
 	# fuente: http://billauer.co.il/blog/2017/08/linux-vcd-waveform-viewer/
 	gunzip --stdout $(SIMDIR)/$(TESTBENCH).vcdgz | $(WAVEFORM_VIEWER) --vcd $(SIMDIR)/$(TESTBENCH).sav
+	
+plot:
+	# grafico de los puntos del mundito con octave
+	$(PLOTER) octave-src/outploter.$(PLOT_EXT)
 
 clean :
 	$(GHDL_CMD) --clean --workdir=simulation

@@ -136,7 +136,7 @@ architecture tp4_tb_arq of tp4_tb is
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
 	file datos_ram 	: text open read_mode is
 					--"test_files/coor_linea_ptofijo-16_ram.txt";
-					"test_files/coordenadas_ptofijoDEC100-16.txt";
+					"test_files/coordenadas_ptofijoDEC3-16.txt";
 	file output	: text open write_mode is
 					"test_files/output.txt";
 	signal word : std_logic_vector(7 downto 0);
