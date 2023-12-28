@@ -11,7 +11,7 @@ use IEEE.numeric_std.all;
 --longitud de 9 bits para las direcciones	
 
 entity generador_direcciones is
-	generic(N: integer := 16;	--longitud de los vectores
+	generic(N: integer := 14;	--longitud de los vectores
 			L: integer := 9);	--longitud de las direcciones
 	port(
 		--flag: in std_logic;	--me avisa cuando termina de rotar.
@@ -25,13 +25,13 @@ end;
 
 architecture generador_direcciones_arq of generador_direcciones is
 
-	--Para escalar el vector normalizado en 2048 a 320 necesito
+	--Para escalar el vector normalizado en 8192 a 320 necesito
 	--dividir por 25,6 = 128/5. Es lo mismo que multiplicar por 5
 	--y luego dividir por 128 (ó descartar los 7 bits menos
 	--sinificativos del multiplicador)
 	
 	constant M: integer:= 2*N; --tamanio vector multiplicacion
-	constant BIAS: std_logic_vector(L-1 downto 0):= std_logic_vector(to_signed(160,L));
+	constant BIAS: std_logic_vector(L-1 downto 0):= std_logic_vector(to_signed(161,L));
 	--constant SUMY: std_logic_vector(L-1 downto 0):= "010100010"; --162
 	constant VAL_MULT: integer := 5;
 	--constant CERO: std_logic:= '0';

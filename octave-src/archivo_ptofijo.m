@@ -25,17 +25,17 @@ function archivo_ptofijo(file, ROW, COL, N_ROWS, DECIM)
 	% agregado del fin de archivo
 	datos_ptofijo(N_ROWS/DECIM+1, 1:N*3) = dec2bin((2^(N*3))-1);
 	
-	plot(datos_decimados(:,2), datos_decimados(:,3),".")
+	% plot(datos_decimados(:,2), datos_decimados(:,3),".")
 	
 	% salida en punto fijo
 	datos_ptofijo
 	% salida en decimal
 	% for i=1 : N_ROWS+1 
-	% for j=0 : 2
-	 % result = bin2dec(num2str(datos_ptofijo(i , (j*N+1):((j+1)*N))));
-	% printf("%i\t",result); 
-	% endfor
-	% printf("\n");
+		% for j=0 : 2
+			% result = bin2dec(num2str(datos_ptofijo(i , (j*N+1):((j+1)*N))));
+			% printf("%i\t",result); 
+		% endfor
+		% printf("\n");
 	% endfor
 
 	% guarda en archivo

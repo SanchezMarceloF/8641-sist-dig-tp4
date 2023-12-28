@@ -74,7 +74,7 @@ architecture tp4_tb_arq of tp4_tb is
 		tx : out std_logic;
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
-		pulsadores: in std_logic_vector(5 downto 0);
+		pulsadores: in std_logic_vector(1 downto 0);
 		vga_clear: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
@@ -112,7 +112,7 @@ architecture tp4_tb_arq of tp4_tb is
     -- a UART ----------------------------------
 	signal rx_tb : std_logic:= '1';
 	signal tx_tb, tx_ena: std_logic:='0';
-	signal pulsadores_tb: std_logic_vector(5 downto 0);
+	signal pulsadores_tb: std_logic_vector(1 downto 0);
 	signal vga_clear_tb: std_logic:= '0';
     -- a SRAM externa --------------------------
 	signal adv_tb, mt_clk_tb, mt_cre_tb : std_logic;
@@ -131,6 +131,7 @@ architecture tp4_tb_arq of tp4_tb is
 	-- para capturar datos y escribir en archivo
 	signal tick_dpr_tb: std_logic;
 	signal pxl_x_tb, pxl_y_tb:	std_logic_vector(ADDR_DP_W-1 downto 0);
+	signal pxl_x, pxl_y: integer;
 	-- para operar con archivo de datos -------------
 	-- file datos  : text open read_mode is "test_files/datos.bin";
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
@@ -145,7 +146,7 @@ architecture tp4_tb_arq of tp4_tb is
 begin 
 
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
-	pulsadores_tb <= "100000";
+	pulsadores_tb <= "10";
 	rst_tb <= '1' after 20 ns, '0' after 100 ns;
 	ena_tb <= '0' after 40 ns, '1' after 203 ns;
 	tx_ena <= '1' after 500 ns;
@@ -176,10 +177,15 @@ begin
 	variable ch: character:= ' ';
 	begin
 		wait until falling_edge(tick_dpr_tb);
-		write(linea, to_integer(unsigned(pxl_x_tb)));
+		pxl_x <= to_integer(unsigned(pxl_x_tb));
+		write(linea, pxl_x);
 		write(linea, ch);
-		write(linea, to_integer(unsigned(pxl_y_tb)));
+		pxl_y <= to_integer(unsigned(pxl_y_tb));
+		write(linea, pxl_y);
 		writeline(output, linea);
+		if (pxl_x > 321 or pxl_y > 321) then 
+			report "pxl_x: " & integer'image(pxl_x) & " | pxl_y: " & integer'image(pxl_y);
+		end if;
 	end process output_file;
 
 	Test_uart: process

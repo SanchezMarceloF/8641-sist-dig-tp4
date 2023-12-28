@@ -103,10 +103,10 @@ architecture rotador3d_arq of rotador3d is
 	signal xn_reg, yn_reg, zn_reg: std_logic_vector(COORD_W-1 downto 0);
 	signal dpr_tick_aux : std_logic:= '0';
 	-- a rotacion_ctrl
-	signal alfa_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "010100000000000";
-	signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "101000000000000";	
+	signal alfa_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
+	signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
 	--signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000101000000000";	
-	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
+	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "011111111111111";
 	signal ena_ang, ena_rot : std_logic:= '0';
 	-- generador_direcciones 
 	signal addrx_aux, addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);

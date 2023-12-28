@@ -24,7 +24,7 @@ end;
 
 architecture cordic_arq of cordic is
 
-	constant BITS_DIV: natural:= 9;
+	constant BITS_DIV: natural:= 10; --1,648953=[1024/621]
 	
 	component mux is
 		generic(N :integer:= 17);
@@ -227,10 +227,10 @@ begin
 	--Escalamiento
 	--============================================================
 	
-	--se divide el vector por 1,646302=[512/311] (aprox ganancia del Cordic)
+	--se divide el vector por 1,648953=[1024/621] (aprox ganancia del Cordic)
 	--así se igualan los módulos para poder rotar en la siguiente etapa.
-	xn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_up)) * 311, VECT_WIDE+BITS_DIV));
-	yn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_down)) * 311, VECT_WIDE+BITS_DIV));
+	xn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_up)) * 621, VECT_WIDE+BITS_DIV));
+	yn_aux1 <= std_logic_vector(to_signed(to_integer(signed(A1_down)) * 621, VECT_WIDE+BITS_DIV));
 	
 	
 	--Para ángulo nulo salida igual a la entrada

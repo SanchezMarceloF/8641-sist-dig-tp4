@@ -40,7 +40,7 @@ entity tp4 is
 		tx : out std_logic;
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
-		pulsadores: in std_logic_vector(5 downto 0);
+		pulsadores: in std_logic_vector(1 downto 0);
 		vga_clear: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
@@ -88,10 +88,10 @@ entity tp4 is
 --	attribute loc of ena: signal is "G18";
 --    
 --  -- Pulsadores
---  -- attribute loc of pulsadores: signal is "D18 E18 H13"; --CHECK OK
+--  attribute loc of pulsadores: signal is "H13 E18"; --CHECK OK
 --
 --	--Boton borrado dpr
---	attribute loc of vga_clear: signal is "H13"; --CHECK OK
+--	attribute loc of vga_clear: signal is "D18"; --CHECK OK
 --  
 --  -- UART
 --	attribute loc of rx: signal is "G15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
@@ -305,7 +305,7 @@ architecture tp4_arq of tp4 is
 	end component;	
 
     -- Señales ----------------------------------------------
-    signal count_3d: std_logic_vector(4 downto 0);
+    signal pulsadores_aux: std_logic_vector(5 downto 0):= "000000";
 	-- Dual port RAM ----------------------------------------
     signal dpr_tick_wire: std_logic;
     signal x_0_wire: std_logic_vector(COORD_W-1 downto 0);
@@ -356,33 +356,6 @@ architecture tp4_arq of tp4 is
 	
 	
 begin	
-
---###########################################################
-     -- ::  Contador para emular fin del  rotador 3D  ::     #
-     --------------------------------------------------------#
-	-- gen_tick3D: entity work.counter                       --#
-	-- generic map (N => 5) --quiero contar 32 ciclos        --#
-	-- port map(                                             --#
-		-- rst => rst,                                       --#
-		-- clk => clk,                                       --#
-		-- rst_sync => '0',                                  --#
-		-- ena => '1', -- que cuente siempre                 --#
-		-- count => count_3d                                 --#
-	-- );                                                    --#
-	
-	-- -- genero un tick cada 32 ciclos emulando el rotador 3D #
-	-- process(count_3d)                                     --# 
-	-- begin                                                 --#
-		-- if(count_3d = "10001") then -- numero arbitrario  --#
-			-- flag_fin_3d <= '1';                           --#
-		-- else                                              --#
-			-- flag_fin_3d <= '0';                           --#
-		-- end if;                                           --#
-	-- end process;                                          --#
-                                                           -- --#
--- --###########################################################
-
-
  -- +-------------------------------------------------------------------------+
  -- |                                                                         |
  -- |                       Conexión de componentes                           |
@@ -489,6 +462,8 @@ begin
 		ena_count_tick => addr_tick_cordic_wire 
 	);
 	
+	pulsadores_aux <= "0000" & pulsadores;
+	
    rotador_3d_inst: rotador3d
 	generic map(
 		COORD_W => COORD_W, 	--longitud de los vectores
@@ -497,7 +472,7 @@ begin
 	)
 	port map(
 		rst => rst, ena => ena, clk => clk,
-		pulsadores => pulsadores,
+		pulsadores => pulsadores_aux,
 		x_0 => x_0_wire,
 		y_0 => y_0_wire,
 		z_0 => z_0_wire,
@@ -506,13 +481,6 @@ begin
 		addr_dpr => addr_porta_in,
 		dpr_tick => dpr_tick_wire
 	);
-
-	-- gen_dir: generador_direcciones
-	-- generic map(N => COORD_W, L => ADDR_DP_W)	--longitud de las direcciones
-	-- port map(
-		-- x => x_n_wire, y => y_n_wire,
-		-- Addrx => Addrx_aux, Addry => Addry_aux --direcciones a port A dual port RAM
-	-- );
 	
 	borrador: borrado_dpr
 	generic map(ADDR_W => 2*ADDR_DP_W, --long vectores direccionamiento
