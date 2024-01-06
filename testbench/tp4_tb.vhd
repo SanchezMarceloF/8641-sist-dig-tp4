@@ -67,7 +67,7 @@ architecture tp4_tb_arq of tp4_tb is
             DATA_W: natural := 16;
 		    ADDR_W: natural := 23
     );
-	port(
+		port(
 		clk, ena, rst: in std_logic;
 		-- a UART ----------------------------------
 		rx : in std_logic;
@@ -75,7 +75,7 @@ architecture tp4_tb_arq of tp4_tb is
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores: in std_logic_vector(1 downto 0);
-		vga_clear: in std_logic;
+		vga_clear_ext: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -86,7 +86,7 @@ architecture tp4_tb_arq of tp4_tb is
 		red_o: out std_logic_vector(2 downto 0);
 		grn_o: out std_logic_vector(2 downto 0);
 		blu_o: out std_logic_vector(1 downto 0);	
-		hs, vs: out std_logic;	
+		hs, vs: out std_logic;
 		-- a 7 segmentos
 		sal_7seg: out std_logic_vector(7 downto 0);
 		-- para capturar en simulacion
@@ -137,7 +137,7 @@ architecture tp4_tb_arq of tp4_tb is
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
 	file datos_ram 	: text open read_mode is
 					--"test_files/coor_linea_ptofijo-16_ram.txt";
-					"test_files/coordenadas_ptofijoDEC3-16.txt";
+					"test_files/coordenadas_ptofijoDEC100-16.txt";
 	file output	: text open write_mode is
 					"test_files/output.txt";
 	signal word : std_logic_vector(7 downto 0);
@@ -254,7 +254,7 @@ begin
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores => pulsadores_tb,
-		vga_clear => vga_clear_tb,
+		vga_clear_ext => vga_clear_tb,
 		-- a SRAM externa --------------------------
 	   adv => adv_tb, mt_clk => mt_clk_tb, mt_cre => mt_cre_tb,
 		we_n => we_n_tb, oe_n => oe_n_tb,

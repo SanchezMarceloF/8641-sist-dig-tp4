@@ -41,7 +41,7 @@ entity tp4 is
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores: in std_logic_vector(1 downto 0);
-		vga_clear: in std_logic;
+		vga_clear_ext: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -91,7 +91,7 @@ entity tp4 is
 --  attribute loc of pulsadores: signal is "H13 E18"; --CHECK OK
 --
 --	--Boton borrado dpr
---	attribute loc of vga_clear: signal is "D18"; --CHECK OK
+--	attribute loc of vga_clear_ext: signal is "D18"; --CHECK OK
 --  
 --  -- UART
 --	attribute loc of rx: signal is "G15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
@@ -121,7 +121,7 @@ entity tp4 is
 --  attribute LOC of sal_7seg: signal is "L18 F18 D17 D16 G14 J17 H14 C17";
 
         
-end;
+end tp4;
 
 -- cuerpo de arquitectura
 architecture tp4_arq of tp4 is
@@ -151,7 +151,10 @@ architecture tp4_arq of tp4 is
         mem: out std_logic;
         rw: out std_logic;
 		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0)
+		sal_7seg: out std_logic_vector(7 downto 0);
+		-- a borrador dual port ram
+		clear_fin: in std_logic;
+		borrar: out std_logic
     );
     end component;
 
@@ -250,12 +253,12 @@ architecture tp4_arq of tp4 is
 		DATA_W: integer:= 1  --len of data
 	);
 	port(
-		clk, rst: in std_logic;
-		button: in std_logic;
+		clk, rst, ena: in std_logic;
 		addr_in: in std_logic_vector(ADDR_W-1 downto 0);
 		addr_out: out std_logic_vector(ADDR_W-1 downto 0);
 		we: out std_logic;
-		data: out std_logic_vector(DATA_W-1 downto 0) 
+		data: out std_logic_vector(DATA_W-1 downto 0);
+		flag_fin: out std_logic
 	);
 	end component;
 	
@@ -306,6 +309,7 @@ architecture tp4_arq of tp4 is
 
     -- Señales ----------------------------------------------
     signal pulsadores_aux: std_logic_vector(5 downto 0):= "000000";
+	signal vga_clear, ctrl_clear, clear_fin_wire: std_logic:= '0';
 	-- Dual port RAM ----------------------------------------
     signal dpr_tick_wire: std_logic;
     signal x_0_wire: std_logic_vector(COORD_W-1 downto 0);
@@ -343,7 +347,7 @@ architecture tp4_arq of tp4 is
 	-- generador_direcciones -------------------------------------------
 	-- signal Addrx_aux, Addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
 	-- señales para la dual port ram -----------------------------------
-	signal we_aux, we_borrador: std_logic;
+	signal we_aux, we_borrador, rst_borrador: std_logic:= '0';
 	signal din_porta, dout_b_aux: std_logic_vector(DATA_DP_W-1 downto 0);
 	signal addr_porta, addr_porta_in, addr_portb: std_logic_vector(2*ADDR_DP_W-1 downto 0);
 	-- señales para controlador y vga --------------------------------------
@@ -385,7 +389,10 @@ begin
 		addr_sram => addr_sram_wire,
 		mem => mem_wire,
 		rw => rw_wire,
-		sal_7seg => sal_7seg
+		sal_7seg => sal_7seg,
+		-- a borrador dual port ram
+		clear_fin => clear_fin_wire,
+		borrar => ctrl_clear
 	);
 
 	uart2sram_inst: uart2sram
@@ -482,16 +489,20 @@ begin
 		dpr_tick => dpr_tick_wire
 	);
 	
+	vga_clear <= vga_clear_ext or ctrl_clear;
+	rst_borrador <= rst or not vga_clear;
+	
 	borrador: borrado_dpr
 	generic map(ADDR_W => 2*ADDR_DP_W, --long vectores direccionamiento
 				DATA_W => DATA_DP_W)   --len of data
 	port map(
-		clk => clk, rst => rst,
-		button => vga_clear,
+		clk => clk, rst => rst_borrador,
+		ena => vga_clear,
 		addr_in => addr_porta_in,
 		addr_out => addr_porta,
 		we => we_borrador,
-		data => din_porta
+		data => din_porta,
+		flag_fin => clear_fin_wire
 	);
 	
 	we_aux <= dpr_tick_wire or we_borrador;

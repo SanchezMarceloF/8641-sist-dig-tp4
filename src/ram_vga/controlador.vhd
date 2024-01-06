@@ -30,12 +30,11 @@ end controlador;
 
 architecture Behavioral of controlador is
 	
-	--posiciones limites de escritura en pantalla
-	constant coleft: signed(M-1 downto 0):= to_signed(158,M); --(160,M)
-	constant colright: signed(M-1 downto 0):= to_signed(492,M); --(490,M)
-	constant rowsup: signed(M-1 downto 0):= to_signed(78,M); --(80,M)
-    -- HARDCODEADO para la simulación
-	constant rowinf: signed(M-1 downto 0):= to_signed(412,M); --(410,M)
+	--posiciones limite de escritura en pantalla
+	constant COLEFT: signed(M-1 downto 0):= to_signed(158,M); --(160,M)
+	constant COLRIGHT: signed(M-1 downto 0):= to_signed(492,M); --(490,M)
+	constant ROWSUP: signed(M-1 downto 0):= to_signed(78,M); --(80,M)
+	constant ROWINF: signed(M-1 downto 0):= to_signed(412,M); --(410,M)
 	
 	
 	--seniales
@@ -50,10 +49,10 @@ begin
 	ctrl_portb: process(pixel_row, pixel_col, address_aux)
 
 	begin
-		--if ((rowsup <= signed(pixel_row)) and (signed(pixel_row) <= rowinf) and (coleft <= signed(pixel_col)) and (signed(pixel_col) <= colright)) then
-		if ((rowsup <= signed(pixel_row)) and (rowinf >= signed(pixel_row)) and (coleft <= signed(pixel_col)) and (colright >= signed(pixel_col))) then
-			address_aux(N*2-1 downto N) <= 	std_logic_vector(signed(pixel_row(N-1 downto 0))-rowsup(N-1 downto 0));
-			address_aux(N-1 downto 0) <= 	std_logic_vector(signed(pixel_col(N-1 downto 0))-coleft(N-1 downto 0));
+		--if ((ROWSUP <= signed(pixel_row)) and (signed(pixel_row) <= ROWINF) and (COLEFT <= signed(pixel_col)) and (signed(pixel_col) <= COLRIGHT)) then
+		if ((ROWSUP <= signed(pixel_row)) and (ROWINF >= signed(pixel_row)) and (COLEFT <= signed(pixel_col)) and (COLRIGHT >= signed(pixel_col))) then
+			address_aux(N*2-1 downto N) <= 	std_logic_vector(signed(pixel_row(N-1 downto 0))-ROWSUP(N-1 downto 0));
+			address_aux(N-1 downto 0) <= 	std_logic_vector(signed(pixel_col(N-1 downto 0))-COLEFT(N-1 downto 0));
 		else
 			address_aux <= (others=>'0');
 		end if;

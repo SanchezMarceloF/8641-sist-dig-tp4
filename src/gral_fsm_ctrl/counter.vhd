@@ -21,18 +21,18 @@ architecture behavioral of counter is
 
 begin
 
-    process(clk,rst)
-    begin
-        if rst='1' then
-            aux_count <= (others => '0');
-        elsif clk = '1' and clk'event then
-            if rst_sync = '1' then
-                aux_count <= (others => '0');
-            elsif ena = '1' then
-                aux_count <= aux_count + 1;
-            end if;
-        end if;
-    end process;
+	process(clk,rst)
+	begin
+		if rst='1' then
+			aux_count <= (others => '0');
+		elsif clk = '1' and clk'event then
+			if rst_sync = '1' then
+				aux_count <= (others => '0');
+			elsif ena = '1' then
+				aux_count <= aux_count + 1;
+			end if;
+		end if;
+	end process;
 
     count <= std_logic_vector(aux_count);
 

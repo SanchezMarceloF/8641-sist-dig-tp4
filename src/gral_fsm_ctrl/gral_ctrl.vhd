@@ -26,7 +26,10 @@ entity gral_ctrl is
         mem: out std_logic;
         rw: out std_logic;
 		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0)
+		sal_7seg: out std_logic_vector(7 downto 0);
+		-- a borrador dual port ram
+		clear_fin: in std_logic;
+		borrar: out std_logic
     );
 end gral_ctrl;
 
@@ -70,6 +73,8 @@ architecture gral_ctrl_arch of gral_ctrl is
                          := (others => '0');
     signal word          : std_logic_vector(DATA_W-1 downto 0) 
                          := (others => '0');
+	-- a borrador dual port ram
+	signal borrar_aux: std_logic;
     -- variables de estado --------------------------------------
     type t_estado is (REPOSO, CARGA_DATOS, ROTACION, REFRESH_DPR);
     signal estado_act, estado_sig : t_estado;
@@ -121,7 +126,7 @@ begin
     word <= data_f2s when estado_act = CARGA_DATOS else
             data_s2f_r;
 
-    prox_estado: process(estado_act, ena, rx_uart_empty, word, mem_uart)
+    prox_estado: process(estado_act, ena, rx_uart_empty, word, mem_uart, clear_fin)
 	begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
@@ -138,18 +143,22 @@ begin
 			-- acá llega al final del archivo, luego me aseguro que
 			-- se escriba en memoria leyendo el bit mem_uart
 				if (word = EOF_WORD and mem_uart= '1') then
-					estado_sig <= REFRESH_DPR;
+					estado_sig <= ROTACION;
 				end if;        
 			when ROTACION => 
 				if (word = EOF_WORD) then
 					estado_sig <= REFRESH_DPR;
 				end if;    
 			when REFRESH_DPR => 
-				if ena = '1' then 
-					estado_sig <= ROTACION;
+				if ena = '1' then
+					if clear_fin = '1' then
+						estado_sig <= ROTACION;
+					else
+						estado_sig <= REFRESH_DPR;
+					end if;
 				else 
 					estado_sig <= REPOSO;
-				end if;    
+				end if;
 		end case;
 	end process;
     
@@ -164,39 +173,39 @@ begin
     
     -- Salidas del fsm -----------------------------------------
 
-    salidas: process(estado_act, mem_uart, mem_cordic, addr_tick_uart,
+	salidas: process(estado_act, mem_uart, mem_cordic, addr_tick_uart,
                      addr_tick_cordic)
-    begin
-        -- asignación por defecto 
-        rst_addr_sync <= '0'; -- reseteo de direccionamiento
-        mem_aux <= '0'; -- comienzo de operacion sram (r ó w)
-        rw_aux <= '1'; -- [0]: escritura; [1]: lectura
-        addr_tick <= '0'; -- avance de direccionamiento
-        ena_uart2sram_aux <= '0'; -- habilitación proceso uart2sram
-        ena_sram2cordic_aux <= '0'; --habilitación proceso sram2cordic
-        --refresh_tick <= '0';
-        case estado_act is
-            when REPOSO =>
-                rst_addr_sync <= '1';
-            when CARGA_DATOS => -- proceso uart2sram
-                mem_aux <= mem_uart;
-                rw_aux <= '0';
-                addr_tick <= addr_tick_uart;
-                ena_uart2sram_aux <= '1';
-		    when ROTACION => -- proceso sram2cordic
-                mem_aux <= mem_cordic;
-                rw_aux <= '1';
-                ena_sram2cordic_aux <= '1';
-                addr_tick <= addr_tick_cordic;
-            when REFRESH_DPR =>
-                -- refresh_tick <= '1';
-                rst_addr_sync <= '1';
-                mem_aux <= mem_cordic;
-                rw_aux <= '1';
-                addr_tick <= addr_tick_cordic;
-                ena_sram2cordic_aux <= '1';
-        end case;
-    end process;
+	begin
+		-- asignación por defecto 
+		rst_addr_sync <= '0'; -- reseteo de direccionamiento
+		mem_aux <= '0'; -- comienzo de operacion sram (r ó w)
+		rw_aux <= '1'; -- [0]: escritura; [1]: lectura
+		addr_tick <= '0'; -- avance de direccionamiento
+		ena_uart2sram_aux <= '0'; -- habilitación proceso uart2sram
+		ena_sram2cordic_aux <= '0'; --habilitación proceso sram2cordic
+		borrar_aux <= '0'; -- para refrescar vga cuando termina rotación
+		case estado_act is
+			when REPOSO =>
+				rst_addr_sync <= '1';
+			when CARGA_DATOS => -- proceso uart2sram
+				mem_aux <= mem_uart;
+				rw_aux <= '0';
+				addr_tick <= addr_tick_uart;
+				ena_uart2sram_aux <= '1';
+			when ROTACION => -- proceso sram2cordic
+				mem_aux <= mem_cordic;
+				rw_aux <= '1';
+				ena_sram2cordic_aux <= '1';
+				addr_tick <= addr_tick_cordic;
+			when REFRESH_DPR =>
+				borrar_aux <= '1';
+				rst_addr_sync <= '1';
+				mem_aux <= mem_cordic;
+				rw_aux <= '1';
+				addr_tick <= addr_tick_cordic;
+				ena_sram2cordic_aux <= '1';
+		end case;
+	end process;
 
     -- señales de salida ---------------
  
@@ -205,6 +214,7 @@ begin
     mem <= mem_aux;
     ena_uart2sram <= ena_uart2sram_aux;
     ena_sram2cordic <= ena_sram2cordic_aux;
+	borrar <= borrar_aux;
 
 
 --####################################################################    
