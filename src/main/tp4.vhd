@@ -38,9 +38,8 @@ entity tp4 is
 		-- a UART ----------------------------------
 		rx : in std_logic;
 		tx : out std_logic;
-		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
-		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
-		pulsadores: in std_logic_vector(1 downto 0);
+		-- pulsadores(3 2): eje select | (1): up | (0): down
+		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
@@ -88,7 +87,7 @@ entity tp4 is
 --	attribute loc of ena: signal is "G18";
 --    
 --  -- Pulsadores
---  attribute loc of pulsadores: signal is "H13 E18"; --CHECK OK
+--  attribute loc of pulsadores: signal is "R17 N17 H13 E18"; --CHECK OK
 --
 --	--Boton borrado dpr
 --	attribute loc of vga_clear_ext: signal is "D18"; --CHECK OK
@@ -139,6 +138,7 @@ architecture tp4_arq of tp4 is
         ena_sram2cordic: out std_logic;
         addr_tick_cordic: in std_logic;
         mem_cordic: in std_logic;
+		 flag_eof: in std_logic;
         -- a uart2sram
         ena_uart2sram: out std_logic;
         rx_uart_empty: in std_logic;
@@ -152,6 +152,8 @@ architecture tp4_arq of tp4 is
         rw: out std_logic;
 		-- a 7 segmentos
 		sal_7seg: out std_logic_vector(7 downto 0);
+		-- a rotador3d
+		flag_rotnew: in std_logic;
 		-- a borrador dual port ram
 		clear_fin: in std_logic;
 		borrar: out std_logic
@@ -221,6 +223,8 @@ architecture tp4_arq of tp4 is
 		x_coord: out std_logic_vector(COORD_W-1 downto 0);
 		y_coord: out std_logic_vector(COORD_W-1 downto 0);
 		z_coord: out std_logic_vector(COORD_W-1 downto 0);
+		-- a gral_ctrl
+		flag_eof: out std_logic;
 		-- a sram_ctrl
 		data_in: in std_logic_vector(DATA_W-1 downto 0);
 		mem: out std_logic;
@@ -236,7 +240,9 @@ architecture tp4_arq of tp4 is
 	port(
 		rst, ena, clk: in std_logic;
 		-- desde botones 
-		pulsadores: in std_logic_vector(5 downto 0);
+		pulsadores: in std_logic_vector(3 downto 0);
+		-- hacia gral_ctrl
+		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
 		x_0, y_0, z_0: in std_logic_vector(COORD_W-1 downto 0);
 		coord_ready: in std_logic;
@@ -308,7 +314,7 @@ architecture tp4_arq of tp4 is
 	end component;	
 
     -- Señales ----------------------------------------------
-    signal pulsadores_aux: std_logic_vector(5 downto 0):= "000000";
+    -- signal pulsadores_aux: std_logic_vector(5 downto 0):= "000000";
 	signal vga_clear, ctrl_clear, clear_fin_wire: std_logic:= '0';
 	-- Dual port RAM ----------------------------------------
     signal dpr_tick_wire: std_logic;
@@ -316,9 +322,10 @@ architecture tp4_arq of tp4 is
     signal y_0_wire: std_logic_vector(COORD_W-1 downto 0);
     signal z_0_wire: std_logic_vector(COORD_W-1 downto 0);
     -- rotador 3D --------------------------------------------
-    signal ctrl_3d, flag_fin3d_wire: std_logic;
+    signal ctrl_3d, flag_fin3d_wire, rotnew_wire: std_logic;
     -- gral_ctrl ---------------------------------------------
     signal rx_uart_empty_wire: std_logic:= '0';
+    signal flag_eof_wire: std_logic;
     -- uart2sram ---------------------------------------------
     --signal rx_wire, tx_wire: std_logic:= '1';
     signal ena_uart2sram_wire: std_logic:= '0';
@@ -339,13 +346,7 @@ architecture tp4_arq of tp4 is
 	signal data_s2f_ur_wire: std_logic_vector(DATA_W-1 downto 0)
                          := (others => '0');
 	signal mem_wire, rw_wire, ready_wire: std_logic := '0';
-	---------------------         lado SRAM          --------------------    
-	-- signal we_n_wire, oe_n_wire : std_logic;
-	--signal ad_wire: std_logic_vector(ADDR_W-1 downto 0)
-	--             := (others =>'0');
-	--signal ce_a_n_wire, ub_a_n_wire, lb_a_n_wire: std_logic;
-	-- generador_direcciones -------------------------------------------
-	-- signal Addrx_aux, Addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
+	---------------------         lado SRAM          --------------------
 	-- señales para la dual port ram -----------------------------------
 	signal we_aux, we_borrador, rst_borrador: std_logic:= '0';
 	signal din_porta, dout_b_aux: std_logic_vector(DATA_DP_W-1 downto 0);
@@ -378,6 +379,7 @@ begin
 		ena_sram2cordic => ena_sram2cordic_wire,
 		addr_tick_cordic => addr_tick_cordic_wire,
 		mem_cordic => mem_cordic_wire,
+		flag_eof => flag_eof_wire,
 		-- a uart2sram
 	   ena_uart2sram => ena_uart2sram_wire,
 		rx_uart_empty => rx_uart_empty_wire,
@@ -390,6 +392,8 @@ begin
 		mem => mem_wire,
 		rw => rw_wire,
 		sal_7seg => sal_7seg,
+		-- a rotador3d
+		flag_rotnew => rotnew_wire,
 		-- a borrador dual port ram
 		clear_fin => clear_fin_wire,
 		borrar => ctrl_clear
@@ -462,14 +466,14 @@ begin
 		x_coord => x_0_wire,
 		y_coord => y_0_wire,
 		z_coord => z_0_wire,
+		-- a gral_ctrl
+		flag_eof => flag_eof_wire,
 		-- a sram_ctrl
 		data_in => data_s2f_r_wire,
 		mem => mem_cordic_wire,
 		ready => ready_wire,
 		ena_count_tick => addr_tick_cordic_wire 
 	);
-	
-	pulsadores_aux <= "0000" & pulsadores;
 	
    rotador_3d_inst: rotador3d
 	generic map(
@@ -479,7 +483,8 @@ begin
 	)
 	port map(
 		rst => rst, ena => ena, clk => clk,
-		pulsadores => pulsadores_aux,
+		pulsadores => pulsadores,
+		rotnew => rotnew_wire,
 		x_0 => x_0_wire,
 		y_0 => y_0_wire,
 		z_0 => z_0_wire,

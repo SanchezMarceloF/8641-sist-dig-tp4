@@ -16,6 +16,8 @@ entity sram2cordic is
 		x_coord: out std_logic_vector(COORD_W-1 downto 0);
 		y_coord: out std_logic_vector(COORD_W-1 downto 0);
 		z_coord: out std_logic_vector(COORD_W-1 downto 0);
+		-- a gral_ctrl
+		flag_eof: out std_logic;
 		-- a sram_ctrl
 		data_in: in std_logic_vector(DATA_W-1 downto 0);
 		mem: out std_logic;
@@ -42,6 +44,8 @@ architecture sram2cordic_arch of sram2cordic is
                      := (others => '1');
 	constant FLAG_Z: integer:= 3; -- contador para flag_z
 	constant FLAG_DPR: integer:= 2; -- contador para we dual port ram
+	-- a gral_ctrl
+	signal flag_eof_aux: std_logic;
     -- para registros de coordenadas
     signal wr_reg_tick   : std_logic := '0';
     signal coord_aux     : std_logic_vector(COORD_W-1 downto 0);
@@ -100,6 +104,7 @@ begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
 		zcount_sig <= zcount_act;
+		flag_eof_aux <= '0';
 		case estado_act is
 			when REPOSO =>
 				if (ena = '1' and ready = '1') then
@@ -115,6 +120,7 @@ begin
 				if data_in = EOF_WORD then
 					estado_sig <= REPOSO;
 					zcount_sig <= (others => '0');
+					flag_eof_aux <= '1';
 				elsif (zcount_act = FLAG_Z-1) then
 					estado_sig <= ESPERA_ROTADOR;
 					zcount_sig <= (others => '0');
@@ -162,6 +168,7 @@ begin
     x_coord <= x_reg;
     y_coord <= y_reg;
     z_coord <= z_reg;
+	flag_eof <= flag_eof_aux;
     
 --####################################################################    
 --#------ Señales para visualizar los estados en gtkwave ------------#

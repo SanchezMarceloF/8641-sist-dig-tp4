@@ -20,7 +20,9 @@ entity rotador3d is
 	port(
 		rst, ena, clk: in std_logic;
 		-- desde botones 
-		pulsadores: in std_logic_vector(5 downto 0);
+		pulsadores: in std_logic_vector(3 downto 0);
+		-- hacia gral_ctrl
+		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
 		x_0, y_0, z_0: in std_logic_vector(COORD_W-1 downto 0);
 		coord_ready: in std_logic;
@@ -105,9 +107,10 @@ architecture rotador3d_arq of rotador3d is
 	-- a rotacion_ctrl
 	signal alfa_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
 	signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
-	--signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000101000000000";	
-	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "011111111111111";
+	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
 	signal ena_ang, ena_rot : std_logic:= '0';
+	signal eje_sel, rot: std_logic_vector(1 downto 0);
+	signal sel_aux: std_logic_vector(5 downto 0);
 	-- generador_direcciones 
 	signal addrx_aux, addry_aux: std_logic_vector(ADDR_DP_W-1 downto 0);
 	
@@ -216,7 +219,25 @@ begin
 				dpr_tick_aux <= '1';
 		end case;
 	end process;
+	
+	-- Generación de los ángulos
 
+	eje_sel <= pulsadores(3 downto 2);
+	rot <= pulsadores(1 downto 0);
+	
+	eje_select: process(eje_sel) -- selección del eje a rotar
+	begin
+		if eje_sel = "00" then
+			sel_aux <= "000000";
+		elsif eje_sel = "01" then
+			sel_aux <= rot & "0000";
+		elsif eje_sel = "10" then
+			sel_aux <= "00" & rot & "00";
+		else
+			sel_aux <= "0000" & rot;
+		end if;
+	end process;
+	
 	enable_ang: ena_20mili --habilita cada 20 ms el cambio de angulo
 	--generic map( N => 512 )
 	generic map( N => 1048576 )	-- cantidad de ciclos a contar
@@ -232,9 +253,9 @@ begin
 				N => COORD_W) 	--longitud del dato a rotar
 		port map(
 			clk => clk, rst => rst, ena => ena_rot,
-			sel => pulsadores,
-			--alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
-			alfa => open, beta => open, gamma => open
+			sel => sel_aux,
+			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
+			-- alfa => open, beta => open, gamma => open
 	);
 	
 	gen_dir: generador_direcciones
@@ -254,6 +275,7 @@ begin
 	coord_ok <= regin_tick;
 	addr_dpr <= addrx_aux & addry_aux;
 	dpr_tick <= dpr_tick_aux;
+	rotnew <= ena_rot and (eje_sel(1) or eje_sel(0)) and (rot(1) or rot(0));
 	   
 --####################################################################    
 --#------ Señales para visualizar los estados en gtkwave ------------#

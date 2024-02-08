@@ -30,7 +30,7 @@ end borrado_dpr;
 architecture borrado_dpr_arq of borrado_dpr is
 	-- declaracion de componente, senales, etc
 	
-	constant MAXCOUNT: unsigned((ADDR_W/2)-1 downto 0):= to_unsigned(322,ADDR_W/2);
+	constant MAXCOUNT: unsigned((ADDR_W/2)-1 downto 0):= to_unsigned(322,ADDR_W/2);--322
 	
 	component counter is
 	generic (N : natural := 8);

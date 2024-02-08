@@ -74,7 +74,7 @@ architecture tp4_tb_arq of tp4_tb is
 		tx : out std_logic;
 		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
-		pulsadores: in std_logic_vector(1 downto 0);
+		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
@@ -112,7 +112,7 @@ architecture tp4_tb_arq of tp4_tb is
     -- a UART ----------------------------------
 	signal rx_tb : std_logic:= '1';
 	signal tx_tb, tx_ena: std_logic:='0';
-	signal pulsadores_tb: std_logic_vector(1 downto 0);
+	signal pulsadores_tb: std_logic_vector(3 downto 0);
 	signal vga_clear_tb: std_logic:= '0';
     -- a SRAM externa --------------------------
 	signal adv_tb, mt_clk_tb, mt_cre_tb : std_logic;
@@ -146,11 +146,11 @@ architecture tp4_tb_arq of tp4_tb is
 begin 
 
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
-	pulsadores_tb <= "10";
+	pulsadores_tb <= "1110";
 	rst_tb <= '1' after 20 ns, '0' after 100 ns;
 	ena_tb <= '0' after 40 ns, '1' after 203 ns;
 	tx_ena <= '1' after 500 ns;
-	vga_clear_tb <= '1' after 350 us;
+	vga_clear_tb <= '1' after 950 us;
 
 	Test_sram: process
 		variable linea: line;
