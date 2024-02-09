@@ -21,6 +21,7 @@ entity rotador3d is
 		rst, ena, clk: in std_logic;
 		-- desde botones 
 		pulsadores: in std_logic_vector(3 downto 0);
+		transparencia: in std_logic;
 		-- hacia gral_ctrl
 		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
@@ -29,7 +30,9 @@ entity rotador3d is
 		coord_ok: out std_logic;
 		-- hacia dual port ram
 		addr_dpr: out std_logic_vector(2*ADDR_DP_W-1 downto 0);
-		dpr_tick: out std_logic
+		dpr_tick: out std_logic;
+		-- a 7 segmentos
+		state: out std_logic_vector(2 downto 0)
 	);
 end;
 
@@ -95,6 +98,7 @@ architecture rotador3d_arq of rotador3d is
 	end component;
 	
 	-- señales ----------------------------------------------------------
+	signal flag_transp: std_logic;
 	-- a registros
 	signal regin_tick, regout_tick : std_logic:= '0';
 	-- a Cordic 3d
@@ -166,8 +170,9 @@ begin
 	end process;
    
 	-- lógica de próximo estado -------------------------
-  
-	prox_estado: process(estado_act, ena, coord_ready, flag_fin, xn_aux)
+	
+	flag_transp <= zn_aux(COORD_W-1);
+	prox_estado: process(estado_act, ena, coord_ready, flag_fin, flag_transp, transparencia)
 	begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
@@ -181,10 +186,10 @@ begin
 					estado_sig <= ROTAR;
 			when ROTAR =>
 				if (flag_fin = '1') then
-					if (signed(xn_aux) >= 0) then -- elimina transparencia
+					if (transparencia = '1' and flag_transp = '0') then -- elimina transparencia
 						estado_sig <= SHIFT_REG_DPR;
 					else 
-						estado_sig <= ESCRITURA_DPR;
+						estado_sig <= REPOSO;
 					end if;
 				end if;
 			when SHIFT_REG_DPR => -- duración 1 ciclo
@@ -255,8 +260,9 @@ begin
 			clk => clk, rst => rst, ena => ena_rot,
 			sel => sel_aux,
 			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
-			-- alfa => open, beta => open, gamma => open
 	);
+	-- alfa_aux <= "001011010000000";
+	-- alfa_aux <= "110100110000000";
 	
 	gen_dir: generador_direcciones
 	generic map(
@@ -264,8 +270,8 @@ begin
 		L => ADDR_DP_W --longitud de las direcciones
 	)
 	port map(
-		--x => xn_reg, y => yn_reg,
-		x => yn_reg, y => zn_reg,
+		x => xn_reg, y => yn_reg,
+		--x => yn_reg, y => zn_reg,
 		Addrx => addrx_aux, Addry => addry_aux --direcciones a port A dual port RAM
 	);
 	
@@ -276,6 +282,8 @@ begin
 	addr_dpr <= addrx_aux & addry_aux;
 	dpr_tick <= dpr_tick_aux;
 	rotnew <= ena_rot and (eje_sel(1) or eje_sel(0)) and (rot(1) or rot(0));
+	-- a 7 segmentos
+	state <= estado_actual;
 	   
 --####################################################################    
 --#------ Señales para visualizar los estados en gtkwave ------------#

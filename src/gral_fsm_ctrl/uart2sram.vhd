@@ -18,14 +18,15 @@ entity uart2sram is
 		ADDR_W: natural := 18
     );
     port(
-        clk, rst, ena : in std_logic;
-        rx : in std_logic;
-        tx : out std_logic;
-        -- a sram_ctrl
-        data_out : out std_logic_vector(DATA_W-1 downto 0);
-        mem   : out std_logic;
-        ready : in std_logic;
-        addr_tick : out std_logic
+		clk, rst, ena : in std_logic;
+		rx : in std_logic;
+		tx : out std_logic;
+		-- a sram_ctrl
+		data_out : out std_logic_vector(DATA_W-1 downto 0);
+		mem   : out std_logic;
+		ready : in std_logic;
+		addr_tick : out std_logic;
+		state: out std_logic_vector(2 downto 0)
     );
 end uart2sram;
 
@@ -218,7 +219,8 @@ begin
     data_out <= ub_data & r_data_aux;
     mem <= mem_aux;
     addr_tick <= addr_tick_aux;
-
+	-- a 7 segmentos
+	state <= estado_actual;
 
 --####################################################################
     -- Señales para mostrar los estados en gktwave ------------------#

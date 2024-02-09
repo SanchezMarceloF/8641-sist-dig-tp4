@@ -67,15 +67,16 @@ architecture tp4_tb_arq of tp4_tb is
             DATA_W: natural := 16;
 		    ADDR_W: natural := 23
     );
-		port(
+	port(
 		clk, ena, rst: in std_logic;
 		-- a UART ----------------------------------
 		rx : in std_logic;
 		tx : out std_logic;
-		-- pulsadores(5): alfa_up | (4): alfa_down | (3): beta_up
-		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
+		-- pulsadores(3 2): eje select | (1): up | (0): down
 		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
+		ena_rot_ext: in std_logic;
+		transparencia: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -88,7 +89,7 @@ architecture tp4_tb_arq of tp4_tb is
 		blu_o: out std_logic_vector(1 downto 0);	
 		hs, vs: out std_logic;
 		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0);
+		sal_7seg: out std_logic_vector(11 downto 0);
 		-- para capturar en simulacion
 		tick_dpr: out std_logic;
 		pxl_x: out std_logic_vector(ADDR_DP_W-1 downto 0);
@@ -127,7 +128,9 @@ architecture tp4_tb_arq of tp4_tb is
 	signal red_o_tb: std_logic_vector(2 downto 0);
 	signal grn_o_tb: std_logic_vector(2 downto 0);
 	signal blu_o_tb: std_logic_vector(1 downto 0);	
-	signal hs_tb, vs_tb: std_logic;	
+	signal hs_tb, vs_tb: std_logic;
+	-- a switch externo
+	signal ena_rot_ext_tb, transparencia_tb: std_logic:= '0';
 	-- para capturar datos y escribir en archivo
 	signal tick_dpr_tb: std_logic;
 	signal pxl_x_tb, pxl_y_tb:	std_logic_vector(ADDR_DP_W-1 downto 0);
@@ -137,7 +140,7 @@ architecture tp4_tb_arq of tp4_tb is
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
 	file datos_ram 	: text open read_mode is
 					--"test_files/coor_linea_ptofijo-16_ram.txt";
-					"test_files/coordenadas_ptofijoDEC100-16.txt";
+					"test_files/coordenadas_ptofijoDEC5-16.txt";
 	file output	: text open write_mode is
 					"test_files/output.txt";
 	signal word : std_logic_vector(7 downto 0);
@@ -146,31 +149,33 @@ architecture tp4_tb_arq of tp4_tb is
 begin 
 
 	clk_tb <= not clk_tb after 10 ns; -- ES EL CLOCK DE LA FPGA 
-	pulsadores_tb <= "1110";
-	rst_tb <= '1' after 20 ns, '0' after 100 ns;
-	ena_tb <= '0' after 40 ns, '1' after 203 ns;
-	tx_ena <= '1' after 500 ns;
-	vga_clear_tb <= '1' after 950 us;
+	pulsadores_tb <= "0110";
+	rst_tb <= '1' after 10 ns, '0' after 45 ns;
+	ena_tb <= '1' after 35 ns;
+	tx_ena <= '1' after 52 ns;
+	transparencia_tb <= '1' after 20 ns;
+	-- vga_clear_tb <= '1' after 950 us;
+	-- ena_rot_ext_tb <= '1' after 50 ns;
 
-	Test_sram: process
-		variable linea: line;
-		variable ch: character:= ' ';
-	begin
-		wait until rising_edge(ena_tb);
-		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
-			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
-			for i in 1 to 3 loop
-				wait until falling_edge(oe_n_tb);
-				for j in 0 to 15 loop
-					read(linea, ch);   -- se extrae un entero de la linea
-					word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					wait for 1 ps;
-					dio_sram_tb (15-j) <= word_sram(0);
-				end loop;
-			end loop;
-		end loop;
-		file_close(datos_ram); -- cierra el archivo
-	end process Test_sram;
+	-- Test_sram: process
+		-- variable linea: line;
+		-- variable ch: character:= ' ';
+	-- begin
+		-- wait until rising_edge(ena_tb);
+		-- while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			-- readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+			-- for i in 1 to 3 loop
+				-- wait until falling_edge(oe_n_tb);
+				-- for j in 0 to 15 loop
+					-- read(linea, ch);   -- se extrae un entero de la linea
+					-- word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					-- wait for 1 ps;
+					-- dio_sram_tb (15-j) <= word_sram(0);
+				-- end loop;
+			-- end loop;
+		-- end loop;
+		-- file_close(datos_ram); -- cierra el archivo
+	-- end process Test_sram;
 	
 	output_file: process
 	variable linea: line;
@@ -205,7 +210,7 @@ begin
 					wait for 960 ns;
 					-- bits de datos -------
 					for i in 0 to 7 loop
-						if j = 1 then
+						if j = 4 then
 							rx_tb <= '1';
 						else
 							rx_tb <= word(i);
@@ -255,6 +260,8 @@ begin
 		-- (2): beta_down | (1): gamma_up | (0): gamma_down	
 		pulsadores => pulsadores_tb,
 		vga_clear_ext => vga_clear_tb,
+		ena_rot_ext => ena_rot_ext_tb,
+		transparencia => transparencia_tb,
 		-- a SRAM externa --------------------------
 	   adv => adv_tb, mt_clk => mt_clk_tb, mt_cre => mt_cre_tb,
 		we_n => we_n_tb, oe_n => oe_n_tb,

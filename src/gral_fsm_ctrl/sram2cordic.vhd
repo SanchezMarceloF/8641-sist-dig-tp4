@@ -22,7 +22,9 @@ entity sram2cordic is
 		data_in: in std_logic_vector(DATA_W-1 downto 0);
 		mem: out std_logic;
 		ready: in std_logic;
-		ena_count_tick: out std_logic
+		ena_count_tick: out std_logic;
+		-- a 7 segmentos
+		state: out std_logic_vector(2 downto 0)
 	);
 end sram2cordic;
 
@@ -169,6 +171,8 @@ begin
     y_coord <= y_reg;
     z_coord <= z_reg;
 	flag_eof <= flag_eof_aux;
+	-- a 7 segmentos
+	state <= estado_actual;
     
 --####################################################################    
 --#------ Señales para visualizar los estados en gtkwave ------------#

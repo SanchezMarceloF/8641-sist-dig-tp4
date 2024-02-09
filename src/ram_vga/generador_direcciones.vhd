@@ -31,7 +31,7 @@ architecture generador_direcciones_arq of generador_direcciones is
 	--sinificativos del multiplicador)
 	
 	constant M: integer:= 2*N; --tamanio vector multiplicacion
-	constant BIAS: std_logic_vector(L-1 downto 0):= std_logic_vector(to_signed(161,L));
+	constant BIAS: std_logic_vector(L-1 downto 0):= std_logic_vector(to_signed(160,L));
 	--constant SUMY: std_logic_vector(L-1 downto 0):= "010100010"; --162
 	constant VAL_MULT: integer := 5;
 	--constant CERO: std_logic:= '0';

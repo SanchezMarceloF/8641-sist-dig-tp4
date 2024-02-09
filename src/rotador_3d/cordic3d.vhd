@@ -54,7 +54,7 @@ architecture cordic3d_arq of cordic3d is
 	
 	signal x1_aux, x2_aux, x3_aux: std_logic_vector(VECT_WIDE-1 downto 0);
 	signal y1_aux, y2_aux, y3_aux: std_logic_vector(VECT_WIDE-1 downto 0);
-	signal ctrl_2, ctrl_3, flag_aux : std_logic;
+	signal ctrl_2, ctrl_3, ctrl_y, ctrl_z, flag_aux : std_logic;
 	
 		
 begin
@@ -75,6 +75,7 @@ begin
 							--y habilita la rotación de ry con ctrl_2
 	);
 	
+	ctrl_y <= ctrl and ctrl_2;
 	
 	ry: cordic
 		generic map(VECT_WIDE => VECT_WIDE, 
@@ -83,7 +84,7 @@ begin
 			x_0 => y1_aux,
 			y_0 => x_0,
 			phi_0 => beta,
-			ctrl => ctrl_2,
+			ctrl => ctrl_y,
 			clk => clk,
 			x_n => x2_aux,
 			y_n => y2_aux,
@@ -92,6 +93,7 @@ begin
 							--y habilita la rotación de rz con ctrl_3
 	);
 	
+	ctrl_z <= ctrl and ctrl_3;
 	
 	rz: cordic
 		generic map(VECT_WIDE => VECT_WIDE, 
@@ -100,7 +102,7 @@ begin
 			x_0 => y2_aux,
 			y_0 => x1_aux,
 			phi_0 => gama,
-			ctrl => ctrl_3,
+			ctrl => ctrl_z,
 			clk => clk,
 			x_n => x3_aux,
 			y_n => y3_aux,

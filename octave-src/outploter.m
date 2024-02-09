@@ -7,6 +7,6 @@
 	close all
 	clc
 
-	datos = dlmread("test_files/output.txt", ' ', 0, 0);
+	datos = dlmread("../test_files/output.txt", ' ', 0, 0);
 
 	plot(datos(:,1), 320-datos(:,2),".");

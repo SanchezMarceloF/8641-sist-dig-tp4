@@ -41,6 +41,8 @@ entity tp4 is
 		-- pulsadores(3 2): eje select | (1): up | (0): down
 		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
+		ena_rot_ext: in std_logic;
+		transparencia: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -53,7 +55,7 @@ entity tp4 is
 		blu_o: out std_logic_vector(1 downto 0);	
 		hs, vs: out std_logic;
 		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0);
+		sal_7seg: out std_logic_vector(11 downto 0);
 		-- para capturar en simulacion
 		tick_dpr: out std_logic;
 		pxl_x: out std_logic_vector(ADDR_DP_W-1 downto 0);
@@ -86,11 +88,13 @@ entity tp4 is
 --	attribute loc of rst: signal is "B18";
 --	attribute loc of ena: signal is "G18";
 --    
---  -- Pulsadores
+--  -- Pulsadores rotacion
 --  attribute loc of pulsadores: signal is "R17 N17 H13 E18"; --CHECK OK
 --
---	--Boton borrado dpr
+--	--Boton borrado dpr, habilitador rotacion, transparencia
 --	attribute loc of vga_clear_ext: signal is "D18"; --CHECK OK
+--	attribute loc of ena_rot_ext: signal is "H18";
+--	attribute loc of transparencia: signal is "K18";
 --  
 --  -- UART
 --	attribute loc of rx: signal is "G15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
@@ -117,7 +121,7 @@ entity tp4 is
 --	attribute loc of blu_o: signal is "U4 U5";
 --
 --  -- a 7 segmentos
---  attribute LOC of sal_7seg: signal is "L18 F18 D17 D16 G14 J17 H14 C17";
+--  attribute LOC of sal_7seg: signal is "F17 H17 C18 F15 L18 F18 D17 D16 G14 J17 H14 C17";
 
         
 end tp4;
@@ -133,30 +137,32 @@ architecture tp4_arq of tp4 is
 		ADDR_W: natural := 23 
     );
     port(
-        clk, rst, ena : in std_logic;
-        -- a sram2cordic
-        ena_sram2cordic: out std_logic;
-        addr_tick_cordic: in std_logic;
-        mem_cordic: in std_logic;
+		clk, rst, ena : in std_logic;
+		-- a sram2cordic
+		ena_sram2cordic: out std_logic;
+		addr_tick_cordic: in std_logic;
+		mem_cordic: in std_logic;
 		 flag_eof: in std_logic;
-        -- a uart2sram
-        ena_uart2sram: out std_logic;
-        rx_uart_empty: in std_logic;
-        addr_tick_uart: in std_logic;
-        mem_uart: in std_logic;
-        -- a sram_ctrl
-        data_f2s: in std_logic_vector(DATA_W-1 downto 0);
-        data_s2f_r: in std_logic_vector(DATA_W-1 downto 0);
-        addr_sram: out std_logic_vector(ADDR_W-1 downto 0);
-        mem: out std_logic;
-        rw: out std_logic;
-		-- a 7 segmentos
-		sal_7seg: out std_logic_vector(7 downto 0);
+		-- a uart2sram
+		ena_uart2sram: out std_logic;
+		rx_uart_empty: in std_logic;
+		addr_tick_uart: in std_logic;
+		mem_uart: in std_logic;
+		-- a sram_ctrl
+		data_f2s: in std_logic_vector(DATA_W-1 downto 0);
+		data_s2f_r: in std_logic_vector(DATA_W-1 downto 0);
+		addr_sram: out std_logic_vector(ADDR_W-1 downto 0);
+		mem: out std_logic;
+		rw: out std_logic;
+		-- para 7 segmentos
+		state: out std_logic_vector(2 downto 0);
 		-- a rotador3d
 		flag_rotnew: in std_logic;
 		-- a borrador dual port ram
 		clear_fin: in std_logic;
-		borrar: out std_logic
+		borrar: out std_logic;
+		-- switch externo
+		ena_rot_ext: in std_logic
     );
     end component;
 
@@ -183,7 +189,8 @@ architecture tp4_arq of tp4 is
         data_out : out std_logic_vector(DATA_W-1 downto 0);
         mem   : out std_logic;
         ready : in std_logic;
-        addr_tick : out std_logic
+		addr_tick : out std_logic;
+		state: out std_logic_vector(2 downto 0)
     );
     end component;
 
@@ -229,7 +236,9 @@ architecture tp4_arq of tp4 is
 		data_in: in std_logic_vector(DATA_W-1 downto 0);
 		mem: out std_logic;
 		ready: in std_logic;
-		ena_count_tick: out std_logic
+		ena_count_tick: out std_logic;
+		-- a 7 segmentos
+		state: out std_logic_vector(2 downto 0)
 	);
 	end component;
 	
@@ -241,6 +250,7 @@ architecture tp4_arq of tp4 is
 		rst, ena, clk: in std_logic;
 		-- desde botones 
 		pulsadores: in std_logic_vector(3 downto 0);
+		transparencia: in std_logic;
 		-- hacia gral_ctrl
 		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
@@ -249,7 +259,9 @@ architecture tp4_arq of tp4 is
 		coord_ok: out std_logic;
 		-- hacia dual port ram
 		addr_dpr: out std_logic_vector(2*ADDR_DP_W-1 downto 0);
-		dpr_tick: out std_logic
+		dpr_tick: out std_logic;
+		-- a 7 segmentos
+		state: out std_logic_vector(2 downto 0)
 	);
 	end component;
 	
@@ -298,7 +310,7 @@ architecture tp4_arq of tp4 is
 	end component;
 	
 	component vga_ctrl is
-    port (
+    port(
 		mclk: in std_logic;
 		red_i: in std_logic;
 		grn_i: in std_logic;
@@ -311,7 +323,20 @@ architecture tp4_arq of tp4 is
 		pixel_row: out std_logic_vector(9 downto 0);
 		pixel_col: out std_logic_vector(9 downto 0)
 	);
-	end component;	
+	end component;
+	
+	component ctrl_7seg is
+	port(
+		clk, rst: in std_logic;
+		-- a sram2cordic
+		gral_ctrl_state: in std_logic_vector(2 downto 0);
+		uart2sram_state: in std_logic_vector(2 downto 0);
+		sram2cordic_state: in std_logic_vector(2 downto 0);
+		rotador3d_state: in std_logic_vector(2 downto 0);
+		sal_7seg: out std_logic_vector(11 downto 0)
+	);
+	end component;
+
 
     -- Señales ----------------------------------------------
     -- signal pulsadores_aux: std_logic_vector(5 downto 0):= "000000";
@@ -322,7 +347,7 @@ architecture tp4_arq of tp4 is
     signal y_0_wire: std_logic_vector(COORD_W-1 downto 0);
     signal z_0_wire: std_logic_vector(COORD_W-1 downto 0);
     -- rotador 3D --------------------------------------------
-    signal ctrl_3d, flag_fin3d_wire, rotnew_wire: std_logic;
+    signal ctrl_3d, flag_fin3d_wire, rotnew_wire, rst_rotador3d: std_logic;
     -- gral_ctrl ---------------------------------------------
     signal rx_uart_empty_wire: std_logic:= '0';
     signal flag_eof_wire: std_logic;
@@ -358,6 +383,9 @@ architecture tp4_arq of tp4 is
 	signal pxl_col_aux, pxl_row_aux: std_logic_vector(9 downto 0);
 	-- señales para la sram externa ----------------------------------------
 	signal dio_sram_aux : std_logic_vector(DATA_W-1 downto 0);
+	-- señales a 7 segmentos
+	signal gral_ctrl_state, uart2sram_state, sram2cordic_state, rotador3d_state: std_logic_vector(2 downto 0);
+	signal sal_7seg_wire: std_logic_vector(11 downto 0);
 	
 	
 begin	
@@ -391,12 +419,14 @@ begin
 		addr_sram => addr_sram_wire,
 		mem => mem_wire,
 		rw => rw_wire,
-		sal_7seg => sal_7seg,
+		state => gral_ctrl_state,
 		-- a rotador3d
 		flag_rotnew => rotnew_wire,
 		-- a borrador dual port ram
 		clear_fin => clear_fin_wire,
-		borrar => ctrl_clear
+		borrar => ctrl_clear,
+		-- switch externo
+		ena_rot_ext => ena_rot_ext
 	);
 
 	uart2sram_inst: uart2sram
@@ -419,7 +449,9 @@ begin
 		data_out => data_f2s_wire,
 		mem => mem_uart_wire,
 		ready => ready_wire, 
-		addr_tick => addr_tick_uart_wire
+		addr_tick => addr_tick_uart_wire,
+		-- a 7 segmentos
+		state => uart2sram_state
 	);
 
 	sram_ctrl_inst: sram_ctrl
@@ -448,7 +480,7 @@ begin
 		dio_a   => dio_sram,
 		ce_a_n  => ce_n,
 		ub_a_n  => ub_n,
-		lb_a_n  => lb_n 
+		lb_a_n  => lb_n
 	);
 
 	sram2cordic_inst: sram2cordic
@@ -472,8 +504,12 @@ begin
 		data_in => data_s2f_r_wire,
 		mem => mem_cordic_wire,
 		ready => ready_wire,
-		ena_count_tick => addr_tick_cordic_wire 
+		ena_count_tick => addr_tick_cordic_wire,
+		-- a 7 segmentos
+		state => sram2cordic_state
 	);
+	
+	rst_rotador3d <= rst and not ena_rot_ext;
 	
    rotador_3d_inst: rotador3d
 	generic map(
@@ -482,8 +518,9 @@ begin
 		ADDR_DP_W => ADDR_DP_W	--longitud direcciones dpr
 	)
 	port map(
-		rst => rst, ena => ena, clk => clk,
+		rst => rst_rotador3d, ena => ena, clk => clk,
 		pulsadores => pulsadores,
+		transparencia => transparencia,
 		rotnew => rotnew_wire,
 		x_0 => x_0_wire,
 		y_0 => y_0_wire,
@@ -491,7 +528,9 @@ begin
 		coord_ready => ctrl_3d,
 		coord_ok => flag_fin3d_wire,
 		addr_dpr => addr_porta_in,
-		dpr_tick => dpr_tick_wire
+		dpr_tick => dpr_tick_wire,
+		-- a 7 segmentos
+		state => rotador3d_state
 	);
 	
 	vga_clear <= vga_clear_ext or ctrl_clear;
@@ -537,6 +576,17 @@ begin
 		blu_o => blu_aux, pixel_row => pxl_row_aux, pixel_col => pxl_col_aux
 	);
 	
+	ctrl_7seg_inst: ctrl_7seg
+	port map(
+		clk => clk, rst => rst,
+		gral_ctrl_state => gral_ctrl_state,
+		uart2sram_state => uart2sram_state,
+		sram2cordic_state => sram2cordic_state,
+		rotador3d_state => rotador3d_state,
+		sal_7seg => sal_7seg_wire
+	);
+		
+	
  -- +-------------------------------------------------------------------------+
  -- |                                                                         |
  -- |                               Salidas                                   |
@@ -556,6 +606,8 @@ begin
 	tick_dpr <= dpr_tick_wire;
 	pxl_x	<= addr_porta_in(ADDR_DP_W*2-1 downto ADDR_DP_W);
 	pxl_y <= addr_porta_in(ADDR_DP_W-1 downto 0);
+	-- a 7 segmentos
+	sal_7seg <= sal_7seg_wire;
 	
 	-- we_n, oe_n <= (sram_ctrl);
 	-- ce_n, ub_n, lb_n <= ce_a_n, ub_a_n, lb_a_n (sram_ctrl);
