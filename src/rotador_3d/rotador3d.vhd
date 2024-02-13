@@ -109,9 +109,9 @@ architecture rotador3d_arq of rotador3d is
 	signal xn_reg, yn_reg, zn_reg: std_logic_vector(COORD_W-1 downto 0);
 	signal dpr_tick_aux : std_logic:= '0';
 	-- a rotacion_ctrl
-	signal alfa_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
-	signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
-	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= "000000000000000";
+	signal alfa_aux: std_logic_vector(ANG_WIDE-1 downto 0):= (others => '0');
+	signal beta_aux: std_logic_vector(ANG_WIDE-1 downto 0):= (others => '0');
+	signal gamma_aux: std_logic_vector(ANG_WIDE-1 downto 0):= (others => '0');
 	signal ena_ang, ena_rot : std_logic:= '0';
 	signal eje_sel, rot: std_logic_vector(1 downto 0);
 	signal sel_aux: std_logic_vector(5 downto 0);
@@ -172,7 +172,7 @@ begin
 	-- lógica de próximo estado -------------------------
 	
 	flag_transp <= zn_aux(COORD_W-1);
-	prox_estado: process(estado_act, ena, coord_ready, flag_fin, flag_transp, transparencia)
+	prox_estado: process(estado_act, ena, coord_ready, flag_fin, flag_transp)
 	begin
 		-- asignaciones por defecto
 		estado_sig <= estado_act;
@@ -186,7 +186,8 @@ begin
 					estado_sig <= ROTAR;
 			when ROTAR =>
 				if (flag_fin = '1') then
-					if (transparencia = '1' and flag_transp = '0') then -- elimina transparencia
+					-- if (transparencia = '1' and flag_transp = '0') then -- elimina transparencia
+					if (flag_transp = '0') then -- elimina transparencia
 						estado_sig <= SHIFT_REG_DPR;
 					else 
 						estado_sig <= REPOSO;
@@ -261,8 +262,7 @@ begin
 			sel => sel_aux,
 			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
 	);
-	-- alfa_aux <= "001011010000000";
-	-- alfa_aux <= "110100110000000";
+	-- beta_aux <= "0001000000000000";
 	
 	gen_dir: generador_direcciones
 	generic map(

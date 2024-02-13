@@ -22,8 +22,8 @@ end;
 architecture updown_counter_arq of updown_counter is
 	-- declaracion de componente, senales, etc
 	
-	constant PHI: std_logic_vector(M-1 downto 0):= "000000010110100";
-	constant PHI_NEG: std_logic_vector(M-1 downto 0):= "111111101001100";
+	constant PHI: std_logic_vector(M-1 downto 0):= "0000000100000000";
+	constant PHI_NEG: std_logic_vector(M-1 downto 0):= "1111111100000000";
 	constant CERO: std_logic_vector(M-1 downto 0):= (others => '0');
 	
 	component mux2 is

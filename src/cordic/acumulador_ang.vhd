@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 
 -- declaracion de entidad
 entity acumulador_ang is
-	generic(ANG_WIDE: integer:= 13);
+	generic(ANG_WIDE: integer:= 16);
 	port(
 		phi_0: in std_logic_vector(ANG_WIDE-1 downto 0);
 		count: in std_logic_vector(3 downto 0);
@@ -86,20 +86,21 @@ begin
 	
 	--aca van los valores calculados de tg^(-1){2^(-i)}
 	--------------------------------------------------------
-	sal_rom <= 	"010110100000000" when to_integer(unsigned(count)) = 0 else
-				"001101010010001" when to_integer(unsigned(count)) = 1 else
-				"000111000001001" when to_integer(unsigned(count)) = 2 else
-				"000011100100000" when to_integer(unsigned(count)) = 3 else
-				"000001110010100" when to_integer(unsigned(count)) = 4 else
-				"000000111001010" when to_integer(unsigned(count)) = 5 else
-				"000000011100101" when to_integer(unsigned(count)) = 6 else
-				"000000001110011" when to_integer(unsigned(count)) = 7 else
-				"000000000111001" when to_integer(unsigned(count)) = 8 else
-				"000000000011101" when to_integer(unsigned(count)) = 9 else
-				"000000000001110" when to_integer(unsigned(count)) = 10 else
-				"000000000000111" when to_integer(unsigned(count)) = 11 else
-				"000000000000011" when to_integer(unsigned(count)) = 12 else
-				"000000000000001";
+	sal_rom <=	"0100000000000000" when to_integer(unsigned(count)) = 0 else
+				"0010010111001000" when to_integer(unsigned(count)) = 1 else
+				"0001001111110110" when to_integer(unsigned(count)) = 2 else
+				"0000101000100010" when to_integer(unsigned(count)) = 3 else
+				"0000010100010110" when to_integer(unsigned(count)) = 4 else
+				"0000001010001011" when to_integer(unsigned(count)) = 5 else
+				"0000000101000101" when to_integer(unsigned(count)) = 6 else
+				"0000000010100011" when to_integer(unsigned(count)) = 7 else
+				"0000000001010001" when to_integer(unsigned(count)) = 8 else
+				"0000000000101001" when to_integer(unsigned(count)) = 9 else
+				"0000000000010100" when to_integer(unsigned(count)) = 10 else
+				"0000000000001010" when to_integer(unsigned(count)) = 11 else
+				"0000000000000101" when to_integer(unsigned(count)) = 12 else
+				"0000000000000011" when to_integer(unsigned(count)) = 13 else
+				"0000000000000001";
 
 	di_aux <= not sal_reg(ANG_WIDE-1);		
 				

@@ -13,7 +13,7 @@ FILES = src/*/* # todos los archivos .vhd están guardos acá
 VHDLEX = .vhd 	# extensión archivos vhdl
 
 # testbench
-TESTBENCHPATH = testbench/${TESTBENCH}$(VHDLEX)
+TESTBENCHPATH = testbench/${TESTBENCH}$(VHDLEX)	
 
 #GHDL CONFIG
 GHDL_CMD = ghdl
@@ -23,7 +23,7 @@ GHDL_FLAGS  = --ieee=standard --warn-no-vital-generic
 SIMDIR = simulation
 # Simulation break condition
 #GHDL_SIM_OPT = --assert-level=error	
-GHDL_SIM_OPT = --stop-time=500us
+GHDL_SIM_OPT = --stop-time=3500us
 #3451000ns
 
 WAVEFORM_VIEWER = gtkwave

@@ -2,10 +2,8 @@ clear all
 close all
 clc
 
-%N = 5;
-%M = 8;
-%VAL = 26.565;
-
+DIG = 14;
+GRAD_45 = 2^DIG
 
 function RET = ptofijo_a_bin(N, M, VAL)
   %esta funcion convierte el numero flotante VAL en punto fijo.
@@ -41,7 +39,8 @@ function RET = ptofijo_a_bin(N, M, VAL)
 endfunction
 
 for i = 0:15
-  x1 = atan(2^(-i))*180/pi;
-  printf("paso %i => ",i); 
-  x2 = ptofijo_a_bin(6, 8, x1)
-endfor
+  x1 = atan(2^(-i))*180/pi*GRAD_45/45;
+  %printf("paso %i => ",i);
+  x2 = ptofijo_a_bin(DIG+2, 0, x1);
+  printf("\"\%s\"\n",x2);
+  endfor

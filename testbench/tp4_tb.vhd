@@ -7,7 +7,7 @@ use std.textio.all;
 -- declaracion de entidad
 entity tp4_tb is
 	generic(COORD_W: integer:= 14;  --long coordenadas x, y, z.
-			ANG_W: integer:= 15;    --long angulos de rotacion
+			ANG_W: integer:= 16;    --long angulos de rotacion
 			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
 	        DATA_DP_W: natural:= 1;
             -- UART -- Default setting:
@@ -50,22 +50,22 @@ architecture tp4_tb_arq of tp4_tb is
 
     component tp4 is
 	generic(COORD_W: integer:= 13;  --long coordenadas x, y, z.
-			ANG_W: integer:= 15;    --long angulos de rotacion
-            ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
-            DATA_DP_W: natural:= 1;
-            -- UART -- Default setting:
-            -- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
-            DBIT_UART: integer:=8;     -- # data bits
-            SB_TICK_UART: integer:=16; -- # ticks for stop bits, 16/24/32
-                            --   for 1/1.5/2 stop bits
-            DVSR_UART: integer:= 163;  -- baud rate divisor
-                            -- DVSR = 50M/(16*baud rate)
-            DVSR_BIT_UART: integer:=8; -- # bits of DVSR
-            FIFO_W_UART: integer:=2;    -- # addr bits of FIFO
-                            -- # words in FIFO=2^FIFO_W
-            -- SRAM externa ----------
-            DATA_W: natural := 16;
-		    ADDR_W: natural := 23
+			ANG_W: integer:= 16;    --long angulos de rotacion
+			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
+			DATA_DP_W: natural:= 1;
+			-- UART -- Default setting:
+			-- 19,200 baud, 8 data bis, 1 stop its, 2^2 FIFO
+			DBIT_UART: integer:=8;     -- # data bits
+			SB_TICK_UART: integer:=16; -- # ticks for stop bits, 16/24/32
+							--   for 1/1.5/2 stop bits
+			DVSR_UART: integer:= 163;  -- baud rate divisor
+							-- DVSR = 50M/(16*baud rate)
+			DVSR_BIT_UART: integer:=8; -- # bits of DVSR
+			FIFO_W_UART: integer:=2;    -- # addr bits of FIFO
+							-- # words in FIFO=2^FIFO_W
+			-- SRAM externa ----------
+			DATA_W: natural := 16;
+			ADDR_W: natural := 23
     );
 	port(
 		clk, ena, rst: in std_logic;
@@ -140,7 +140,7 @@ architecture tp4_tb_arq of tp4_tb is
 	file datos  : text open read_mode is "test_files/coord_linea_ptofijo-16.bin";
 	file datos_ram 	: text open read_mode is
 					--"test_files/coor_linea_ptofijo-16_ram.txt";
-					"test_files/coordenadas_ptofijoDEC5-16.txt";
+					"test_files/coordenadas_ptofijoDEC3-16.txt";
 	file output	: text open write_mode is
 					"test_files/output.txt";
 	signal word : std_logic_vector(7 downto 0);
@@ -157,25 +157,25 @@ begin
 	-- vga_clear_tb <= '1' after 950 us;
 	-- ena_rot_ext_tb <= '1' after 50 ns;
 
-	-- Test_sram: process
-		-- variable linea: line;
-		-- variable ch: character:= ' ';
-	-- begin
-		-- wait until rising_edge(ena_tb);
-		-- while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
-			-- readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
-			-- for i in 1 to 3 loop
-				-- wait until falling_edge(oe_n_tb);
-				-- for j in 0 to 15 loop
-					-- read(linea, ch);   -- se extrae un entero de la linea
-					-- word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
-					-- wait for 1 ps;
-					-- dio_sram_tb (15-j) <= word_sram(0);
-				-- end loop;
-			-- end loop;
-		-- end loop;
-		-- file_close(datos_ram); -- cierra el archivo
-	-- end process Test_sram;
+	Test_sram: process
+		variable linea: line;
+		variable ch: character:= ' ';
+	begin
+		wait until rising_edge(ena_tb);
+		while not(endfile(datos_ram)) loop 	-- si se quiere leer de stdin se pone "input"
+			readline(datos_ram, linea); 	-- se lee una linea del archivo de valores de prueba
+			for i in 1 to 3 loop
+				wait until falling_edge(oe_n_tb);
+				for j in 0 to 15 loop
+					read(linea, ch);   -- se extrae un entero de la linea
+					word_sram <= std_logic_vector(to_unsigned(character'pos(ch),8));
+					wait for 1 ps;
+					dio_sram_tb (15-j) <= word_sram(0);
+				end loop;
+			end loop;
+		end loop;
+		file_close(datos_ram); -- cierra el archivo
+	end process Test_sram;
 	
 	output_file: process
 	variable linea: line;
@@ -210,7 +210,7 @@ begin
 					wait for 960 ns;
 					-- bits de datos -------
 					for i in 0 to 7 loop
-						if j = 4 then
+						if j = 1 then
 							rx_tb <= '1';
 						else
 							rx_tb <= word(i);

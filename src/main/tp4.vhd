@@ -16,7 +16,7 @@ use IEEE.numeric_std.all;
 -- declaracion de entidad
 entity tp4 is
 	generic(COORD_W: integer:= 14;  --long coordenadas x, y, z.
-			ANG_W: integer:= 15;    --long angulos de rotacion
+			ANG_W: integer:= 16; --15	  --long angulos de rotacion
 			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
 			DATA_DP_W: natural:= 1;
           -- UART -- Default setting:
