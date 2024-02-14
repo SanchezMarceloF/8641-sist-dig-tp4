@@ -35,7 +35,7 @@ PLOT_PATH = octave-src/outploter
 PLOTER = python
 PLOT_EXT = py
 
-all: compile run view plot
+all: compile run plot
 
 new:
 	@echo "Setting up project ${PROJECT}"

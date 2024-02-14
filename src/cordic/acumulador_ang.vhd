@@ -86,21 +86,21 @@ begin
 	
 	--aca van los valores calculados de tg^(-1){2^(-i)}
 	--------------------------------------------------------
-	sal_rom <=	"0100000000000000" when to_integer(unsigned(count)) = 0 else
-				"0010010111001000" when to_integer(unsigned(count)) = 1 else
-				"0001001111110110" when to_integer(unsigned(count)) = 2 else
-				"0000101000100010" when to_integer(unsigned(count)) = 3 else
-				"0000010100010110" when to_integer(unsigned(count)) = 4 else
-				"0000001010001011" when to_integer(unsigned(count)) = 5 else
-				"0000000101000101" when to_integer(unsigned(count)) = 6 else
-				"0000000010100011" when to_integer(unsigned(count)) = 7 else
-				"0000000001010001" when to_integer(unsigned(count)) = 8 else
-				"0000000000101001" when to_integer(unsigned(count)) = 9 else
-				"0000000000010100" when to_integer(unsigned(count)) = 10 else
-				"0000000000001010" when to_integer(unsigned(count)) = 11 else
-				"0000000000000101" when to_integer(unsigned(count)) = 12 else
-				"0000000000000011" when to_integer(unsigned(count)) = 13 else
-				"0000000000000001";
+	sal_rom <=	"00100000000000000" when to_integer(unsigned(count)) = 0 else
+				"00010010111001000" when to_integer(unsigned(count)) = 1 else
+				"00001001111110110" when to_integer(unsigned(count)) = 2 else
+				"00000101000100010" when to_integer(unsigned(count)) = 3 else
+				"00000010100010110" when to_integer(unsigned(count)) = 4 else
+				"00000001010001011" when to_integer(unsigned(count)) = 5 else
+				"00000000101000101" when to_integer(unsigned(count)) = 6 else
+				"00000000010100011" when to_integer(unsigned(count)) = 7 else
+				"00000000001010001" when to_integer(unsigned(count)) = 8 else
+				"00000000000101001" when to_integer(unsigned(count)) = 9 else
+				"00000000000010100" when to_integer(unsigned(count)) = 10 else
+				"00000000000001010" when to_integer(unsigned(count)) = 11 else
+				"00000000000000101" when to_integer(unsigned(count)) = 12 else
+				"00000000000000011" when to_integer(unsigned(count)) = 13 else
+				"00000000000000001";
 
 	di_aux <= not sal_reg(ANG_WIDE-1);		
 				

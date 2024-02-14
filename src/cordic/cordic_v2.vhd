@@ -97,16 +97,37 @@ architecture cordic_arq of cordic is
 	
 	--declaracion de señales
 	
+	constant NOVENTA: integer:= 32768; --2^15
+	constant CIENTOCHENTA: integer:= 65536; --2^16
+	constant DOSETENTA: integer:= 131072; --2^17
+	
 	signal A1_up, sal_mux_up, xn_bef, sal_shift_up: std_logic_vector(VECT_WIDE-1 downto 0);
 	signal A1_down, sal_mux_down, yn_bef, sal_shift_down: std_logic_vector(VECT_WIDE-1 downto 0);
 	signal sal_count: std_logic_vector(3 downto 0);
 	signal ctrlbrr_up, ctrlbrr_d: std_logic_vector(1 downto 0);
 	signal ctrl_aux, di_up, di_down, flag_aux, flag_angulo: std_logic;
-	signal zn_aux: std_logic_vector(ANG_WIDE-1 downto 0);
+	signal phi0_pri, zn_aux: std_logic_vector(ANG_WIDE-1 downto 0);
 	signal yn_aux1, xn_aux1: std_logic_vector(VECT_WIDE-1+BITS_DIV downto 0);
-	signal yn_aux2, xn_aux2: std_logic_vector(VECT_WIDE-1 downto 0);
+	signal x0_pri, y0_pri, yn_aux2, xn_aux2: std_logic_vector(VECT_WIDE-1 downto 0);
 	
 begin
+
+	precordic: process(x_0, y_0, phi_0)
+	begin
+		if (NOVENTA < unsigned(phi_0) and unsigned(phi_0) < DOSETENTA) then
+			x0_pri <= std_logic_vector((unsigned(not x_0)) + 1);
+			y0_pri <= std_logic_vector((unsigned(not y_0)) + 1);
+			-- if CIENTOCHENTA < unsigned(phi_0) then 
+			-- phi_0_pri <= std_logic_vector(unsigned(phi_0) - CIENTOCHENTA);
+			-- else
+			phi0_pri <= std_logic_vector(unsigned(phi_0) + CIENTOCHENTA);
+		else
+			x0_pri <= x_0;
+			y0_pri <= y_0;
+			phi0_pri <= phi_0;
+		end if;
+	end process precordic;
+			
 	
 --Bloque superior
 --=======================================================
@@ -114,7 +135,7 @@ begin
 	mux_up: mux
 		generic map(N => VECT_WIDE)
 		port map(
-			A_0 => x_0,
+			A_0 => x0_pri,
 			A_1 => A1_up,
 			sel => ctrl,
 			sal => sal_mux_up
@@ -204,7 +225,7 @@ begin
 	mux_down: mux
 		generic map(N => VECT_WIDE)
 		port map(
-			A_0 => y_0,
+			A_0 => y0_pri,
 			A_1 => A1_down,
 			sel => ctrl,
 			sal => sal_mux_down
@@ -216,7 +237,7 @@ begin
 	acum: acumulador_ang
 		generic map(ANG_WIDE => ANG_WIDE)
 		port map(
-			phi_0 => phi_0,
+			phi_0 => phi0_pri,
 			count => sal_count,
 			clk => clk,
 			ctrl => ctrl,

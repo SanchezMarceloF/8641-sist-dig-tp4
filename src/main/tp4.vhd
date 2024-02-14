@@ -16,7 +16,7 @@ use IEEE.numeric_std.all;
 -- declaracion de entidad
 entity tp4 is
 	generic(COORD_W: integer:= 14;  --long coordenadas x, y, z.
-			ANG_W: integer:= 16; --15	  --long angulos de rotacion
+			ANG_W: integer:= 17; --15	  --long angulos de rotacion
 			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
 			DATA_DP_W: natural:= 1;
           -- UART -- Default setting:
@@ -42,7 +42,7 @@ entity tp4 is
 		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
 		ena_rot_ext: in std_logic;
-		transparencia: in std_logic;
+		--transparencia: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -94,7 +94,7 @@ entity tp4 is
 --	--Boton borrado dpr, habilitador rotacion, transparencia
 --	attribute loc of vga_clear_ext: signal is "D18"; --CHECK OK
 --	attribute loc of ena_rot_ext: signal is "H18";
---	attribute loc of transparencia: signal is "K18";
+--	--attribute loc of transparencia: signal is "K18";
 --  
 --  -- UART
 --	attribute loc of rx: signal is "G15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
@@ -250,7 +250,7 @@ architecture tp4_arq of tp4 is
 		rst, ena, clk: in std_logic;
 		-- desde botones 
 		pulsadores: in std_logic_vector(3 downto 0);
-		transparencia: in std_logic;
+		--transparencia: in std_logic;
 		-- hacia gral_ctrl
 		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
@@ -520,7 +520,7 @@ begin
 	port map(
 		rst => rst_rotador3d, ena => ena, clk => clk,
 		pulsadores => pulsadores,
-		transparencia => transparencia,
+		--transparencia => transparencia,
 		rotnew => rotnew_wire,
 		x_0 => x_0_wire,
 		y_0 => y_0_wire,

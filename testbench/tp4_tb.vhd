@@ -7,7 +7,7 @@ use std.textio.all;
 -- declaracion de entidad
 entity tp4_tb is
 	generic(COORD_W: integer:= 14;  --long coordenadas x, y, z.
-			ANG_W: integer:= 16;    --long angulos de rotacion
+			ANG_W: integer:= 17;    --long angulos de rotacion
 			ADDR_DP_W: integer:= 9; --long direcciones a dual port RAM
 	        DATA_DP_W: natural:= 1;
             -- UART -- Default setting:
@@ -76,7 +76,7 @@ architecture tp4_tb_arq of tp4_tb is
 		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
 		ena_rot_ext: in std_logic;
-		transparencia: in std_logic;
+		--transparencia: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -130,7 +130,7 @@ architecture tp4_tb_arq of tp4_tb is
 	signal blu_o_tb: std_logic_vector(1 downto 0);	
 	signal hs_tb, vs_tb: std_logic;
 	-- a switch externo
-	signal ena_rot_ext_tb, transparencia_tb: std_logic:= '0';
+	signal ena_rot_ext_tb: std_logic:= '0';
 	-- para capturar datos y escribir en archivo
 	signal tick_dpr_tb: std_logic;
 	signal pxl_x_tb, pxl_y_tb:	std_logic_vector(ADDR_DP_W-1 downto 0);
@@ -153,7 +153,7 @@ begin
 	rst_tb <= '1' after 10 ns, '0' after 45 ns;
 	ena_tb <= '1' after 35 ns;
 	tx_ena <= '1' after 52 ns;
-	transparencia_tb <= '1' after 20 ns;
+	-- transparencia_tb <= '1' after 20 ns;
 	-- vga_clear_tb <= '1' after 950 us;
 	-- ena_rot_ext_tb <= '1' after 50 ns;
 
@@ -261,7 +261,7 @@ begin
 		pulsadores => pulsadores_tb,
 		vga_clear_ext => vga_clear_tb,
 		ena_rot_ext => ena_rot_ext_tb,
-		transparencia => transparencia_tb,
+		--transparencia => transparencia_tb,
 		-- a SRAM externa --------------------------
 	   adv => adv_tb, mt_clk => mt_clk_tb, mt_cre => mt_cre_tb,
 		we_n => we_n_tb, oe_n => oe_n_tb,

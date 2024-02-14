@@ -10,8 +10,11 @@ x = []
 y = []
 
 for linea in datos:
-	x.append(int(re.findall("\d+", linea)[0]))
-	y.append(320 - int(re.findall("\d+", linea)[1]))
+	x_aux = int(re.findall("\d+", linea)[0])
+	y_aux = 320 - int(re.findall("\d+", linea)[1])
+	if (x_aux < 340 and y_aux < 340):
+		x.append(x_aux)
+		y.append(y_aux)
 	
 fig, ax = plt.subplots()
 ax.scatter(x, y, marker=".", s=2)

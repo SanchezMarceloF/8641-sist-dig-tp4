@@ -21,7 +21,7 @@ entity rotador3d is
 		rst, ena, clk: in std_logic;
 		-- desde botones 
 		pulsadores: in std_logic_vector(3 downto 0);
-		transparencia: in std_logic;
+		--transparencia: in std_logic;
 		-- hacia gral_ctrl
 		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
@@ -262,7 +262,9 @@ begin
 			sel => sel_aux,
 			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
 	);
-	-- beta_aux <= "0001000000000000";
+	-- beta_aux <= "00101000000000000";
+	-- beta_aux <= "01101000000000000";
+	-- beta_aux <= "11101000000000000";
 	
 	gen_dir: generador_direcciones
 	generic map(

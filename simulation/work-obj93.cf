@@ -1,137 +1,137 @@
 v 4
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/rotador3d_tb.vhd" "d2d5f9bc458d1e117ef95eae7e65a4f66358d5bd" "20231128200911.721":
-  entity rotador3d_tb at 2( 40) + 0 on 35;
-  architecture rotador3d_tb_arq of rotador3d_tb at 27( 953) + 0 on 36;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/sram_tb.vhd" "036c64dc2b6ae10c5bf318ef01d7ebf2615e1d13" "20231020025420.853":
-  entity sram_tb at 2( 17) + 0 on 4;
-  architecture sram_tb_arch of sram_tb at 20( 579) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_04_uart.vhd" "690fda734020d2f49ef327cf2dd3b0817be98f62" "20240213174550.485":
-  entity uart at 2( 16) + 0 on 75;
-  architecture str_arch of uart at 29( 922) + 0 on 76;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_03_uart_tx.vhd" "c473024fc3063bd76fa8948e656d158bf0f832a9" "20240213174550.485":
-  entity uart_tx at 2( 16) + 0 on 73;
-  architecture arch of uart_tx at 20( 458) + 0 on 74;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_02_flag.vhd" "843cfa3ec5a66fcc8f1166970d3cacbe5469bb85" "20240106180844.083":
-  entity flag_buf at 2( 16) + 0 on 4;
-  architecture arch of flag_buf at 15( 340) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_01_uart_rx.vhd" "aa89c208da0e1a11e0c84108ece03aaa1ab91c4d" "20240213174550.485":
-  entity uart_rx at 2( 16) + 0 on 69;
-  architecture arch of uart_rx at 19( 428) + 0 on 70;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/ctrl_7seg.vhd" "22b1d8867da4910125475f79deadd7cc6c834bac" "20240214024025.010":
+  entity ctrl_7seg at 1( 0) + 0 on 63;
+  architecture ctrl_7seg_arch of ctrl_7seg at 17( 437) + 0 on 64;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/cordic_tb.vhd" "c1376a17a94abe416a1e3fa96abcf5ea26c2c3ec" "20231217234120.642":
+  entity cordic_tb at 2( 40) + 0 on 39;
+  architecture cordic_tb_arq of cordic_tb at 14( 257) + 0 on 40;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/deco_BCDa7seg.vhd" "925d95d477b60631e1a8d6524c8ba3f8d9d7d8b5" "20240214024025.011":
+  entity deco_bcda7seg at 2( 40) + 0 on 105;
+  architecture deco_bcda7seg_arq of deco_bcda7seg at 14( 293) + 0 on 106;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/borrado_dpr.vhd" "3b796f487624ad064e93730e1ae761b4039fddc9" "20240214024025.010":
+  entity borrado_dpr at 11( 425) + 0 on 55;
+  architecture borrado_dpr_arq of borrado_dpr at 30( 904) + 0 on 56;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/sram2cordic_ctrl.vhd" "7b38395e05933c6c505e85b10aa2d533e84dd777" "20230915011430.265":
+  entity sram2cordic_ctrl at 1( 0) + 0 on 4;
+  architecture sram2cordic_ctrl_arch of sram2cordic_ctrl at 28( 809) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/uart2sram_ctrl.vhd" "2c5a1255fc436d9561551114d71de1a390bb328d" "20230918021717.324":
+  entity uart2sram_ctrl at 1( 0) + 0 on 4;
+  architecture uart2sram_ctrl_arch of uart2sram_ctrl at 31( 1037) + 0 on 4;
+file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/gral_ctrl_tb.vhd" "b57fe550db62f476ac14ed5efcf18ffe218a35ad" "20230828150715.709":
+  entity gral_ctrl_tb at 1( 0) + 0 on 31;
+  architecture gral_ctrl_tb_arch of gral_ctrl_tb at 26( 1006) + 0 on 32;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/tp4_tb.vhd" "4de326524a36c6f38f540055dbc37e79352cdbf0" "20240214024025.010":
+  entity tp4_tb at 2( 40) + 0 on 41;
+  architecture tp4_tb_arq of tp4_tb at 49( 1719) + 0 on 42;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/acumulador_ang.vhd" "a29d7e8cbc3ce1717ccbcc8ad77aa1776b5f8c96" "20240214024025.011":
+  entity acumulador_ang at 2( 40) + 0 on 99;
+  architecture acumulador_ang_arq of acumulador_ang at 21( 499) + 0 on 100;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/barrer_shifter.vhd" "5e227fc7dd248729aaa9e2739cf6089c6e8cc5f9" "20240214024025.010":
+  entity barrer_shifter at 2( 40) + 0 on 93;
+  architecture estruc of barrer_shifter at 20( 524) + 0 on 94;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/contador.vhd" "a8e49bb429cbae49223283a9ed833a4539327d76" "20240214024025.010":
+  entity contador at 2( 40) + 0 on 97;
+  architecture contador_arq of contador at 19( 426) + 0 on 98;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/cordic_v2.vhd" "111a33017d77f0a53f11662858b2aaaeed6c1b87" "20240214024025.010":
+  entity cordic at 2( 40) + 0 on 89;
+  architecture cordic_arq of cordic at 25( 851) + 0 on 90;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/mux.vhd" "4e2ae87216fe7bfd6507879cc241e84eb686d052" "20240214024025.010":
+  entity mux at 2( 40) + 0 on 91;
+  architecture mux_arq of mux at 17( 352) + 0 on 92;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/registro.vhd" "785a222bad9947b10dd83e077a7ac9d5e19cb8bf" "20240214024025.010":
+  entity registro at 2( 40) + 0 on 77;
+  architecture registro_arq of registro at 16( 324) + 0 on 78;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/sumador.vhd" "0c6999741a06b2372b82a27ce12f6bed459d6456" "20240214024025.010":
+  entity sumador at 15( 329) + 0 on 95;
+  architecture sum of sumador at 34( 759) + 0 on 96;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/counter.vhd" "1912b16e6e80c5a139fb2d5f664b6b027cd1c5dc" "20240214024025.010":
+  entity counter at 1( 0) + 0 on 65;
+  architecture behavioral of counter at 17( 361) + 0 on 66;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/gral_ctrl.vhd" "b5e63d065e2cd39a17b0ab6c9479aef36cb45f17" "20240214024025.010":
+  entity gral_ctrl at 1( 0) + 0 on 45;
+  architecture gral_ctrl_arch of gral_ctrl at 41( 1140) + 0 on 46;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/sram2cordic.vhd" "8a17a9bffe4c6d7c237c5a1b9d10c87db07b27d2" "20240214024025.010":
+  entity sram2cordic at 1( 0) + 0 on 51;
+  architecture sram2cordic_arch of sram2cordic at 31( 768) + 0 on 52;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/uart2sram.vhd" "e687f6c549ca2dd913e5ab5bd2cb4c0c3c5cff8f" "20240214024025.010":
+  entity uart2sram at 1( 0) + 0 on 47;
+  architecture uart2sram_arch of uart2sram at 33( 1037) + 0 on 48;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/main/tp4.vhd" "92c3ec635e71b6ee1fc3af340a389376b707249c" "20240214024025.010":
+  entity tp4 at 12( 449) + 0 on 43;
+  architecture tp4_arq of tp4 at 130( 5033) + 0 on 44;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/main/uart2sram_wrap.vhd" "4367c3261e7e1728bd38644706d3ba3b9896735f" "20240214024022.918":
+  entity uart2sram_wrap at 1( 0) + 0 on 4;
+  architecture uart2sram_wrap_arch of uart2sram_wrap at 45( 1642) + 0 on 4;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_externa/contador_clock.vhd" "2350bf9e34c6f4a67a6d316db50d57664fe67ca9" "20240214024025.010":
+  entity contador_clock at 1( 0) + 0 on 79;
+  architecture contador_clock_arq of contador_clock at 14( 231) + 0 on 80;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_externa/sram_nexys2_ctrl.vhd" "ea44696c45e4de636e606b864bca06447c6952c0" "20240214024025.010":
+  entity sram_ctrl at 7( 203) + 0 on 49;
+  architecture arch of sram_ctrl at 33( 1004) + 0 on 50;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/controlador.vhd" "c2d40fe381f27c5e9ca97885448273e6ca3c719d" "20240214024025.010":
+  entity controlador at 12( 434) + 0 on 59;
+  architecture behavioral of controlador at 31( 892) + 0 on 60;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/generador_direcciones.vhd" "357f48be7ad88474726e0d155b1e95660c3dd321" "20240214024025.010":
+  entity generador_direcciones at 2( 40) + 0 on 87;
+  architecture generador_direcciones_arq of generador_direcciones at 26( 695) + 0 on 88;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/vga_ctrl.vhd" "17b1c1708e941843c1daedf25a385d0f515cc9e3" "20240214024025.010":
+  entity vga_ctrl at 10( 354) + 0 on 61;
+  architecture vga_ctrl_arq of vga_ctrl at 67( 2270) + 0 on 62;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/xilinx_dual_port_ram_sync_v2.vhd" "0333f35a17602f3c79306efe42cd5a5cd4f94154" "20240214024025.010":
+  entity xilinx_dual_port_ram_sync at 6( 171) + 0 on 57;
+  architecture beh_arch of xilinx_dual_port_ram_sync at 27( 723) + 0 on 58;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/cordic3d.vhd" "c5a8f0a93c77387d0c3cfa3af494ab0126a2e4ac" "20240214024025.010":
+  entity cordic3d at 2( 40) + 0 on 81;
+  architecture cordic3d_arq of cordic3d at 29( 945) + 0 on 82;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/detect_flanco.vhd" "7e5654d7b370546733630d7ce50d432203c5b956" "20240106180844.043":
+  entity detect_flanco at 2( 41) + 0 on 4;
+  architecture det_arq of detect_flanco at 19( 410) + 0 on 4;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/ena_20mili.vhd" "db99cba6967e9a2df550685027763bc2b4acdc1e" "20240214024025.010":
+  entity ena_20mili at 1( 0) + 0 on 83;
+  architecture ena_20mili_arq of ena_20mili at 18( 308) + 0 on 84;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/ffd.vhd" "6ee8e98c19416bd11bb352aef68cb81648bd195e" "20240214024022.921":
+  entity ffd at 1( 0) + 0 on 4;
+  architecture ffd_arq of ffd at 15( 329) + 0 on 4;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/lector_datos.vhd" "49786706e6092538c49dfca30d027daae00482ab" "20240106180844.044":
+  entity lector_datos at 2( 40) + 0 on 4;
+  architecture lector_datos_arq of lector_datos at 31( 1108) + 0 on 4;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/mux2.vhd" "310d8debf7be576293bce865fcbcbafc8ac2b7d9" "20240214024025.011":
+  entity mux2 at 2( 40) + 0 on 103;
+  architecture mux2_arq of mux2 at 16( 380) + 0 on 104;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/rotacion_ctrl.vhd" "e38bf7b676f811ddc3829dfed9e20493061a05db" "20240214024025.010":
+  entity rotacion_ctrl at 2( 40) + 0 on 85;
+  architecture rotacion_ctrl_arq of rotacion_ctrl at 20( 481) + 0 on 86;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/rotador3d.vhd" "d1c8617c071b516cbed30e274e751d468265ccea" "20240214024025.010":
+  entity rotador3d at 2( 40) + 0 on 53;
+  architecture rotador3d_arq of rotador3d at 41( 1339) + 0 on 54;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/updown_counter.vhd" "c381ad68ed01c4ca6cb6ccd94efbd260e206f563" "20240214024025.011":
+  entity updown_counter at 2( 40) + 0 on 101;
+  architecture updown_counter_arq of updown_counter at 22( 525) + 0 on 102;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch04_11_mod_m.vhd" "857487ae0ca051b304df51fcc7581917a7fd74c9" "20240214024025.010":
+  entity mod_m_counter at 2( 17) + 0 on 67;
+  architecture arch of mod_m_counter at 17( 365) + 0 on 68;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch04_20_fifo.vhd" "0a7a9047014632a753991d6694f89ef1b78efeb0" "20240214024025.010":
+  entity fifo at 2( 17) + 0 on 71;
+  architecture arch of fifo at 19( 441) + 0 on 72;
 file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch06_01_02_debounce.vhd" "f706bc175a04437354efd17d0d6c7257df399a78" "20240106180844.082":
   entity debounce at 2( 16) + 0 on 4;
   architecture exp_fsmd_arch of debounce at 13( 241) + 0 on 4;
   architecture fsmd_arch of debounce at 86( 2300) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch04_20_fifo.vhd" "0a7a9047014632a753991d6694f89ef1b78efeb0" "20240213174550.485":
-  entity fifo at 2( 17) + 0 on 71;
-  architecture arch of fifo at 19( 441) + 0 on 72;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch04_11_mod_m.vhd" "857487ae0ca051b304df51fcc7581917a7fd74c9" "20240213174550.485":
-  entity mod_m_counter at 2( 17) + 0 on 67;
-  architecture arch of mod_m_counter at 17( 365) + 0 on 68;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/updown_counter.vhd" "4ac4cfa826feef1044ea877bece14af1db0d5c6e" "20240213174550.485":
-  entity updown_counter at 2( 40) + 0 on 101;
-  architecture updown_counter_arq of updown_counter at 22( 525) + 0 on 102;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/rotador3d.vhd" "1a6caf6f2dbcadf43c8ed6a34f33414252c3929d" "20240213174550.485":
-  entity rotador3d at 2( 40) + 0 on 53;
-  architecture rotador3d_arq of rotador3d at 41( 1337) + 0 on 54;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/rotacion_ctrl.vhd" "e38bf7b676f811ddc3829dfed9e20493061a05db" "20240213174550.485":
-  entity rotacion_ctrl at 2( 40) + 0 on 85;
-  architecture rotacion_ctrl_arq of rotacion_ctrl at 20( 481) + 0 on 86;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/mux2.vhd" "310d8debf7be576293bce865fcbcbafc8ac2b7d9" "20240213174550.485":
-  entity mux2 at 2( 40) + 0 on 103;
-  architecture mux2_arq of mux2 at 16( 380) + 0 on 104;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/lector_datos.vhd" "49786706e6092538c49dfca30d027daae00482ab" "20240106180844.044":
-  entity lector_datos at 2( 40) + 0 on 4;
-  architecture lector_datos_arq of lector_datos at 31( 1108) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/ffd.vhd" "6ee8e98c19416bd11bb352aef68cb81648bd195e" "20240213174549.612":
-  entity ffd at 1( 0) + 0 on 4;
-  architecture ffd_arq of ffd at 15( 329) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/ena_20mili.vhd" "db99cba6967e9a2df550685027763bc2b4acdc1e" "20240213174550.485":
-  entity ena_20mili at 1( 0) + 0 on 83;
-  architecture ena_20mili_arq of ena_20mili at 18( 308) + 0 on 84;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/detect_flanco.vhd" "7e5654d7b370546733630d7ce50d432203c5b956" "20240106180844.043":
-  entity detect_flanco at 2( 41) + 0 on 4;
-  architecture det_arq of detect_flanco at 19( 410) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/rotador_3d/cordic3d.vhd" "c5a8f0a93c77387d0c3cfa3af494ab0126a2e4ac" "20240213174550.485":
-  entity cordic3d at 2( 40) + 0 on 81;
-  architecture cordic3d_arq of cordic3d at 29( 945) + 0 on 82;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/xilinx_dual_port_ram_sync_v2.vhd" "0333f35a17602f3c79306efe42cd5a5cd4f94154" "20240213174550.485":
-  entity xilinx_dual_port_ram_sync at 6( 171) + 0 on 57;
-  architecture beh_arch of xilinx_dual_port_ram_sync at 27( 723) + 0 on 58;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/vga_ctrl.vhd" "17b1c1708e941843c1daedf25a385d0f515cc9e3" "20240213174550.485":
-  entity vga_ctrl at 10( 354) + 0 on 61;
-  architecture vga_ctrl_arq of vga_ctrl at 67( 2270) + 0 on 62;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/generador_direcciones.vhd" "357f48be7ad88474726e0d155b1e95660c3dd321" "20240213174550.485":
-  entity generador_direcciones at 2( 40) + 0 on 87;
-  architecture generador_direcciones_arq of generador_direcciones at 26( 695) + 0 on 88;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/controlador.vhd" "006ad2c0dc6f4cb2df0099c062a4339778973be8" "20240213174550.485":
-  entity controlador at 12( 434) + 0 on 59;
-  architecture behavioral of controlador at 31( 892) + 0 on 60;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_externa/sram_nexys2_ctrl.vhd" "ea44696c45e4de636e606b864bca06447c6952c0" "20240213174550.485":
-  entity sram_ctrl at 7( 203) + 0 on 49;
-  architecture arch of sram_ctrl at 33( 1004) + 0 on 50;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_externa/contador_clock.vhd" "2350bf9e34c6f4a67a6d316db50d57664fe67ca9" "20240213174550.485":
-  entity contador_clock at 1( 0) + 0 on 79;
-  architecture contador_clock_arq of contador_clock at 14( 231) + 0 on 80;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/main/uart2sram_wrap.vhd" "4367c3261e7e1728bd38644706d3ba3b9896735f" "20240213174549.609":
-  entity uart2sram_wrap at 1( 0) + 0 on 4;
-  architecture uart2sram_wrap_arch of uart2sram_wrap at 45( 1642) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/main/tp4.vhd" "be149ea5c90ed7c5a9924409064919eb296ab95c" "20240213174550.485":
-  entity tp4 at 12( 449) + 0 on 43;
-  architecture tp4_arq of tp4 at 130( 5028) + 0 on 44;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/uart2sram.vhd" "e687f6c549ca2dd913e5ab5bd2cb4c0c3c5cff8f" "20240213174550.485":
-  entity uart2sram at 1( 0) + 0 on 47;
-  architecture uart2sram_arch of uart2sram at 33( 1037) + 0 on 48;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/sram2cordic.vhd" "8a17a9bffe4c6d7c237c5a1b9d10c87db07b27d2" "20240213174550.485":
-  entity sram2cordic at 1( 0) + 0 on 51;
-  architecture sram2cordic_arch of sram2cordic at 31( 768) + 0 on 52;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/gral_ctrl.vhd" "b5e63d065e2cd39a17b0ab6c9479aef36cb45f17" "20240213174550.485":
-  entity gral_ctrl at 1( 0) + 0 on 45;
-  architecture gral_ctrl_arch of gral_ctrl at 41( 1140) + 0 on 46;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/counter.vhd" "1912b16e6e80c5a139fb2d5f664b6b027cd1c5dc" "20240213174550.485":
-  entity counter at 1( 0) + 0 on 65;
-  architecture behavioral of counter at 17( 361) + 0 on 66;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/sumador.vhd" "0c6999741a06b2372b82a27ce12f6bed459d6456" "20240213174550.485":
-  entity sumador at 15( 329) + 0 on 95;
-  architecture sum of sumador at 34( 759) + 0 on 96;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/registro.vhd" "785a222bad9947b10dd83e077a7ac9d5e19cb8bf" "20240213174550.485":
-  entity registro at 2( 40) + 0 on 77;
-  architecture registro_arq of registro at 16( 324) + 0 on 78;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/mux.vhd" "4e2ae87216fe7bfd6507879cc241e84eb686d052" "20240213174550.485":
-  entity mux at 2( 40) + 0 on 91;
-  architecture mux_arq of mux at 17( 352) + 0 on 92;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/cordic_v2.vhd" "8830c77ff4dc1d200fa43713382a6acd82e58768" "20240213174550.485":
-  entity cordic at 2( 40) + 0 on 89;
-  architecture cordic_arq of cordic at 25( 851) + 0 on 90;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/contador.vhd" "a8e49bb429cbae49223283a9ed833a4539327d76" "20240213174550.485":
-  entity contador at 2( 40) + 0 on 97;
-  architecture contador_arq of contador at 19( 426) + 0 on 98;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/barrer_shifter.vhd" "5e227fc7dd248729aaa9e2739cf6089c6e8cc5f9" "20240213174550.485":
-  entity barrer_shifter at 2( 40) + 0 on 93;
-  architecture estruc of barrer_shifter at 20( 524) + 0 on 94;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/cordic/acumulador_ang.vhd" "2ba140539c861c1777e72ed2be51f6a8f1ecb684" "20240213174550.485":
-  entity acumulador_ang at 2( 40) + 0 on 99;
-  architecture acumulador_ang_arq of acumulador_ang at 21( 499) + 0 on 100;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/tp4_tb.vhd" "21a2a6fa99a1d1d0162a4558c43dc3d03deb82f6" "20240213174550.484":
-  entity tp4_tb at 2( 40) + 0 on 41;
-  architecture tp4_tb_arq of tp4_tb at 49( 1719) + 0 on 42;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "testbench/gral_ctrl_tb.vhd" "b57fe550db62f476ac14ed5efcf18ffe218a35ad" "20230828150715.709":
-  entity gral_ctrl_tb at 1( 0) + 0 on 31;
-  architecture gral_ctrl_tb_arch of gral_ctrl_tb at 26( 1006) + 0 on 32;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/uart2sram_ctrl.vhd" "2c5a1255fc436d9561551114d71de1a390bb328d" "20230918021717.324":
-  entity uart2sram_ctrl at 1( 0) + 0 on 4;
-  architecture uart2sram_ctrl_arch of uart2sram_ctrl at 31( 1037) + 0 on 4;
-file "/home/marcelofs/Documentos/8646 - Sistemas digitales 1ercuat2022/8641-sist-dig-tp4/" "src/gral_fsm_ctrl/sram2cordic_ctrl.vhd" "7b38395e05933c6c505e85b10aa2d533e84dd777" "20230915011430.265":
-  entity sram2cordic_ctrl at 1( 0) + 0 on 4;
-  architecture sram2cordic_ctrl_arch of sram2cordic_ctrl at 28( 809) + 0 on 4;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/ram_vga/borrado_dpr.vhd" "3b796f487624ad064e93730e1ae761b4039fddc9" "20240213174550.485":
-  entity borrado_dpr at 11( 425) + 0 on 55;
-  architecture borrado_dpr_arq of borrado_dpr at 30( 904) + 0 on 56;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/deco_BCDa7seg.vhd" "925d95d477b60631e1a8d6524c8ba3f8d9d7d8b5" "20240213174550.485":
-  entity deco_bcda7seg at 2( 40) + 0 on 105;
-  architecture deco_bcda7seg_arq of deco_bcda7seg at 14( 293) + 0 on 106;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/cordic_tb.vhd" "c1376a17a94abe416a1e3fa96abcf5ea26c2c3ec" "20231217234120.642":
-  entity cordic_tb at 2( 40) + 0 on 39;
-  architecture cordic_tb_arq of cordic_tb at 14( 257) + 0 on 40;
-file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/gral_fsm_ctrl/ctrl_7seg.vhd" "22b1d8867da4910125475f79deadd7cc6c834bac" "20240213174550.485":
-  entity ctrl_7seg at 1( 0) + 0 on 63;
-  architecture ctrl_7seg_arch of ctrl_7seg at 17( 437) + 0 on 64;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_01_uart_rx.vhd" "aa89c208da0e1a11e0c84108ece03aaa1ab91c4d" "20240214024025.010":
+  entity uart_rx at 2( 16) + 0 on 69;
+  architecture arch of uart_rx at 19( 428) + 0 on 70;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_02_flag.vhd" "843cfa3ec5a66fcc8f1166970d3cacbe5469bb85" "20240106180844.083":
+  entity flag_buf at 2( 16) + 0 on 4;
+  architecture arch of flag_buf at 15( 340) + 0 on 4;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_03_uart_tx.vhd" "c473024fc3063bd76fa8948e656d158bf0f832a9" "20240214024025.010":
+  entity uart_tx at 2( 16) + 0 on 73;
+  architecture arch of uart_tx at 20( 458) + 0 on 74;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "src/uart/list_ch07_04_uart.vhd" "690fda734020d2f49ef327cf2dd3b0817be98f62" "20240214024025.010":
+  entity uart at 2( 16) + 0 on 75;
+  architecture str_arch of uart at 29( 922) + 0 on 76;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/sram_tb.vhd" "036c64dc2b6ae10c5bf318ef01d7ebf2615e1d13" "20231020025420.853":
+  entity sram_tb at 2( 17) + 0 on 4;
+  architecture sram_tb_arch of sram_tb at 20( 579) + 0 on 4;
+file "D:\Fiuba\8641 - Sistemas digitales\8641-sist-dig-tp4\" "testbench/rotador3d_tb.vhd" "d2d5f9bc458d1e117ef95eae7e65a4f66358d5bd" "20231128200911.721":
+  entity rotador3d_tb at 2( 40) + 0 on 35;
+  architecture rotador3d_tb_arq of rotador3d_tb at 27( 953) + 0 on 36;
