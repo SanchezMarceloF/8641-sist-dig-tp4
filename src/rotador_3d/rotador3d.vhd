@@ -21,7 +21,6 @@ entity rotador3d is
 		rst, ena, clk: in std_logic;
 		-- desde botones 
 		pulsadores: in std_logic_vector(3 downto 0);
-		--transparencia: in std_logic;
 		-- hacia gral_ctrl
 		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
@@ -186,7 +185,6 @@ begin
 					estado_sig <= ROTAR;
 			when ROTAR =>
 				if (flag_fin = '1') then
-					-- if (transparencia = '1' and flag_transp = '0') then -- elimina transparencia
 					if (flag_transp = '0') then -- elimina transparencia
 						estado_sig <= SHIFT_REG_DPR;
 					else 
@@ -262,10 +260,11 @@ begin
 			sel => sel_aux,
 			alfa => alfa_aux, beta => beta_aux, gamma => gamma_aux
 	);
-	-- beta_aux <= "00101000000000000";
-	-- beta_aux <= "01101000000000000";
-	-- beta_aux <= "11101000000000000";
-	
+	-- beta_aux <= std_logic_vector(to_signed(-26214,ANG_WIDE));
+	-- alfa_aux <= std_logic_vector(to_signed(28672,ANG_WIDE));
+	-- beta_aux <= std_logic_vector(to_signed(-51613,ANG_WIDE));
+	-- gamma_aux <= std_logic_vector(to_signed(48914,ANG_WIDE));
+
 	gen_dir: generador_direcciones
 	generic map(
 		N => COORD_W, 

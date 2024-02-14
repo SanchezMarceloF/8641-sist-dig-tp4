@@ -99,7 +99,7 @@ architecture cordic_arq of cordic is
 	
 	constant NOVENTA: integer:= 32768; --2^15
 	constant CIENTOCHENTA: integer:= 65536; --2^16
-	constant DOSETENTA: integer:= 131072; --2^17
+	constant DOSETENTA: integer:= 98304;
 	
 	signal A1_up, sal_mux_up, xn_bef, sal_shift_up: std_logic_vector(VECT_WIDE-1 downto 0);
 	signal A1_down, sal_mux_down, yn_bef, sal_shift_down: std_logic_vector(VECT_WIDE-1 downto 0);

@@ -42,7 +42,6 @@ entity tp4 is
 		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
 		ena_rot_ext: in std_logic;
-		--transparencia: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -91,10 +90,9 @@ entity tp4 is
 --  -- Pulsadores rotacion
 --  attribute loc of pulsadores: signal is "R17 N17 H13 E18"; --CHECK OK
 --
---	--Boton borrado dpr, habilitador rotacion, transparencia
+--	--Boton borrado dpr, habilitador rotacion
 --	attribute loc of vga_clear_ext: signal is "D18"; --CHECK OK
 --	attribute loc of ena_rot_ext: signal is "H18";
---	--attribute loc of transparencia: signal is "K18";
 --  
 --  -- UART
 --	attribute loc of rx: signal is "G15"; --(Pmod conector) --"U6"; --VA A DB-9 (RS-232)
@@ -250,7 +248,6 @@ architecture tp4_arq of tp4 is
 		rst, ena, clk: in std_logic;
 		-- desde botones 
 		pulsadores: in std_logic_vector(3 downto 0);
-		--transparencia: in std_logic;
 		-- hacia gral_ctrl
 		rotnew: out std_logic;
 		-- desde/hacia sram2cordic
@@ -520,7 +517,6 @@ begin
 	port map(
 		rst => rst_rotador3d, ena => ena, clk => clk,
 		pulsadores => pulsadores,
-		--transparencia => transparencia,
 		rotnew => rotnew_wire,
 		x_0 => x_0_wire,
 		y_0 => y_0_wire,

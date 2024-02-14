@@ -76,7 +76,6 @@ architecture tp4_tb_arq of tp4_tb is
 		pulsadores: in std_logic_vector(3 downto 0);
 		vga_clear_ext: in std_logic;
 		ena_rot_ext: in std_logic;
-		--transparencia: in std_logic;
 		-- a SRAM externa --------------------------
 		adv, mt_clk, mt_cre : out std_logic;
 		we_n, oe_n : out std_logic;
@@ -153,7 +152,6 @@ begin
 	rst_tb <= '1' after 10 ns, '0' after 45 ns;
 	ena_tb <= '1' after 35 ns;
 	tx_ena <= '1' after 52 ns;
-	-- transparencia_tb <= '1' after 20 ns;
 	-- vga_clear_tb <= '1' after 950 us;
 	-- ena_rot_ext_tb <= '1' after 50 ns;
 
@@ -261,7 +259,6 @@ begin
 		pulsadores => pulsadores_tb,
 		vga_clear_ext => vga_clear_tb,
 		ena_rot_ext => ena_rot_ext_tb,
-		--transparencia => transparencia_tb,
 		-- a SRAM externa --------------------------
 	   adv => adv_tb, mt_clk => mt_clk_tb, mt_cre => mt_cre_tb,
 		we_n => we_n_tb, oe_n => oe_n_tb,
